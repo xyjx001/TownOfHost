@@ -622,6 +622,19 @@ namespace TownOfHost
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
             }, Options.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
         }
+        public static void SelectRevengePlayer(this PlayerControl revenger)
+        {
+            var rand = new System.Random();
+            System.Collections.Generic.List<PlayerControl> TargetList = new System.Collections.Generic.List<PlayerControl>();
+            foreach (var pc in PlayerControl.AllPlayerControls)
+                if (pc != revenger)
+                    TargetList.Add(pc);
+            var RevengeTarget = TargetList[rand.Next(TargetList.Count)];
+            PlayerState.setDeathReason(RevengeTarget.PlayerId, PlayerState.DeathReason.Revenge);
+            main.IgnoreReportPlayers.Add(RevengeTarget.PlayerId);
+            revenger.RpcMurderPlayer(RevengeTarget);
+            CheckForEndVotingPatch.recall = true;
+        }
         public static bool isCrewmate(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Crewmate; }
         public static bool isEngineer(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Engineer; }
         public static bool isScientist(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Scientist; }

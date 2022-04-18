@@ -42,6 +42,7 @@ namespace TownOfHost
             Bombed,
             Misfire,
             Disconnected,
+            Revenge,
             etc = -1
         }
     }

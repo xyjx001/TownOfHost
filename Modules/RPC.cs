@@ -13,6 +13,7 @@ namespace TownOfHost
         TerroristWin,
         ArsonistWin,
         SchrodingerCatExiled,
+        NekomataExiled,
         EndGame,
         PlaySound,
         SetCustomRole,
@@ -85,6 +86,9 @@ namespace TownOfHost
                     break;
                 case (byte)CustomRPC.SchrodingerCatExiled:
                     byte exiledSchrodingerCat = reader.ReadByte();
+                    break;
+                case (byte)CustomRPC.NekomataExiled:
+                    byte exiledNekomata = reader.ReadByte();
                     break;
                 case (byte)CustomRPC.EndGame:
                     RPC.EndGame();
