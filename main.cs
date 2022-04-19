@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.IL2CPP;
@@ -172,6 +172,9 @@ namespace TownOfHost
                 {CustomRoles.SKMadmate, "#ff0000"},
                 {CustomRoles.MadGuardian, "#ff0000"},
                 {CustomRoles.MadSnitch, "#ff0000"},
+                {CustomRoles.Nekomata, "#ff9500"},
+                {CustomRoles.EvilNekomata, "#ff0000"},
+                {CustomRoles.NiceNekomata, "#ff9500"},
                 {CustomRoles.Watcher, "#800080"},
                 {CustomRoles.EvilWatcher, "#ff0000"},
                 {CustomRoles.NiceWatcher, "#800080"},
@@ -240,6 +243,7 @@ namespace TownOfHost
         Shapeshifter,
         //Impostor
         BountyHunter,
+        EvilNekomata,
         EvilWatcher,
         Mafia,
         SerialKiller,
@@ -253,6 +257,7 @@ namespace TownOfHost
         MadSnitch,
         SKMadmate,
         //両陣営
+        Nekomata,
         Watcher,
         //Crewmate(Vanilla)
         Engineer,
@@ -262,6 +267,7 @@ namespace TownOfHost
         Bait,
         Lighter,
         Mayor,
+        NiceNekomata,
         NiceWatcher,
         SabotageMaster,
         Sheriff,

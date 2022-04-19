@@ -25,6 +25,10 @@ namespace TownOfHost
                     __instance.RoleBlurbText.text = getString("WatcherInfo");
                 else
                     __instance.RoleBlurbText.text = getString(role.ToString() + "Info");
+                if (PlayerControl.LocalPlayer.isEvilNekomata() || PlayerControl.LocalPlayer.isNiceNekomata())
+                    __instance.RoleBlurbText.text = getString("NekomataInfo");
+                else
+                    __instance.RoleBlurbText.text = getString(role.ToString() + "Info");
             }, 0.01f, "Override Role Text");
 
         }

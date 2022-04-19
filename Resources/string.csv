@@ -18,6 +18,9 @@ Madmate,Madmate,マッドメイト
 MadGuardian,MadGuardian,マッドガーディアン
 MadSnitch,MadSnitch,マッドスニッチ
 SKMadmate,SideKickMadmate,サイドキックマッドメイト
+NiceNekomata,Nice Nekomata,ナイス猫又
+EvilNekomata,Evil Nekomata,イビル猫又
+Nekomata,Nekomata,猫又
 NiceWatcher,Nice Watcher,ナイスウォッチャー
 EvilWatcher,Evil Watcher,イビルウォッチャー
 Watcher,Watcher,ウォッチャー
@@ -57,6 +60,7 @@ MadmateInfo,Help the Impostors,インポスターの援助をしよう
 MadGuardianInfo,Finish your tasks to help the Impostors,タスクを済ませ、インポスターの援助をしよう
 MadSnitchInfo,Finish your tasks to help the Impostors,タスクを済ませ、インポスターの援助をしよう
 SKMadmateInfo,You are Sidekick,サイドキックにされた
+NekomataInfo,Let's Revenge the enemies,敵を道連れしよう
 WatcherInfo,Pay close attention to the crew's votes,みんなの投票に目を光らせよう
 ArsonistInfo,Let them burn,燃やせ
 JesterInfo,Get voted out,追放されよう
@@ -168,6 +172,7 @@ MadmateHasImpostorVision,Madmate vision is as long as Impostor one,マッドメ�
 CanMakeMadmateCount,Shapeshifter Can Make Madmate limit,マッドメイトを作れる人数
 MadSnitchTasks,MadSnitch Tasks,マッドスニッチのタスク数
 MadGuardianCanSeeWhoTriedToKill,MadGuardian Can See Who Tried To Kill,マッドガーディアンが自身の殺害未遂者を知ることができる
+EvilNekomataChance,EvilNekomata Chance,イビル猫又になる確率
 EvilWatcherChance,EvilWatcher Chance,イビルウォッチャーになる確率
 SabotageMasterFixesDoors,SabotageMaster Can Fixes Multiple Doors,ｻﾎﾞﾀｰｼﾞｭﾏｽﾀｰが1度に複数のﾄﾞｱを開けることを許可する
 SabotageMasterFixesReactors,SabotageMaster Can Fixes Both Reactors,ｻﾎﾞﾀｰｼﾞｭﾏｽﾀｰが原子炉ﾒﾙﾄﾀﾞｳﾝに対して能力を

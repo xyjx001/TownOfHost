@@ -66,6 +66,9 @@ namespace TownOfHost
         public static CustomOption CanMakeMadmateCount;
 
         public static CustomOption EvilWatcherChance;
+
+        public static CustomOption EvilNekomataChance;
+
         public static CustomOption MayorAdditionalVote;
         public static CustomOption SabotageMasterSkillLimit;
         public static CustomOption SabotageMasterFixesDoors;
@@ -163,6 +166,15 @@ namespace TownOfHost
             else
                 IsEvilWatcher = false;
         }
+        public static bool IsEvilNekomata = false;
+        public static void SetNekomataTeam(float EvilNekomataRate)
+        {
+            EvilNekomataRate = Options.EvilNekomataChance.GetFloat();
+            if (UnityEngine.Random.Range(1, 100) < EvilNekomataRate)
+                IsEvilNekomata = true;
+            else
+                IsEvilNekomata = false;
+        }
         private static bool IsLoaded = false;
 
         static Options()
@@ -243,6 +255,8 @@ namespace TownOfHost
             MadmateCanFixComms = CustomOption.Create(10011, Color.white, "MadmateCanFixComms", false);
             MadmateHasImpostorVision = CustomOption.Create(10012, Color.white, "MadmateHasImpostorVision", false);
             // Both
+            SetupRoleOptions(300100, CustomRoles.Nekomata);
+            EvilNekomataChance = CustomOption.Create(30110, Color.white, "EvilNekomataChance", 0, 0, 100, 10, CustomRoleSpawnChances[CustomRoles.Nekomata]);
             SetupRoleOptions(30000, CustomRoles.Watcher);
             EvilWatcherChance = CustomOption.Create(30010, Color.white, "EvilWatcherChance", 0, 0, 100, 10, CustomRoleSpawnChances[CustomRoles.Watcher]);
             // Crewmate

@@ -628,6 +628,9 @@ namespace TownOfHost
         public static bool isGurdianAngel(this PlayerControl target) { return target.getCustomRole() == CustomRoles.GuardianAngel; }
         public static bool isImpostor(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Impostor; }
         public static bool isShapeshifter(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Shapeshifter; }
+        public static bool isNekomata(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Nekomata; }
+        public static bool isEvilNekomata(this PlayerControl target) { return target.getCustomRole() == CustomRoles.EvilNekomata; }
+        public static bool isNiceNekomata(this PlayerControl target) { return target.getCustomRole() == CustomRoles.NiceNekomata; }
         public static bool isWatcher(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Watcher; }
         public static bool isEvilWatcher(this PlayerControl target) { return target.getCustomRole() == CustomRoles.EvilWatcher; }
         public static bool isNiceWatcher(this PlayerControl target) { return target.getCustomRole() == CustomRoles.NiceWatcher; }

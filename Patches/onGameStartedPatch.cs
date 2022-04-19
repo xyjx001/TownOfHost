@@ -95,6 +95,8 @@ namespace TownOfHost
 
             //ウォッチャーの陣営抽選
             Options.SetWatcherTeam(Options.EvilWatcherChance.GetFloat());
+            //猫又の陣営抽選
+            Options.SetNekomataTeam(Options.EvilNekomataChance.GetFloat());
 
             main.AllPlayerCustomRoles = new Dictionary<byte, CustomRoles>();
             main.AllPlayerCustomSubRoles = new Dictionary<byte, CustomRoles>();
@@ -314,6 +316,8 @@ namespace TownOfHost
                 else AssignCustomRolesFromList(CustomRoles.Watcher, Crewmates);
                 if (main.RealOptionsData.NumImpostors > 1)
                     AssignCustomRolesFromList(CustomRoles.Egoist, Shapeshifters);
+                if (Options.IsEvilNekomata) AssignCustomRolesFromList(CustomRoles.Nekomata, Impostors);
+                else AssignCustomRolesFromList(CustomRoles.Nekomata, Crewmates);
 
                 //RPCによる同期
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -322,6 +326,10 @@ namespace TownOfHost
                         main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.EvilWatcher;
                     if (pc.isWatcher() && !Options.IsEvilWatcher)
                         main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.NiceWatcher;
+                    if (pc.isNekomata() && Options.IsEvilNekomata)
+                        main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.EvilNekomata;
+                    if (pc.isWatcher() && !Options.IsEvilNekomata)
+                        main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.NiceNekomata;
                 }
                 foreach (var pair in main.AllPlayerCustomRoles)
                 {
