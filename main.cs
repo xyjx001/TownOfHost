@@ -85,6 +85,7 @@ namespace TownOfHost
         public static Dictionary<byte, float> AirshipMeetingTimer = new Dictionary<byte, float>();
         public static bool AirshipMeetingCheck;
         public static Dictionary<byte, byte> SpeedBoostTarget = new Dictionary<byte, byte>();
+        public static List<PlayerControl> RevengeTarget = new List<PlayerControl>();
         public static int AliveImpostorCount;
         public static int SKMadmateNowCount;
         public static bool witchMeeting;
@@ -137,6 +138,7 @@ namespace TownOfHost
             isDoused = new Dictionary<(byte, byte), bool>();
             DousedPlayerCount = new Dictionary<byte, int>();
             ArsonistTimer = new Dictionary<byte, (PlayerControl, float)>();
+            RevengeTarget = new List<PlayerControl>();
             winnerList = new();
             VisibleTasksCount = false;
             MessagesToSend = new List<(string, byte)>();

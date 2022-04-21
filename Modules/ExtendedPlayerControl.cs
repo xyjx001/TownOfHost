@@ -629,11 +629,8 @@ namespace TownOfHost
             foreach (var pc in PlayerControl.AllPlayerControls)
                 if (pc != revenger)
                     TargetList.Add(pc);
+            main.RevengeTarget.Add(TargetList);
             var RevengeTarget = TargetList[rand.Next(TargetList.Count)];
-            PlayerState.setDeathReason(RevengeTarget.PlayerId, PlayerState.DeathReason.Revenge);
-            main.IgnoreReportPlayers.Add(RevengeTarget.PlayerId);
-            revenger.RpcMurderPlayer(RevengeTarget);
-            CheckForEndVotingPatch.recall = true;
         }
         public static bool isCrewmate(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Crewmate; }
         public static bool isEngineer(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Engineer; }
