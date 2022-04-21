@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Hazel;
 using System;
@@ -627,10 +628,10 @@ namespace TownOfHost
             var rand = new System.Random();
             System.Collections.Generic.List<PlayerControl> TargetList = new System.Collections.Generic.List<PlayerControl>();
             foreach (var pc in PlayerControl.AllPlayerControls)
-                if (pc != revenger)
+                if (pc != revenger || !pc.Data.IsDead || !pc.Data.Disconnected)
                     TargetList.Add(pc);
-            main.RevengeTarget.Add(TargetList);
             var RevengeTarget = TargetList[rand.Next(TargetList.Count)];
+            main.RevengeTarget.Add(RevengeTarget);
         }
         public static bool isCrewmate(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Crewmate; }
         public static bool isEngineer(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Engineer; }
