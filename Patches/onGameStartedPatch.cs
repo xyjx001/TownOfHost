@@ -329,7 +329,7 @@ namespace TownOfHost
                         main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.NiceWatcher;
                     if (pc.isNekomata() && Options.IsEvilNekomata)
                         main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.EvilNekomata;
-                    if (pc.isWatcher() && !Options.IsEvilNekomata)
+                    if (pc.isNekomata() && !Options.IsEvilNekomata)
                         main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.NiceNekomata;
                 }
                 foreach (var pair in main.AllPlayerCustomRoles)
