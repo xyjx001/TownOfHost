@@ -623,7 +623,7 @@ namespace TownOfHost
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
             }, Options.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
         }
-        public static void SelectRevengePlayer(this PlayerControl revenger)
+        public static PlayerControl SelectRevengePlayer(this PlayerControl revenger)
         {
             var rand = new System.Random();
             System.Collections.Generic.List<PlayerControl> TargetList = new System.Collections.Generic.List<PlayerControl>();
@@ -631,7 +631,7 @@ namespace TownOfHost
                 if (pc != revenger || !pc.Data.IsDead || !pc.Data.Disconnected)
                     TargetList.Add(pc);
             var RevengeTarget = TargetList[rand.Next(TargetList.Count)];
-            main.RevengeTarget.Add(RevengeTarget);
+            return RevengeTarget;
         }
         public static bool isCrewmate(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Crewmate; }
         public static bool isEngineer(this PlayerControl target) { return target.getCustomRole() == CustomRoles.Engineer; }

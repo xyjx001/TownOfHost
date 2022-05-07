@@ -10,6 +10,8 @@ namespace TownOfHost
     class CheckForEndVotingPatch
     {
         public static bool recall = false;
+        public static PlayerControl ExliedPlayer = null;
+        public static bool isExiledNekomata = false;
         public static bool Prefix(MeetingHud __instance)
         {
             try
@@ -22,7 +24,7 @@ namespace TownOfHost
                 }
 
                 MeetingHud.VoterState[] states;
-                GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
+                GameData.PlayerInfo exiledPlayerInfo = PlayerControl.LocalPlayer.Data;
                 bool tie = false;
                 recall = false;
 
@@ -114,9 +116,16 @@ namespace TownOfHost
                 }
 
                 Logger.info("追放者決定: " + exileId);
-                exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+                exiledPlayerInfo = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+                PlayerControl exiledPlayer = exiledPlayerInfo.Object;
 
-                __instance.RpcVotingComplete(states, exiledPlayer, tie); //RPC
+                if (exiledPlayer.isNiceNekomata() || exiledPlayer.isEvilNekomata())
+                {
+                    ExliedPlayer = exiledPlayer;
+                    recall = true;
+                }
+
+                __instance.RpcVotingComplete(states, exiledPlayerInfo, tie); //RPC
                 foreach (var p in main.SpelledPlayer)
                 {
                     PlayerState.setDeathReason(p.PlayerId, PlayerState.DeathReason.Spell);
@@ -124,18 +133,18 @@ namespace TownOfHost
                     p.RpcMurderPlayer(p);
                     recall = true;
                 }
-                foreach (var p in main.RevengeTarget)
+                /*foreach (var p in main.RevengeTarget)
                 {
                     PlayerState.setDeathReason(p.PlayerId, PlayerState.DeathReason.Revenge);
                     main.IgnoreReportPlayers.Add(p.PlayerId);
                     p.RpcMurderPlayer(p);
                     recall = true;
-                }
+                }*/
 
                 //霊界用暗転バグ対処
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
-                    if ((pc.isSheriff() || pc.isArsonist()) && (pc.Data.IsDead || pc.PlayerId == exiledPlayer?.PlayerId)) pc.ResetPlayerCam(19f);
+                    if ((pc.isSheriff() || pc.isArsonist()) && (pc.Data.IsDead || pc.PlayerId == exiledPlayerInfo?.PlayerId)) pc.ResetPlayerCam(19f);
                 }
 
                 return false;
@@ -320,6 +329,15 @@ namespace TownOfHost
         {
             Logger.info("会議が終了", "Phase");
             if (!AmongUsClient.Instance.AmHost) return;
+            var ExiledPlayer = CheckForEndVotingPatch.ExliedPlayer;
+
+            if (CheckForEndVotingPatch.isExiledNekomata)
+            {
+                ExiledPlayer.RpcMurderPlayer(ExiledPlayer.SelectRevengePlayer());
+                main.IgnoreReportPlayers.Add(ExiledPlayer.PlayerId);
+                PlayerState.setDeathReason(ExiledPlayer.PlayerId, PlayerState.DeathReason.Revenge);
+                CheckForEndVotingPatch.isExiledNekomata = false;
+            }
             if (CheckForEndVotingPatch.recall)
             {
                 foreach (var pc in PlayerControl.AllPlayerControls)
