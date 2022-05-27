@@ -26,6 +26,8 @@ EvilWatcher,Evil Watcher,イビルウォッチャー
 Puppeteer,Puppeteer,パペッティア
 TimeThief,TimeThief,タイムシーフ
 Sniper,Sniper,スナイパー
+MimicK,Mimic(Killer),ミミック(キラー)
+MimicA,Mimic(Assistant),ミミック(アシスタント)
 
 # マッドメイト系役職
 Madmate,Madmate,マッドメイト
@@ -35,6 +37,9 @@ SKMadmate,SideKickMadmate,サイドキックマッドメイト
 
 # 両陣営可能役職
 Watcher,Watcher,ウォッチャー
+
+# コンビネーション役職
+Mimic,<color=#ff0000>Mimic</color>,<color=#ff0000>ミミック</color>
 
 # 特殊クルー役職
 NiceWatcher,Nice Watcher,ナイスウォッチャー

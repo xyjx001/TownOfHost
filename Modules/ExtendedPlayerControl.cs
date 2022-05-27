@@ -335,6 +335,10 @@ namespace TownOfHost
                         Main.AllPlayerKillCooldown[player.PlayerId] = Options.BHDefaultKillCooldown.GetFloat() / 2;//Mareのキルクールを÷2する
                     }
                     break;
+                case CustomRoles.MimicA:
+                    opt.RoleOptions.ShapeshifterCooldown = 0.1f;
+                    opt.RoleOptions.ShapeshifterDuration = 0f;
+                break;
 
 
                 InfinityVent:
@@ -564,6 +568,7 @@ namespace TownOfHost
                 !pc.Is(CustomRoles.Vampire) &&
                 !pc.Is(CustomRoles.BountyHunter) &&
                 !pc.Is(CustomRoles.SerialKiller) &&
+                !pc.Is(CustomRoles.MimicK) &&
                 Main.AliveImpostorCount == 1;
         }
         public static bool IsDousedPlayer(this PlayerControl arsonist, PlayerControl target)

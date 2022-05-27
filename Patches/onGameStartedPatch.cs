@@ -127,7 +127,7 @@ namespace TownOfHost
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + AdditionalEngineerNum, AdditionalEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
                 int ShapeshifterNum = roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-                int AdditionalShapeshifterNum = CustomRoles.Mafia.GetCount() + CustomRoles.SerialKiller.GetCount() + CustomRoles.BountyHunter.GetCount() + CustomRoles.Warlock.GetCount() + CustomRoles.ShapeMaster.GetCount() + CustomRoles.FireWorks.GetCount() + CustomRoles.Sniper.GetCount();//- ShapeshifterNum;
+                int AdditionalShapeshifterNum = CustomRoles.Mafia.GetCount() + CustomRoles.SerialKiller.GetCount() + CustomRoles.BountyHunter.GetCount() + CustomRoles.Warlock.GetCount() + CustomRoles.ShapeMaster.GetCount() + CustomRoles.FireWorks.GetCount() + CustomRoles.Sniper.GetCount() + CustomRoles.Mimic.GetCount();//- ShapeshifterNum;
                 if (Main.RealOptionsData.NumImpostors > 1)
                     AdditionalShapeshifterNum += CustomRoles.Egoist.GetCount();
                 roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum + AdditionalShapeshifterNum, AdditionalShapeshifterNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
@@ -307,6 +307,7 @@ namespace TownOfHost
                 AssignCustomRolesFromList(CustomRoles.Doctor, Scientists);
                 AssignCustomRolesFromList(CustomRoles.Puppeteer, Impostors);
                 AssignCustomRolesFromList(CustomRoles.TimeThief, Impostors);
+                AssignMimicRolesFromList(CustomRoles.Mimic, Impostors, Shapeshifters);
 
                 //RPCによる同期
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -419,7 +420,7 @@ namespace TownOfHost
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
                 int ShapeshifterNum = roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
-                ShapeshifterNum -= CustomRoles.Mafia.GetCount() + CustomRoles.SerialKiller.GetCount() + CustomRoles.BountyHunter.GetCount() + CustomRoles.Warlock.GetCount() + CustomRoles.ShapeMaster.GetCount() + CustomRoles.FireWorks.GetCount() + CustomRoles.Sniper.GetCount();
+                ShapeshifterNum -= CustomRoles.Mafia.GetCount() + CustomRoles.SerialKiller.GetCount() + CustomRoles.BountyHunter.GetCount() + CustomRoles.Warlock.GetCount() + CustomRoles.ShapeMaster.GetCount() + CustomRoles.FireWorks.GetCount() + CustomRoles.Sniper.GetCount() + CustomRoles.Mimic.GetCount();
                 if (Main.RealOptionsData.NumImpostors > 1)
                     ShapeshifterNum -= CustomRoles.Egoist.GetCount();
                 roleOpt.SetRoleRate(RoleTypes.Shapeshifter, ShapeshifterNum, roleOpt.GetChancePerGame(RoleTypes.Shapeshifter));
@@ -497,6 +498,27 @@ namespace TownOfHost
                 Logger.Info("役職設定:" + player?.Data?.PlayerName + " = " + player.GetCustomRole().ToString() + " + " + loversRole.ToString(), "AssignLovers");
             }
             RPC.SyncLoversPlayers();
+        }
+        private static void AssignMimicRolesFromList(CustomRoles role, List<PlayerControl> imp, List<PlayerControl> sha, int RawCount = -1)
+        {
+            var KillerRole = CustomRoles.MimicK;
+            var AssistantRole = CustomRoles.MimicA;
+            var rand = new Random();
+            var count = Math.Clamp(RawCount, 0, imp.Count);
+            if (count <= 0) return;
+
+            for (var i = 0; i < count; i++)
+            {
+                var mimick = imp[rand.Next(0, imp.Count)];
+                imp.Remove(mimick);
+                Main.AllPlayerCustomRoles[mimick.PlayerId] = KillerRole;
+                Logger.Info("役職設定:" + mimick?.Data?.PlayerName + " = " + KillerRole.ToString(), "AssignMimicKiller");
+
+                var mimica = sha[rand.Next(0, sha.Count)];
+                sha.Remove(mimica);
+                Main.AllPlayerCustomRoles[mimica.PlayerId] = AssistantRole;
+                Logger.Info("役職設定:" + mimica?.Data?.PlayerName + " = " + AssistantRole.ToString(), "AssignMimicAssistant");
+            }
         }
     }
 }
