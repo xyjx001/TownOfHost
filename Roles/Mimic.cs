@@ -33,6 +33,13 @@ namespace TownOfHost
         {
             return playerIdList.Count > 0;
         }
+        public static void KillCheck(this PlayerControl killer, PlayerControl target)
+        {
+            killer.RpcGuardAndKill(target);
+            Main.AllPlayerKillCooldown[killer.PlayerId] = Options.BHDefaultKillCooldown.GetFloat() * 2;
+            target.RpcExileV2();
+            killer.RpcShapeshift(target,false);
+        }
     }
     public static class MimicA
     {

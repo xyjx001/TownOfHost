@@ -176,6 +176,12 @@ namespace TownOfHost
                         Main.VotingTime -= Options.TimeThiefDecreaseVotingTime.GetInt();
                     Utils.CustomSyncAllSettings();
                     break;
+                case CustomRoles.MimicK:
+                    MimicK.KillCheck(killer, target);
+                    break;
+                case CustomRoles.MimicA:
+                    Main.BlockKilling[killer.PlayerId] = false;
+                    return false;
 
                 //==========マッドメイト系役職==========//
                 case CustomRoles.SKMadmate:
