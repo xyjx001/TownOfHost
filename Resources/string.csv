@@ -26,8 +26,8 @@ EvilWatcher,Evil Watcher,イビルウォッチャー
 Puppeteer,Puppeteer,パペッティア
 TimeThief,TimeThief,タイムシーフ
 Sniper,Sniper,スナイパー
-MimicK,Mimic(Killer),ミミック(キラー)
-MimicA,Mimic(Assistant),ミミック(アシスタント)
+MimicK,Mimic(Killer),ミミック〔キラー〕
+MimicA,Mimic(Assistant),ミミック〔アシスタント〕
 
 # マッドメイト系役職
 Madmate,Madmate,マッドメイト
@@ -84,6 +84,8 @@ TeamImpostor,Team Impostor,インポスター陣営
 BountyHunterInfo,Hunt your bounty down,標的を確実に仕留めよう
 MareInfo,Kill in the dark world.,闇の世界で暗殺せよ
 FireWorksInfo,FireWorksInfo,最後に一華咲かせよう
+MimicKInfo,Let's Kill him replace.,殺して入れ替われ
+MimicAImfo,Create a Killer alibi,キラーのアリバイを作れ
 SerialKillerInfo,Keep killng to win,殺人衝動が抑えられない
 ShapeMasterInfo,Shapeshift and confuse your enemies,変身して敵を混乱させよう
 VampireInfo,Kill the Crewmates with your bites,クルーを噛んで全滅させよう
