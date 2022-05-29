@@ -506,7 +506,6 @@ namespace TownOfHost
         }
         private static void AssignCombinationRolesFromList(CustomRoles role, CustomRoles role1, CustomRoles role2, List<PlayerControl> role1L, List<PlayerControl> role2L)
         {
-            Logger.Info("あ", "");
             var Combi1 = role1;
             var Combi2 = role2;
             var rand = new Random();
@@ -526,7 +525,7 @@ namespace TownOfHost
                 var combi2 = role2L[rand.Next(0, role2L.Count)];
                 role2L.Remove(combi2);
                 Main.AllPlayerCustomRoles[combi2.PlayerId] = Combi2;
-                Logger.Info("役職設定:" + combi1?.Data?.PlayerName + " = " + Combi1.ToString(), "Assign CombinationRole2");
+                Logger.Info("役職設定:" + combi2?.Data?.PlayerName + " = " + Combi2.ToString(), "Assign CombinationRole2");
             }
         }
     }
