@@ -273,6 +273,9 @@ namespace TownOfHost
             }
             else
             {
+                //コンビネーション役職を優先して割り当てる
+                if (Main.RealOptionsData.NumImpostors > 1)
+                    AssignCombinationRolesFromList(CustomRoles.Mimic, CustomRoles.MimicK, CustomRoles.MimicA, Impostors, Shapeshifters);
 
                 AssignCustomRolesFromList(CustomRoles.FireWorks, Shapeshifters);
                 AssignCustomRolesFromList(CustomRoles.Sniper, Shapeshifters);
@@ -304,7 +307,6 @@ namespace TownOfHost
                 else AssignCustomRolesFromList(CustomRoles.Watcher, Crewmates);
                 if (Main.RealOptionsData.NumImpostors > 1)
                     AssignCustomRolesFromList(CustomRoles.Egoist, Shapeshifters);
-                    AssignMimicRolesFromList(CustomRoles.Mimic, Impostors, Shapeshifters);
                 AssignCustomRolesFromList(CustomRoles.Mare, Impostors);
                 AssignCustomRolesFromList(CustomRoles.Doctor, Scientists);
                 AssignCustomRolesFromList(CustomRoles.Puppeteer, Impostors);
@@ -502,28 +504,29 @@ namespace TownOfHost
             }
             RPC.SyncLoversPlayers();
         }
-        private static void AssignMimicRolesFromList(CustomRoles role, List<PlayerControl> imp, List<PlayerControl> shape)
+        private static void AssignCombinationRolesFromList(CustomRoles role, CustomRoles role1, CustomRoles role2, List<PlayerControl> role1L, List<PlayerControl> role2L)
         {
             Logger.Info("あ", "");
-            var KillerRole = CustomRoles.MimicK;
-            var AssistantRole = CustomRoles.MimicA;
+            var Combi1 = role1;
+            var Combi2 = role2;
             var rand = new Random();
-            var count = Math.Clamp(role.GetCount(), 0, imp.Count);
-            if (count <= 0 || imp.Count <= 0) return;
-            Logger.Info("い", "");
+            var count = role.GetCount();
+            if (role1L.Count <= 0 || role2L.Count <= 0) //role1のリストかrole2のリストが空なら
+                count = 0; //カウントを0に
+            if (count <= 0) return;
 
             for (var i = 0; i < count; i++)
-            Logger.Info("ん", "");
             {
-                var mimick = imp[rand.Next(0, imp.Count)];
-                imp.Remove(mimick);
-                Main.AllPlayerCustomRoles[mimick.PlayerId] = KillerRole;
-                Logger.Info("役職設定:" + mimick?.Data?.PlayerName + " = " + KillerRole.ToString(), "AssignMimicKiller");
+                var combi1 = role1L[rand.Next(0, role1L.Count)];
+                role1L.Remove(combi1);
+                Main.AllPlayerCustomRoles[combi1.PlayerId] = Combi1;
+                Logger.Info("役職設定:" + combi1?.Data?.PlayerName + " = " + Combi1.ToString(), "Assign CombinationRole1");
 
-                var mimica = shape[rand.Next(0, shape.Count)];
-                shape.Remove(mimica);
-                Main.AllPlayerCustomRoles[mimica.PlayerId] = AssistantRole;
-                Logger.Info("役職設定:" + mimica?.Data?.PlayerName + " = " + AssistantRole.ToString(), "AssignMimicAssistant");
+                if (role2L.Count <= 0) continue;
+                var combi2 = role2L[rand.Next(0, role2L.Count)];
+                role2L.Remove(combi2);
+                Main.AllPlayerCustomRoles[combi2.PlayerId] = Combi2;
+                Logger.Info("役職設定:" + combi1?.Data?.PlayerName + " = " + Combi1.ToString(), "Assign CombinationRole2");
             }
         }
     }
