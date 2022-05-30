@@ -36,6 +36,7 @@ namespace TownOfHost
             killer.RpcGuardAndKill(target);
             target.RpcExileV2();
             killer.RpcShapeshift(target,false);
+            killer.CustomSyncSettings();
         }
     }
     public static class MimicA
