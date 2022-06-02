@@ -157,14 +157,14 @@ And the movement speed will also increase. And name is displayed in red<br>
 
 ### Mimic
 
-Team : Imposter
+Team : Impostor
 Decision : Impostor & Shapeshifter
 
-Imposter position for a duo of Mimic (Killer) and Mimic (Assistant).
+Impostor position for a duo of Mimic (Killer) and Mimic (Assistant).
 The Killer has the ability to erase the corpse upon kill and transform into the target of the kill.
 (The Killer cannot untransform until the next meeting.)
 
-The assistant is an imposter who cannot kill, but has the ability to transform into the player and provide support to assist the killer.
+The assistant is an impostor who cannot kill, but has the ability to transform into the player and provide support to assist the killer.
 The assistant's transformation has no Cooldown and there is no limit to the duration of the transform.
 
 ### Puppeteer
