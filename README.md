@@ -152,6 +152,18 @@
 停電時以外にキルをすることができませんが、キルクールが半分になります。<br>
 停電中にのみ移動速度も上昇しますが、自分の名前が赤く表示されます。<br>
 
+### Mimic/ミミック
+
+陣営 : インポスター
+判定 : インポスター & シェイプシフター
+
+ミミック(キラー)とミミック(アシスタント)の二人組のインポスター役職
+キラーはキル時に死体を消し、殺した対象に変身する能力を持ちます。
+（キラーは変身を次のミーティングまで解除することができません）
+
+アシスタントはキルができませんが、プレイヤーに変身する能力を持ち、キラーをサポートするサポートをするインポスターです。
+アシスタントの変身にクールダウンはなく、変身持続時間に制限がありません。
+
 ### Puppeteer/パペッティア
 
 陣営 : インポスター<br>
@@ -742,7 +754,7 @@ Polus や The Airship のドアを開けるとその部屋の全てのドアが�
 
 [バウンティーハンター](#BountyHunter/バンティーハンター)や[マフィア](#Mafia/マフィア)、[ヴァンパイア](#Vampire/ヴァンパイア)、[魔女](#Witch/魔女)、[ベイト](#Bait/ベイト)、[メイヤー](#Mayor/メイヤー)、[シェリフ](#Sheriff/シェリフ)、[スニッチ](#Snitch/スニッチ)、[ライター](#Lighter/ライター)の役職と Mod の作成方法の参考 : https://github.com/Eisbison/TheOtherRoles<br>
 [オポチュニスト](#Opportunist/オポチュニスト)、[ウォッチャー](#Watcher/ウォッチャー)の役職 : https://github.com/yukinogatari/TheOtherRoles-GM<br>
-[シュレディンガーの猫](#SchrodingerCat/シュレディンガーの猫)の役職 : https://github.com/haoming37/TheOtherRoles-GM-Haoming<br>
+[シュレディンガーの猫](#SchrodingerCat/シュレディンガーの猫)、[ミミック](#Mimic/ミミック)の役職 : https://github.com/haoming37/TheOtherRoles-GM-Haoming<br>
 [ドクター](#Doctor/ドクター) の役職 : https://github.com/Dolly1016/Nebula<br>
 [ジェスター](#Jester/ジェスター)(てるてる)と[マッドメイト](#Madmate/マッドメイト)の役職 : https://au.libhalt.net<br>
 [テロリスト](#Terrorist/テロリスト)(Trickstar + Joker) : https://github.com/MengTube/Foolers-Mod<br>

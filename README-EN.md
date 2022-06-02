@@ -155,6 +155,18 @@ No kills can be made except in the event of a power outage.<br>
 However, if the kill is successful, the KillCooldown is halved.<br>
 And the movement speed will also increase. And name is displayed in red<br>
 
+### Mimic
+
+Team : Imposter
+Decision : Impostor & Shapeshifter
+
+Imposter position for a duo of Mimic (Killer) and Mimic (Assistant).
+The Killer has the ability to erase the corpse upon kill and transform into the target of the kill.
+(The Killer cannot untransform until the next meeting.)
+
+The assistant is an imposter who cannot kill, but has the ability to transform into the player and provide support to assist the killer.
+The assistant's transformation has no Cooldown and there is no limit to the duration of the transform.
+
 ### Puppeteer
 
 Team : Impostors<br>
@@ -752,7 +764,7 @@ If the client language is English, this setting is meaningless unless `Force Jap
 
 [BountyHunter](#BountyHunter),[Mafia](#Mafia),[Vampire](#Vampire),[Witch](#Witch),[Bait](#Bait),[Mayor](#Mayor),[Sheriff](#Sheriff),[Snitch](#Snitch),[Lighter](#Lighter)roles and more tips to modding : https://github.com/Eisbison/TheOtherRoles<br>
 [Opportunist](#Opportunist),[Watcher](#Watcher) roles : https://github.com/yukinogatari/TheOtherRoles-GM<br>
-[SchrodingerCat](#SchrodingerCat) role : https://github.com/haoming37/TheOtherRoles-GM-Haoming<br>
+[SchrodingerCat](#SchrodingerCat),[Mimic](#Mimic) roles : https://github.com/haoming37/TheOtherRoles-GM-Haoming<br>
 [Doctor](#Doctor) role : https://github.com/Dolly1016/Nebula<br>
 [Jester](#Jester) and [Madmate](#Madmate) roles : https://au.libhalt.net<br>
 [Terrorist](#Terrorist)(Trickstar + Joker) : https://github.com/MengTube/Foolers-Mod<br>
