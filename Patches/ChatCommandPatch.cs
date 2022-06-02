@@ -186,6 +186,7 @@ namespace TownOfHost
                 { CustomRoles.BountyHunter, "bo" },
                 { CustomRoles.FireWorks, "fw" },
                 { CustomRoles.Mafia, "mf" },
+                { CustomRoles.Mimic, "mi"},
                 { CustomRoles.SerialKiller, "sk" },
                 { CustomRoles.ShapeMaster, "sha" },
                 { CustomRoles.TimeThief, "tt"},
