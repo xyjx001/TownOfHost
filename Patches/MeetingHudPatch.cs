@@ -203,6 +203,8 @@ namespace TownOfHost
                         },
                         5f);
                 }
+                if (CustomRoles.MimicK.IsEnable() && CustomRoles.Mimic.IsEnable())
+                    pc.RpcRevertShapeshift(false);//ミミックの変身したままで会議に突入し、終わった時に変身が解除されないため、会議開始時に全員のシェイプを解除
             }
         }
         public static void Postfix(MeetingHud __instance)
