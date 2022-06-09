@@ -202,7 +202,7 @@ namespace TownOfHost
                     new LateTask(() =>
                     {
                         pc.RpcRevertShapeshift(false);//ミミックの変身したままで会議に突入し、終わった時に変身が解除されないため、会議開始時に全員のシェイプを解除
-                    }, 0.2f, "AllRevertShapeshift");
+                    }, 0.4f, "AllRevertShapeshift");
             }
         }
         public static void Postfix(MeetingHud __instance)
