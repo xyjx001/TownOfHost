@@ -94,6 +94,7 @@ namespace TownOfHost
                 }
             }
             FireWorks.Init();
+            ShapeMaster.Init();
             Sniper.Init();
         }
     }

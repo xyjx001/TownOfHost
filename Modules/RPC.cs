@@ -351,6 +351,7 @@ namespace TownOfHost
             }
             if (role == CustomRoles.FireWorks) FireWorks.Add(targetId);
             if (role == CustomRoles.Sniper) Sniper.Add(targetId);
+            if (role == CustomRoles.ShapeMaster) ShapeMaster.Add(targetId);
             HudManager.Instance.SetHudActive(true);
         }
         public static void AddNameColorData(byte seerId, byte targetId, string color)
