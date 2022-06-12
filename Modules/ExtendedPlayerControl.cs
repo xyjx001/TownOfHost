@@ -685,6 +685,13 @@ namespace TownOfHost
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
+        public static void RpcShapeshiftV2(this PlayerControl shapeshifter, PlayerControl target, bool animate)
+        {
+            shapeshifter.Shapeshift(target,animate);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(shapeshifter.NetId, (byte)RpcCalls.Shapeshift, SendOption.None, -1);
+            writer.WriteNetObject(target);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
         public static bool IsModClient(this PlayerControl player) => Main.playerVersion.ContainsKey(player.PlayerId);
 
         //汎用
