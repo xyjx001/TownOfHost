@@ -31,7 +31,7 @@ namespace TownOfHost
         }
         public static void ShapeShiftCheck(this PlayerControl pc, PlayerControl target, bool shapeshifting)
         {
-            if (pc == null || pc.Data.IsDead || !shapeshifting) return;
+            if (pc == null || pc.Data.IsDead) return;
             if (shapeshifting)
             {
                 if (DisableShapeMasterShapeshiftAnimation.GetBool())
