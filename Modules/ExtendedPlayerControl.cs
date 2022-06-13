@@ -276,7 +276,7 @@ namespace TownOfHost
                     goto InfinityVent;
                 case CustomRoles.ShapeMaster:
                     opt.RoleOptions.ShapeshifterCooldown = 0.1f;
-                    opt.RoleOptions.ShapeshifterDuration = Options.ShapeMasterShapeshiftDuration.GetFloat();
+                    opt.RoleOptions.ShapeshifterDuration = ShapeMaster.ShapeMasterShapeshiftDuration.GetFloat();
                     opt.RoleOptions.ShapeshifterLeaveSkin = false;
                     break;
                 case CustomRoles.Warlock:

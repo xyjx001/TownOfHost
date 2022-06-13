@@ -289,6 +289,7 @@ ArsonistDouseTime,Arsonist Douse Time,アーソニストの塗り時間
 ArsonistCooldown,Arsonist Cooldown,アーソニストのクールダウン
 CanTerroristSuicideWin,Can Terrorist Suicide Win,テロリストの自殺勝ち
 ShapeMasterShapeshiftDuration,ShapeMaster Shapeshift Duration,シェイプマスターの変身持続時間
+DisableShapeMasterShapeshiftAnimation,Disable ShapeMaster Shapeshift Animation,シェイプマスターの変身アニメーションを無効化する
 FireWorksMaxCount,FireWorks Max Count,花火の所持数
 FireWorksRadius,FireWorks Radius,花火の爆発半径
 SniperBulletCount,Sniper Bullet Count,スナイパーの所持弾数
