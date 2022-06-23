@@ -363,10 +363,13 @@ namespace TownOfHost
             Logger.Info("------------会議終了------------", "Phase");
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                new LateTask(() =>
+                if (pc.Is(CustomRoles.MimicK) || pc.Is(CustomRoles.MimicA))
                 {
-                    pc.RpcRevertShapeshift(false);//ミミックの変身したままで会議に突入し、終わった時に変身が解除されないため、会議終了時に全員のシェイプを解除
-                }, 0.4f, "AllRevertShapeshift");
+                    new LateTask(() =>
+                    {
+                        pc.RpcRevertShapeshift(false);//ミミックの変身したままで会議に突入し、終わった時に変身が解除されない場合があるため、ミミックのシェイプを解除
+                    }, 0.4f, "MimicRevertShapeshift");
+                }
             }
         }
     }
