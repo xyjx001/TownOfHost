@@ -601,7 +601,7 @@ namespace TownOfHost
                 !pc.Is(CustomRoles.Vampire) &&
                 !pc.Is(CustomRoles.BountyHunter) &&
                 !pc.Is(CustomRoles.SerialKiller) &&
-                !pc.Is(CustomRoles.MimicK) &&
+                !pc.Is(CustomRoles.MimicA) &&
                 Main.AliveImpostorCount == 1;
         }
         public static bool IsDousedPlayer(this PlayerControl arsonist, PlayerControl target)
