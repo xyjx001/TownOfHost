@@ -367,7 +367,7 @@ namespace TownOfHost
                 {
                     new LateTask(() =>
                     {
-                        pc.RpcRevertShapeshift(false);//ミミックの変身したままで会議に突入し、終わった時に変身が解除されない場合があるため、ミミックのシェイプを解除
+                        pc.RpcRevertShapeshift(false);//ミミックの変身したままで会議に突入し、終わった時に名前が変身元の名前になっている場合があるため、ミミックのシェイプを解除
                     }, 0.4f, "MimicRevertShapeshift");
                 }
             }
