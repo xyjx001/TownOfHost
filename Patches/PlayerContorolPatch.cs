@@ -39,7 +39,7 @@ namespace TownOfHost
             if (Main.SelfGuard[target.PlayerId])
             {
                 Main.SelfGuard[target.PlayerId] = false;
-                target.RpcMurderPlayer(target);
+                target.RpcMurderPlayerV2(target);
             }
             Logger.Info($"{killer.GetNameWithRole()} => {target.GetNameWithRole()}", "CheckMurder");
 
@@ -146,6 +146,11 @@ namespace TownOfHost
                         }
                         else
                         {
+                            if (killer.Is(CustomRoles.SerialKiller))
+                            {
+                                killer.RpcResetAbilityCooldown();
+                                Main.SerialKillerTimer[killer.PlayerId] = 0f;
+                            }
                             if (killer.GetCustomRole().IsImpostor())
                                 target.RpcSetCustomRole(CustomRoles.MSchrodingerCat);
                             if (killer.Is(CustomRoles.Sheriff))
@@ -243,7 +248,7 @@ namespace TownOfHost
                         }
                         if (Main.CheckShapeshift[killer.PlayerId])
                         {//呪われてる人がいないくて変身してるときに通常キルになる
-                            killer.RpcMurderPlayer(target);
+                            killer.RpcMurderPlayerV2(target);
                             killer.RpcGuardAndKill(target);
                             return false;
                         }
@@ -306,9 +311,9 @@ namespace TownOfHost
                         if (!target.CanBeKilledBySheriff())
                         {
                             PlayerState.SetDeathReason(killer.PlayerId, PlayerState.DeathReason.Misfire);
-                            killer.RpcMurderPlayer(killer);
+                            killer.RpcMurderPlayerV2(killer);
                             if (Options.SheriffCanKillCrewmatesAsIt.GetBool())
-                                killer.RpcMurderPlayer(target);
+                                killer.RpcMurderPlayerV2(target);
 
                             return false;
                         }
@@ -317,7 +322,7 @@ namespace TownOfHost
             }
 
             //==キル処理==
-            killer.RpcMurderPlayer(target);
+            killer.RpcMurderPlayerV2(target);
             //============
 
             return false;
@@ -435,7 +440,7 @@ namespace TownOfHost
                         var min = cpdistance.OrderBy(c => c.Value).FirstOrDefault();//一番小さい値を取り出す
                         PlayerControl targetw = min.Key;
                         Logger.Info($"{targetw.GetNameWithRole()}was killed", "Warlock");
-                        cp.RpcMurderPlayer(targetw);//殺す
+                        cp.RpcMurderPlayerV2(targetw);//殺す
                         shapeshifter.RpcGuardAndKill(shapeshifter);
                         Main.isCurseAndKill[shapeshifter.PlayerId] = false;
                     }
@@ -528,8 +533,8 @@ namespace TownOfHost
                     PlayerState.SetDeathReason(bitten.PlayerId, PlayerState.DeathReason.Bite);
                     //Protectは強制的にはがす
                     if (bitten.protectedByGuardian)
-                        bitten.RpcMurderPlayer(bitten);
-                    bitten.RpcMurderPlayer(bitten);
+                        bitten.RpcMurderPlayerV2(bitten);
+                    bitten.RpcMurderPlayerV2(bitten);
                     RPC.PlaySoundRPC(vampireID, Sounds.KillSound);
                     Logger.Info("Vampireに噛まれている" + bitten?.Data?.PlayerName + "を自爆させました。", "ReportDeadBody");
                 }
@@ -587,7 +592,7 @@ namespace TownOfHost
                             if (!bitten.Data.IsDead)
                             {
                                 PlayerState.SetDeathReason(bitten.PlayerId, PlayerState.DeathReason.Bite);
-                                bitten.RpcMurderPlayer(bitten);
+                                bitten.RpcMurderPlayerV2(bitten);
                                 var vampirePC = Utils.GetPlayerById(vampireID);
                                 Logger.Info("Vampireに噛まれている" + bitten?.Data?.PlayerName + "を自爆させました。", "Vampire");
                                 if (vampirePC.IsAlive())
@@ -620,7 +625,7 @@ namespace TownOfHost
                     {
                         //自滅時間が来たとき
                         PlayerState.SetDeathReason(player.PlayerId, PlayerState.DeathReason.Suicide);//死因：自滅
-                        player.RpcMurderPlayer(player);//自滅させる
+                        player.RpcMurderPlayerV2(player);//自滅させる
                     }
                     else
                     {
@@ -765,7 +770,7 @@ namespace TownOfHost
                             if (min.Value <= KillRange && player.CanMove && target.CanMove)
                             {
                                 RPC.PlaySoundRPC(Main.PuppeteerList[player.PlayerId], Sounds.KillSound);
-                                player.RpcMurderPlayer(target);
+                                player.RpcMurderPlayerV2(target);
                                 Utils.CustomSyncAllSettings();
                                 Main.PuppeteerList.Remove(player.PlayerId);
                                 Utils.NotifyRoles();
@@ -1034,7 +1039,7 @@ namespace TownOfHost
                             if (isExiled)
                                 Main.AfterMeetingDeathPlayers.TryAdd(partnerPlayer.PlayerId, PlayerState.DeathReason.LoversSuicide);
                             else
-                                partnerPlayer.RpcMurderPlayer(partnerPlayer);
+                                partnerPlayer.RpcMurderPlayerV2(partnerPlayer);
                         }
                     }
                 }
@@ -1148,7 +1153,7 @@ namespace TownOfHost
                             if (pc != __instance.myPlayer)
                             {
                                 //生存者は焼殺
-                                pc.RpcMurderPlayer(pc);
+                                pc.RpcMurderPlayerV2(pc);
                                 PlayerState.SetDeathReason(pc.PlayerId, PlayerState.DeathReason.Torched);
                                 PlayerState.SetDead(pc.PlayerId);
                             }
