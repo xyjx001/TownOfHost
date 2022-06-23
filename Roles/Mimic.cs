@@ -32,7 +32,7 @@ namespace TownOfHost
         }
         public static void KillCheck(this PlayerControl killer, PlayerControl target)
         {
-            Main.AllPlayerKillCooldown[killer.PlayerId] = Main.RealOptionsData.KillCooldown * 2;
+            Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown * 2;
             killer.RpcGuardAndKill(target);
             target.RpcExileV2();
             killer.RpcShapeshift(target,false);
