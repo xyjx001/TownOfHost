@@ -105,6 +105,18 @@ namespace TownOfHost
                 ResetRoleAndEndGame(GameOverReason.HumansByVote, false);
                 return true;
             }
+            else
+            {
+                foreach (var pc in PlayerControl.AllPlayerControls)
+                {
+                    if (statistics.TeamImpostorsAlive == 1 && !pc.Data.IsDead && pc.Is(CustomRoles.MimicA))
+                    {
+                        __instance.enabled = false;
+                        ResetRoleAndEndGame(GameOverReason.HumansByVote, false);
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
