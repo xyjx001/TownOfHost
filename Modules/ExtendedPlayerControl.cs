@@ -142,17 +142,20 @@ namespace TownOfHost
         public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, int colorId = 0)
         {
             if (target == null) target = killer;
-            Main.SelfGuard[target.PlayerId] = true;
-            killer.RpcProtectPlayer(target, colorId);
-            new LateTask(() =>
-            {
-                if (target == null) return;
-                Main.SelfGuard[target.PlayerId] = false;
-                if (!target.Data.IsDead && target.protectedByGuardian)
-                    killer?.RpcMurderPlayer(target);
-                else
-                    Main.BlockKilling[killer.PlayerId] = false;
-            }, 0.5f, "GuardAndKill");
+            // Host
+            killer.ProtectPlayer(target, colorId);
+            killer.MurderPlayer(target);
+            // Other Clients
+            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.None);
+            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.ProtectPlayer)
+                  .WriteNetObject((InnerNetObject)target)
+                  .Write(colorId)
+                  .EndRpc();
+            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer)
+                  .WriteNetObject((InnerNetObject)target)
+                  .EndRpc();
+            sender.SendMessage();
+            Main.BlockKilling[killer.PlayerId] = false;
         }
         public static void RpcSpecificMurderPlayer(this PlayerControl killer, PlayerControl target = null)
         {
@@ -280,14 +283,13 @@ namespace TownOfHost
                     opt.RoleOptions.ShapeshifterLeaveSkin = false;
                     break;
                 case CustomRoles.Warlock:
-                    if (!Main.isCursed) opt.RoleOptions.ShapeshifterCooldown = Main.RealOptionsData.killCooldown; //Options.BHDefaultKillCooldown.GetFloat();
-                    if (Main.isCursed) opt.RoleOptions.ShapeshifterCooldown = 1f;
+                    opt.RoleOptions.ShapeshifterCooldown = Main.isCursed ? 1f : Options.DefaultKillCooldown;
                     break;
                 case CustomRoles.SerialKiller:
                     opt.RoleOptions.ShapeshifterCooldown = Options.SerialKillerLimit.GetFloat();
                     break;
                 case CustomRoles.BountyHunter:
-                    opt.RoleOptions.ShapeshifterCooldown = Options.BountyTargetChangeTime.GetFloat() + Options.BountyFailureKillCooldown.GetFloat();
+                    opt.RoleOptions.ShapeshifterCooldown = Options.BountyTargetChangeTime.GetFloat();
                     break;
                 case CustomRoles.Shapeshifter:
                 case CustomRoles.Mafia:
@@ -304,9 +306,11 @@ namespace TownOfHost
                     break;
                 case CustomRoles.Lighter:
                     if (player.GetPlayerTaskState().IsTaskFinished)
+                    {
                         opt.CrewLightMod = Options.LighterTaskCompletedVision.GetFloat();
-                    if (Utils.IsActive(SystemTypes.Electrical) && Options.LighterTaskCompletedDisableLightOut.GetBool())
-                        opt.CrewLightMod *= 5;
+                        if (Utils.IsActive(SystemTypes.Electrical) && Options.LighterTaskCompletedDisableLightOut.GetBool())
+                            opt.CrewLightMod *= 5;
+                    }
                     break;
                 case CustomRoles.EgoSchrodingerCat:
                     opt.SetVision(player, true);
@@ -333,7 +337,7 @@ namespace TownOfHost
                                 if (targetplayers.Count >= 1)
                                 {
                                     PlayerControl target = targetplayers[rand.Next(0, targetplayers.Count)];
-                                    //Logger.SendInGame("スピードブースターの相手:"+target.nameText.text);
+                                    //Logger.SendInGame("スピードブースターの相手:"+target.cosmetics.nameText.text);
                                     Main.SpeedBoostTarget.Add(player.PlayerId, target.PlayerId);
                                 }
                                 else
@@ -358,7 +362,7 @@ namespace TownOfHost
                     if (Utils.IsActive(SystemTypes.Electrical))//もし停電発生した場合
                     {
                         Main.AllPlayerSpeed[player.PlayerId] = Options.BlackOutMareSpeed.GetFloat();//Mareの速度を設定した値にする
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Main.RealOptionsData.killCooldown / 2; //Options.BHDefaultKillCooldown.GetFloat() / 2;//Mareのキルクールを÷2する
+                        Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown / 2;//Mareのキルクールを÷2する
                     }
                     break;
                 case CustomRoles.MimicA:
@@ -407,6 +411,8 @@ namespace TownOfHost
                 opt.ImpostorLightMod = 0f;
             opt.DiscussionTime = Mathf.Clamp(Main.DiscussionTime, 0, 300);
             opt.VotingTime = Mathf.Clamp(Main.VotingTime, Options.TimeThiefLowerLimitVotingTime.GetInt(), 300);
+
+            opt.RoleOptions.ShapeshifterCooldown = Mathf.Max(1f, opt.RoleOptions.ShapeshifterCooldown);
 
             if (player.AmOwner) PlayerControl.GameOptions = opt;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SyncSettings, SendOption.Reliable, clientId);
@@ -522,6 +528,7 @@ namespace TownOfHost
                     cTargets.Add(pc);
                 }
             }
+            if (cTargets.Count >= 2 && Main.BountyTargets.TryGetValue(player.PlayerId, out var p)) cTargets.RemoveAll(x => x.PlayerId == p.PlayerId);
 
             var rand = new System.Random();
             if (cTargets.Count <= 0)
@@ -540,7 +547,7 @@ namespace TownOfHost
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             return target;
         }
-        public static bool GetKillOrSpell(this PlayerControl player)
+        public static bool IsSpellMode(this PlayerControl player)
         {
             if (!Main.KillOrSpell.TryGetValue(player.PlayerId, out var KillOrSpell))
             {
@@ -553,7 +560,7 @@ namespace TownOfHost
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrSpell, SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
-            writer.Write(player.GetKillOrSpell());
+            writer.Write(player.IsSpellMode());
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void RpcSetSheriffShotLimit(this PlayerControl player)
@@ -627,7 +634,7 @@ namespace TownOfHost
         }
         public static void ResetKillCooldown(this PlayerControl player)
         {
-            Main.AllPlayerKillCooldown[player.PlayerId] = Main.RealOptionsData.killCooldown; //Options.BHDefaultKillCooldown.GetFloat(); //キルクールをデフォルトキルクールに変更
+            Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
             switch (player.GetCustomRole())
             {
                 case CustomRoles.SerialKiller:
@@ -672,8 +679,16 @@ namespace TownOfHost
         }
         public static bool IsDouseDone(this PlayerControl player)
         {
+            if (!player.Is(CustomRoles.Arsonist)) return false;
             var count = Utils.getDousedPlayerCount(player.PlayerId);
             return count.Item1 == count.Item2;
+        }
+        public static bool CanMakeMadmate(this PlayerControl player)
+        {
+            return Options.CanMakeMadmateCount.GetInt() > Main.SKMadmateNowCount
+                    && player != null
+                    && player.Data.Role.Role == RoleTypes.Shapeshifter
+                    && !player.Is(CustomRoles.Warlock) && !player.Is(CustomRoles.FireWorks) && !player.Is(CustomRoles.Sniper);
         }
         public static void ResetThiefVotingTime(this PlayerControl thief)
         {
@@ -686,6 +701,24 @@ namespace TownOfHost
             player.Exiled();
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
+        {
+            if (target == null) target = killer;
+            if (AmongUsClient.Instance.AmClient)
+            {
+                killer.MurderPlayer(target);
+            }
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
+            messageWriter.WriteNetObject(target);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
+        public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target)
+        { /*サボタージュ中でも関係なしに会議を起こせるメソッド
+            targetがnullの場合はボタンとなる*/
+            MeetingRoomManager.Instance.AssignSelf(reporter, target);
+            DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
+            reporter.RpcStartMeeting(target);
         }
         public static bool IsModClient(this PlayerControl player) => Main.playerVersion.ContainsKey(player.PlayerId);
 

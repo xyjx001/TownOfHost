@@ -1,6 +1,7 @@
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using static TownOfHost.Translator;
 
 namespace TownOfHost
 {
@@ -52,15 +53,23 @@ namespace TownOfHost
                 __instance.EnableFriendInvitesButton.transform.localPosition = origin.Value + Vector3.right * 3.125f + Vector3.up * 0.2f;
                 __instance.EnableFriendInvitesButton.transform.localScale = Vector3.one * 0.7f;
             }
+            if (__instance.ColorBlindButton != null)
+            {
+                if (origin == null) origin = __instance.ColorBlindButton.transform.localPosition;// + Vector3.up * 0.075f;
+                __instance.ColorBlindButton.transform.localPosition = origin.Value + Vector3.right * 3.125f + Vector3.up * 0.83f;
+                __instance.ColorBlindButton.transform.localScale = Vector3.one * 0.7f;
+            }
+            if (__instance.StreamerModeButton != null)
+                __instance.StreamerModeButton.transform.localScale = Vector3.one * 0.0f;
 
             if (HideCodesButton == null || HideCodesButton.gameObject == null)
             {
-                HideCodesButton = CreateCustomToggle("Hide Game Codes: ", Main.HideCodes.Value, new Vector3(1.375f, 0.2f, 0), (UnityEngine.Events.UnityAction)HideCodesButtonToggle, __instance);
+                HideCodesButton = CreateCustomToggle($"{GetString("HideGameCodes")}: ", Main.HideCodes.Value, new Vector3(1.375f, 0.2f, 0), (UnityEngine.Events.UnityAction)HideCodesButtonToggle, __instance);
 
                 void HideCodesButtonToggle()
                 {
                     Main.HideCodes.Value = !Main.HideCodes.Value;
-                    UpdateToggle(HideCodesButton, "Hide Game Codes: ", Main.HideCodes.Value);
+                    UpdateToggle(HideCodesButton, $"{GetString("HideGameCodes")}: ", Main.HideCodes.Value);
                 }
             }
             if (ForceJapanese == null || ForceJapanese?.gameObject == null)
