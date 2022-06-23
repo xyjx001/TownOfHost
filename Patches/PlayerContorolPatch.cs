@@ -286,7 +286,7 @@ namespace TownOfHost
                         break;
                     case CustomRoles.MimicK:
                         MimicK.KillCheck(killer, target);
-                        break;
+                        return false;
                     case CustomRoles.MimicA:
                         Main.BlockKilling[killer.PlayerId] = false;
                         return false;
