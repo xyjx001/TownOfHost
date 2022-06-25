@@ -84,7 +84,7 @@ namespace TownOfHost
                 if (seer.Is(ThisRole)) continue;
                 foreach (var target in looplist)
                 {
-                    NameColorManager.Instance.Add(seer.PlayerId, target.PlayerId, "#ff0000");
+                    NameColorManager.Instance.RpcAdd(seer.PlayerId, target.PlayerId, "#ff0000");
                 }
             }
         }
