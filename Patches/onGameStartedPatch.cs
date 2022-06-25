@@ -239,6 +239,7 @@ namespace TownOfHost
                         arsonist.Data.IsDead = true;
                     }
                 }
+                Spy.AssignRoleForRandomPlayer(ref AllPlayers, sender);
             }
             if (sender.CurrentState == CustomRpcSender.State.InRootMessage) sender.EndMessage();
             sender.StartMessage(-1);
@@ -259,6 +260,8 @@ namespace TownOfHost
             RpcSetRoleReplacer.doReplace = false;
             RpcSetRoleReplacer.sender.EndMessage()
                                     .SendMessage();
+
+            Spy.AssignGuardianAngel();
 
             //Utils.ApplySuffix();
 
