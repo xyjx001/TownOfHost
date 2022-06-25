@@ -490,7 +490,7 @@ namespace TownOfHost
             }
 
             // ResetCamが必要なプレイヤーのリスト
-            Main.ResetCamPlayerList = PlayerControl.AllPlayerControls.ToArray().Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Sheriff).Select(p => p.PlayerId).ToList();
+            Main.ResetCamPlayerList = PlayerControl.AllPlayerControls.ToArray().Where(p => (p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Sheriff) || (p.GetCustomRole().IsImpostor() && Spy.IsRoleEnabled)).Select(p => p.PlayerId).ToList();
             Utils.CountAliveImpostors();
             Utils.CustomSyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
