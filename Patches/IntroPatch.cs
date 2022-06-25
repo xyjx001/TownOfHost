@@ -208,6 +208,18 @@ namespace TownOfHost
                 __instance.overlayHandle.color = Palette.CrewmateBlue;
                 return false;
             }
+            if (Spy.IsRoleEnabled)
+            {
+                //Spy入りのTeamListを1から作り直す
+                yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+                yourTeam.Add(PlayerControl.LocalPlayer);
+                foreach (var pc in PlayerControl.AllPlayerControls)
+                {
+                    if (!pc.AmOwner && //前提条件
+                    (pc.Is(RoleType.Impostor) || pc.Is(CustomRoles.Spy))) //インポスターまたはスパイ
+                        yourTeam.Add(pc);
+                }
+            }
             BeginCrewmatePatch.Prefix(__instance, ref yourTeam);
             return true;
         }
