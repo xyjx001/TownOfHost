@@ -79,14 +79,12 @@ namespace TownOfHost
         #endregion
         public static void AssignGuardianAngel()
         {
-            //前処理
-            List<PlayerControl> Impostors = new();
-            PlayerControl spy;
+            CustomRpcSender sender = CustomRpcSender.Create("Spy.AssignGuardianAngel Sender");
+            //リスト作成処理
+            List<PlayerControl> AssignTargets = new();
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                var customRole = pc.GetCustomRole();
-                if (customRole.IsImpostor()) Impostors.Add(pc);
-                else if (pc.Is(ThisRole)) spy = pc;
+                if (pc.GetCustomRole().IsImpostor() || pc.Is(ThisRole)) AssignTargets.Add(pc);
             }
 
             //遅延処理
