@@ -271,7 +271,7 @@ namespace TownOfHost
         public static bool Prefix(ImpostorRole __instance, [HarmonyArgument(0)] GameData.PlayerInfo target, ref bool __result)
         {
             if (!AmongUsClient.Instance.AmHost) return true;
-            if (Spy.IsRoleEnabled)
+            if (Spy.ApplyDesyncForImpostors)
             {
                 __result =
                     target != null &&

@@ -24,6 +24,7 @@ namespace TownOfHost
         public static bool SpyCanVent => opt_SpyCanVent.GetBool();
         public static bool ImpostorCanKillSpy => opt_ImpostorCanKillSpy.GetBool();
         public static bool SheriffCanKillSpy => opt_SheriffCanKillSpy.GetBool();
+        public static bool ApplyDesyncForImpostors => IsRoleEnabled && ImpostorCanKillSpy;
         #endregion
         public static void SetupCustomOption()
         {
@@ -48,7 +49,7 @@ namespace TownOfHost
         //戻り値: 元の処理を行うかどうか(trueで続行, falseで中断)
         public static bool Patch_RpcSetRoleReplacer_Release(PlayerControl target, RoleTypes roleType, CustomRpcSender sender, List<(PlayerControl, RoleTypes)> Storage)
         {
-            if (!IsRoleEnabled) return true;
+            if (!ApplyDesyncForImpostors) return true;
             if (roleType is RoleTypes.Impostor or RoleTypes.Shapeshifter)
             {
                 foreach (var seer in PlayerControl.AllPlayerControls)
