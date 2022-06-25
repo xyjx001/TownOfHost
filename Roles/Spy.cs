@@ -35,6 +35,15 @@ namespace TownOfHost
             opt_ImpostorCanKillSpy = CustomOption.Create(optionId + i++, Color.white, "ImpostorCanKillSpy", true, parent);
             opt_SheriffCanKillSpy = CustomOption.Create(optionId + i++, Color.white, "SheriffCanKillSpy", false, parent);
         }
+        #region 役職割り当て完了後の視点ごとの役職表
+        /*
+        |  PC  | Imp1 | Imp2 | Spy  |
+        | Imp1 | Imp  | Imp  | Sci  |
+        | Imp2 |  GA  | Imp  | Sci  |
+        | Spy  | Crew | Crew | Cr/E |
+        GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
+        */
+        #endregion
         public static void AssignRoleForRandomPlayer(ref List<PlayerControl> AllPlayers, CustomRpcSender sender)
         {
             System.Random rand = new();
@@ -102,15 +111,6 @@ namespace TownOfHost
                     }
                 }
             }
-            #region 上の処理後の想定している各視点の役職(表)
-            /*
-            |  PC  | Imp1 | Imp2 | Spy  |
-            | Imp1 | Imp  | Imp  | Sci  |
-            | Imp2 |  GA  | Imp  | Sci  |
-            | Spy  | Crew | Crew | Cr/E |
-            GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
-            */
-            #endregion
 
             //遅延処理
             new LateTask(() =>
