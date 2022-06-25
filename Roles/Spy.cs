@@ -54,6 +54,7 @@ namespace TownOfHost
                 sender.EndMessage();
                 foreach (var seer in PlayerControl.AllPlayerControls)
                 {
+                    if (seer.PlayerId == 0) continue;
                     RoleTypes role = player == seer ? roleType : RoleTypes.Scientist;
                     sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
                         .Write((ushort)role)
@@ -61,6 +62,8 @@ namespace TownOfHost
                 }
                 if (sender.CurrentState == CustomRpcSender.State.InRootMessage) sender.EndMessage();
                 sender.StartMessage(-1);
+                //ホスト用処理
+                player.SetRole(roleType);
                 return false;
             }
             return true;
