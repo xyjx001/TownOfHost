@@ -87,17 +87,22 @@ namespace TownOfHost
                 if (pc.GetCustomRole().IsImpostor() || pc.Is(ThisRole)) AssignTargets.Add(pc);
             }
             // インポスター視点、他のインポスターとスパイを守護天使化
+            // それ以外視点、スパイを守護天使化
             // mt: MessageTarget, at: AssignTarget
-            foreach (var mt in AssignTargets)
+            foreach (var mt in PlayerControl.AllPlayerControls)
             {
                 if (mt.Is(ThisRole) || mt.PlayerId == 0) continue; //スパイとホストにはRPCを送らない
-                int mt_CID = mt.GetClientId(); //GetClientIdは中でループ処理をしている
+                int mt_CID = mt.GetClientId();
+                bool mt_isImpostor = mt.GetCustomRole().IsImpostor();
                 foreach (var at in AssignTargets)
                 {
                     if (mt == at) continue; //各視点のLocalPlayerの役職は変えない
-                    sender.AutoStartRpc(at.NetId, (byte)RpcCalls.SetRole, mt_CID)
-                        .Write((ushort)RoleTypes.GuardianAngel)
-                        .EndRpc();
+                    if (at.Is(ThisRole) || mt_isImpostor)
+                    {
+                        sender.AutoStartRpc(at.NetId, (byte)RpcCalls.SetRole, mt_CID)
+                            .Write((ushort)RoleTypes.GuardianAngel)
+                            .EndRpc();
+                    }
                 }
             }
             #region 上の処理後の想定している各視点の役職(表)
