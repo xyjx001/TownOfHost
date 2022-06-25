@@ -18,7 +18,7 @@ namespace TownOfHost
         private static CustomOption opt_SheriffCanKillSpy;
         #endregion
         #region OptionGetter
-        public static bool IsEnable => role.IsEnable();
+        public static bool IsRoleEnabled => role.IsEnable();
         public static float RoleChance => role.GetChance();
         public static int RoleCount => role.GetCount();
         public static bool SpyCanVent => opt_SpyCanVent.GetBool();
@@ -38,9 +38,9 @@ namespace TownOfHost
         public static void AssignRoleForRandomPlayer(ref List<PlayerControl> AllPlayers, CustomRpcSender sender)
         {
             System.Random rand = new();
-            if (role.IsEnable())
+            if (IsRoleEnabled)
             {
-                for (int i = 0; i < role.GetCount(); i++)
+                for (int i = 0; i < RoleCount; i++)
                 {
                     if (AllPlayers.Count <= 0) break;
                     var target = AllPlayers[rand.Next(0, AllPlayers.Count)];
