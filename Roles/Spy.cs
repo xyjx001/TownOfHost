@@ -77,6 +77,23 @@ namespace TownOfHost
             }
         }
         #endregion
+        public static void AssignGuardianAngel()
+        {
+            //前処理
+            List<PlayerControl> Impostors = new();
+            PlayerControl spy;
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                var customRole = pc.GetCustomRole();
+                if (customRole.IsImpostor()) Impostors.Add(pc);
+                else if (pc.Is(role)) spy = pc;
+            }
+
+            //遅延処理
+            new LateTask(() =>
+            {
+            }, 5f, "Spy.AssignGuardianAngelTask");
+        }
 
         public PlayerControl player;
         private Spy(PlayerControl player)
