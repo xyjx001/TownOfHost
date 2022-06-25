@@ -68,6 +68,26 @@ namespace TownOfHost
             }
             return true;
         }
+        //インポスター同士は視認し合える
+        //スパイはインポスター視点のみ視認できる
+        public static void SetNameColorData()
+        {
+            List<PlayerControl> looplist = new();
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                CustomRoles role = pc.GetCustomRole();
+                if (role.IsImpostor() || role == ThisRole) looplist.Add(pc);
+            }
+
+            foreach (var seer in looplist)
+            {
+                if (seer.Is(ThisRole)) continue;
+                foreach (var target in looplist)
+                {
+                    NameColorManager.Instance.Add(seer.PlayerId, target.PlayerId, "#ff0000");
+                }
+            }
+        }
         #endregion
 
         public PlayerControl player;
@@ -80,9 +100,6 @@ namespace TownOfHost
             var role = new Spy(player);
             Main.AllPlayerCustomRoles[player.PlayerId] = Spy.ThisRole;
             return role;
-        }
-        public void Init()
-        {
         }
         public void FixedUpdate()
         {

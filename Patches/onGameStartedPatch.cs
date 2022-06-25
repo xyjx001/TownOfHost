@@ -394,6 +394,8 @@ namespace TownOfHost
                 //BountyHunterのターゲットを初期化
                 Main.BountyTargets = new Dictionary<byte, PlayerControl>();
                 Main.BountyTimer = new Dictionary<byte, float>();
+                //Spyの名前色変更処理
+                if (Spy.IsRoleEnabled) Spy.SetNameColorData();
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
                     pc.ResetKillCooldown();
