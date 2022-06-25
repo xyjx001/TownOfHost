@@ -282,6 +282,9 @@ SnitchCanFindNeutralKiller,Snitch Can Find Neutral Killer,第三陣営のキル�
 MayorAdditionalVote,Mayor Additional Votes Count,メイヤーの追加投票の個数
 MayorHasPortableButton,Mayor Has Portable Button,メイヤーがポータブルボタンを持っている
 MayorNumOfUseButton,Mayor Number Of Use Button,メイヤーが使えるボタンの回数
+SpyCanVent,Spy Can Use Vent,スパイがベントを使える
+ImpostorCanKillSpy,Impostor Can Kill Spy,インポスターがスパイをキルできる
+SheriffCanKillSpy,Sheriff Can Kill Spy,シェリフがスパイをキルできる
 CanBeforeSchrodingerCatWinTheCrewmate,Before the role change you can win with your crewmate team,役職変化前であれば、クルー陣営と勝利できる
 SchrodingerCatExiledTeamChanges,SchrodingerCat Exiled Team Changes,シュレディンガーの猫が吊られた際、陣営が変化する
 ExecutionerCanTargetImpostor,Executioner Can be Target Impostor,ｴｸｽｷｭｰｼｮﾅｰがインポスターもターゲットにできる
