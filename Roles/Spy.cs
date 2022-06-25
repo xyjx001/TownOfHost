@@ -53,7 +53,7 @@ namespace TownOfHost
             {
                 foreach (var seer in PlayerControl.AllPlayerControls)
                 {
-                    if (seer == target) continue;
+                    if (seer == target || seer.PlayerId == 0) continue;
                     var seerPair = Storage.Where(pair => pair.Item1.PlayerId == seer.PlayerId).FirstOrDefault();
                     if (seerPair.Item2 is RoleTypes.Impostor or RoleTypes.Shapeshifter)
                     {
@@ -67,6 +67,7 @@ namespace TownOfHost
                 sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, -1)
                     .Write((ushort)roleType)
                     .EndRpc();
+                target.SetRole(roleType);
                 // -1のAutoStartRpcをした後のため、今開いているMessageのtargetは-1で確定
                 return false;
             }
