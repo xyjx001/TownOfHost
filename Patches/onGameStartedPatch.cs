@@ -133,8 +133,8 @@ namespace TownOfHost
                 if (Options.MadSnitchCanVent.GetBool())
                     AdditionalEngineerNum += CustomRoles.MadSnitch.GetCount();
 
-                if (Spy.SpyCanVent)
-                    EngineerNum += Spy.RoleCount;
+                if (Spy.IsRoleEnabled && Spy.SpyCanVent)
+                    AdditionalEngineerNum += Spy.RoleCount;
 
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + AdditionalEngineerNum, AdditionalEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
@@ -467,7 +467,7 @@ namespace TownOfHost
 
                 if (Options.MadSnitchCanVent.GetBool())
                     EngineerNum -= CustomRoles.MadSnitch.GetCount();
-                if (Spy.SpyCanVent)
+                if (Spy.IsRoleEnabled && Spy.SpyCanVent)
                     EngineerNum -= Spy.RoleCount;
 
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
