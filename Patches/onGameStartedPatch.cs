@@ -565,6 +565,11 @@ namespace TownOfHost
             {
                 if (doReplace && sender != null)
                 {
+                    if (Spy.IsRoleEnabled)
+                    {
+                        bool canContinue = Spy.Patch_RpcSetRole(__instance, roleType, sender);
+                        if (!canContinue) return false;
+                    }
                     __instance.SetRole(roleType);
                     sender.StartRpc(__instance.NetId, RpcCalls.SetRole)
                           .Write((ushort)roleType)

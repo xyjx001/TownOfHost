@@ -44,6 +44,27 @@ namespace TownOfHost
         tgt = target, GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
         */
         #endregion
+
+        //戻り値: 元の処理を行うかどうか(trueで続行, falseで中断)
+        public static bool Patch_RpcSetRole(PlayerControl player, RoleTypes roleType, CustomRpcSender sender)
+        {
+            if (roleType is RoleTypes.Impostor or RoleTypes.Shapeshifter)
+            {
+                // 通常の割り当ての代わりに、自視点のみの割り当てにする
+                sender.EndMessage();
+                foreach (var seer in PlayerControl.AllPlayerControls)
+                {
+                    RoleTypes role = player == seer ? roleType : RoleTypes.Scientist;
+                    sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
+                        .Write((ushort)role)
+                        .EndRpc();
+                }
+                if (sender.CurrentState == CustomRpcSender.State.InRootMessage) sender.EndMessage();
+                sender.StartMessage(-1);
+                return false;
+            }
+            return true;
+        }
         #endregion
 
         public PlayerControl player;
