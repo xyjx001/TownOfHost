@@ -44,34 +44,6 @@ namespace TownOfHost
         GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
         */
         #endregion
-        public static void AssignRoleForRandomPlayer(ref List<PlayerControl> AllPlayers, CustomRpcSender sender)
-        {
-            System.Random rand = new();
-            if (IsRoleEnabled)
-            {
-                for (int i = 0; i < RoleCount; i++)
-                {
-                    if (AllPlayers.Count <= 0) break;
-                    var target = AllPlayers[rand.Next(0, AllPlayers.Count)];
-                    AllPlayers.Remove(target);
-                    Spy.Assign(target);
-                    //Desync開始 そういえば最近ホストもDesyncするようになったんだってね。
-                    if (target.PlayerId != 0)
-                    {
-                        int clientId = target.GetClientId();
-                        //target視点: target = クルー or エンジニア [TODO]
-                        sender.RpcSetRole(target, RoleTypes.Engineer, clientId);
-                    }
-                    else
-                    {
-                        //ホストは代わりに自視点エンジニア, 他視点インポスターにする
-                        target.SetRole(RoleTypes.Engineer); //ホスト視点用
-                        sender.RpcSetRole(target, RoleTypes.Impostor);
-                    }
-                    target.Data.IsDead = true;
-                }
-            }
-        }
         #endregion
 
         public PlayerControl player;
