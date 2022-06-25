@@ -10,7 +10,7 @@ namespace TownOfHost
     {
         #region static
         public static Spy Instance;
-        public static readonly CustomRoles role = CustomRoles.Spy;
+        public static readonly CustomRoles ThisRole = CustomRoles.Spy;
         static readonly int optionId = 21000;
         #region CustomOptions
         private static CustomOption opt_SpyCanVent;
@@ -18,9 +18,9 @@ namespace TownOfHost
         private static CustomOption opt_SheriffCanKillSpy;
         #endregion
         #region OptionGetter
-        public static bool IsRoleEnabled => role.IsEnable();
-        public static float RoleChance => role.GetChance();
-        public static int RoleCount => role.GetCount();
+        public static bool IsRoleEnabled => ThisRole.IsEnable();
+        public static float RoleChance => ThisRole.GetChance();
+        public static int RoleCount => ThisRole.GetCount();
         public static bool SpyCanVent => opt_SpyCanVent.GetBool();
         public static bool ImpostorCanKillSpy => opt_ImpostorCanKillSpy.GetBool();
         public static bool SheriffCanKillSpy => opt_SheriffCanKillSpy.GetBool();
@@ -28,8 +28,8 @@ namespace TownOfHost
         public static void SetupCustomOption()
         {
             //21000~21001
-            Options.SetupSingleRoleOptions(optionId, role, 1);
-            CustomOption parent = Options.CustomRoleSpawnChances[role];
+            Options.SetupSingleRoleOptions(optionId, ThisRole, 1);
+            CustomOption parent = Options.CustomRoleSpawnChances[ThisRole];
             int i = 10; //以降、21010から1ずつ上がっていく。
             opt_SpyCanVent = CustomOption.Create(optionId + i++, Color.white, "SpyCanVent", true, parent);
             opt_ImpostorCanKillSpy = CustomOption.Create(optionId + i++, Color.white, "ImpostorCanKillSpy", true, parent);
@@ -86,7 +86,7 @@ namespace TownOfHost
             {
                 var customRole = pc.GetCustomRole();
                 if (customRole.IsImpostor()) Impostors.Add(pc);
-                else if (pc.Is(role)) spy = pc;
+                else if (pc.Is(ThisRole)) spy = pc;
             }
 
             //遅延処理
@@ -103,7 +103,7 @@ namespace TownOfHost
         public static Spy Assign(PlayerControl player)
         {
             var role = new Spy(player);
-            Main.AllPlayerCustomRoles[player.PlayerId] = Spy.role;
+            Main.AllPlayerCustomRoles[player.PlayerId] = Spy.ThisRole;
             return role;
         }
         public void Init()
