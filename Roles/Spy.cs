@@ -36,12 +36,12 @@ namespace TownOfHost
             opt_SheriffCanKillSpy = CustomOption.Create(optionId + i++, Color.white, "SheriffCanKillSpy", false, parent);
         }
         #region 役職割り当て完了後の視点ごとの役職表
-        /*
-        |  PC  | Imp1 | Imp2 | Spy  |
-        | Imp1 | Imp  | Imp  | Sci  |
-        | Imp2 |  GA  | Imp  | Sci  |
-        | Spy  | Crew | Crew | Cr/E |
-        GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
+        /*↓seer
+        | tgt> | Imp1 | Imp2 | Spy  |
+        | Imp1 | Imp  | Sci  | Cr/E |
+        | Imp2 | Sci  | Imp  | Cr/E |
+        | Spy  | Imp  | Imp  | Cr/E |
+        tgt = target, GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
         */
         #endregion
         #endregion
