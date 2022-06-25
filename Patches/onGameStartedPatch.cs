@@ -134,6 +134,9 @@ namespace TownOfHost
                 if (Options.MadSnitchCanVent.GetBool())
                     AdditionalEngineerNum += CustomRoles.MadSnitch.GetCount();
 
+                if (Spy.SpyCanVent)
+                    EngineerNum += Spy.RoleCount;
+
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + AdditionalEngineerNum, AdditionalEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
                 int ShapeshifterNum = roleOpt.GetNumPerGame(RoleTypes.Shapeshifter);
@@ -367,6 +370,7 @@ namespace TownOfHost
                 AssignCustomRolesFromList(CustomRoles.Doctor, Scientists);
                 AssignCustomRolesFromList(CustomRoles.Puppeteer, Impostors);
                 AssignCustomRolesFromList(CustomRoles.TimeThief, Impostors);
+                AssignCustomRolesFromList(CustomRoles.Spy, Spy.SpyCanVent ? Engineers : Crewmates);
 
                 //RPCによる同期
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -454,6 +458,8 @@ namespace TownOfHost
                     }
                     if (pc.Is(CustomRoles.Mayor))
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
+                    if (pc.Is(CustomRoles.Spy))
+                        Spy.Assign(pc);
                 }
 
                 //役職の人数を戻す
@@ -471,6 +477,8 @@ namespace TownOfHost
 
                 if (Options.MadSnitchCanVent.GetBool())
                     EngineerNum -= CustomRoles.MadSnitch.GetCount();
+                if (Spy.SpyCanVent)
+                    EngineerNum -= Spy.RoleCount;
 
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
