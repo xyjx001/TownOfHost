@@ -45,6 +45,11 @@ namespace TownOfHost
         tgt = target, GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
         */
         #endregion
+        /* TODO-LIST
+        - SheriffCanKillSpyのオプションを適用
+        - ImpostorCanKillSpyのオプション名を修正
+        - インポスターの特殊キルの対象で相方が除外されているものがある場合、Spyが透けるのでそれも変更する。
+        */
 
         //戻り値: 元の処理を行うかどうか(trueで続行, falseで中断)
         public static bool Patch_RpcSetRoleReplacer_Release(PlayerControl target, RoleTypes roleType, CustomRpcSender sender, List<(PlayerControl, RoleTypes)> Storage)
