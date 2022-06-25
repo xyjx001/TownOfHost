@@ -79,6 +79,8 @@ namespace TownOfHost
         #endregion
         public static void AssignGuardianAngel()
         {
+            if (!IsRoleEnabled) return;
+
             CustomRpcSender sender = CustomRpcSender.Create("Spy.AssignGuardianAngel Sender");
             //リスト作成処理
             List<PlayerControl> AssignTargets = new();
