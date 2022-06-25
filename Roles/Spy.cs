@@ -12,15 +12,28 @@ namespace TownOfHost
         public static Spy Instance;
         public static readonly CustomRoles role = CustomRoles.Spy;
         static readonly int optionId = 21000;
+        #region CustomOptions
+        private static CustomOption opt_SpyCanVent;
+        private static CustomOption opt_ImpostorCanKillSpy;
+        private static CustomOption opt_SheriffCanKillSpy;
+        #endregion
+        #region OptionGetter
+        public static bool IsEnable => role.IsEnable();
+        public static float RoleChance => role.GetChance();
+        public static int RoleCount => role.GetCount();
+        public static bool SpyCanVent => opt_SpyCanVent.GetBool();
+        public static bool ImpostorCanKillSpy => opt_ImpostorCanKillSpy.GetBool();
+        public static bool SheriffCanKillSpy => opt_SheriffCanKillSpy.GetBool();
+        #endregion
         public static void SetupCustomOption()
         {
             //21000~21001
             Options.SetupSingleRoleOptions(optionId, role, 1);
             CustomOption parent = Options.CustomRoleSpawnChances[role];
             int i = 10; //以降、21010から1ずつ上がっていく。
-            CustomOption.Create(optionId + i++, Color.white, "SpyCanVent", true, parent);
-            CustomOption.Create(optionId + i++, Color.white, "ImpostorCanKillSpy", true, parent);
-            CustomOption.Create(optionId + i++, Color.white, "SheriffCanKillSpy", false, parent);
+            opt_SpyCanVent = CustomOption.Create(optionId + i++, Color.white, "SpyCanVent", true, parent);
+            opt_ImpostorCanKillSpy = CustomOption.Create(optionId + i++, Color.white, "ImpostorCanKillSpy", true, parent);
+            opt_SheriffCanKillSpy = CustomOption.Create(optionId + i++, Color.white, "SheriffCanKillSpy", false, parent);
         }
         public static void AssignRoleForRandomPlayer(ref List<PlayerControl> AllPlayers, CustomRpcSender sender)
         {
