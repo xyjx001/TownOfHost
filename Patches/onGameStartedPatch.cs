@@ -261,8 +261,6 @@ namespace TownOfHost
             RpcSetRoleReplacer.sender.EndMessage()
                                     .SendMessage();
 
-            Spy.AssignGuardianAngel();
-
             //Utils.ApplySuffix();
 
             var rand = new System.Random();

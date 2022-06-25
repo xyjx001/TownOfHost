@@ -61,14 +61,6 @@ namespace TownOfHost
                         int clientId = target.GetClientId();
                         //target視点: target = クルー or エンジニア [TODO]
                         sender.RpcSetRole(target, RoleTypes.Engineer, clientId);
-                        //target視点: 他プレイヤー = 通常の役職判定
-                        //他プレイヤー: target = インポスター
-                        foreach (var pc in PlayerControl.AllPlayerControls)
-                        {
-                            if (pc == target) continue;
-                            if (pc.PlayerId == 0) target.SetRole(RoleTypes.Impostor); //ホスト視点用
-                            else sender.RpcSetRole(target, RoleTypes.Impostor, pc.GetClientId());
-                        }
                     }
                     else
                     {
@@ -81,43 +73,6 @@ namespace TownOfHost
             }
         }
         #endregion
-        public static void AssignGuardianAngel()
-        {
-            if (!IsRoleEnabled) return;
-
-            CustomRpcSender sender = CustomRpcSender.Create("Spy.AssignGuardianAngel Sender");
-            //リスト作成処理
-            List<PlayerControl> AssignTargets = new();
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc.GetCustomRole().IsImpostor() || pc.Is(ThisRole)) AssignTargets.Add(pc);
-            }
-            // インポスター視点、他のインポスターとスパイを守護天使化
-            // それ以外視点、スパイを守護天使化
-            // mt: MessageTarget, at: AssignTarget
-            foreach (var mt in PlayerControl.AllPlayerControls)
-            {
-                if (mt.Is(ThisRole) || mt.PlayerId == 0) continue; //スパイとホストにはRPCを送らない
-                int mt_CID = mt.GetClientId();
-                bool mt_isImpostor = mt.GetCustomRole().IsImpostor();
-                foreach (var at in AssignTargets)
-                {
-                    if (mt == at) continue; //各視点のLocalPlayerの役職は変えない
-                    if (at.Is(ThisRole) || mt_isImpostor)
-                    {
-                        sender.AutoStartRpc(at.NetId, (byte)RpcCalls.SetRole, mt_CID)
-                            .Write((ushort)RoleTypes.GuardianAngel)
-                            .EndRpc();
-                    }
-                }
-            }
-
-            //遅延処理
-            new LateTask(() =>
-            {
-                sender.SendMessage();
-            }, 5f, "Spy.AssignGuardianAngelTask");
-        }
 
         public PlayerControl player;
         private Spy(PlayerControl player)
