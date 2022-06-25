@@ -52,12 +52,7 @@ namespace TownOfHost
                         int clientId = target.GetClientId();
                         //target視点: target = クルー or エンジニア [TODO]
                         sender.RpcSetRole(target, RoleTypes.Engineer, clientId);
-                        //target視点: 他プレイヤー = 科学者
-                        foreach (var pc in PlayerControl.AllPlayerControls)
-                        {
-                            if (pc == target) continue;
-                            sender.RpcSetRole(pc, RoleTypes.Scientist, clientId);
-                        }
+                        //target視点: 他プレイヤー = 通常の役職判定
                         //他プレイヤー: target = インポスター
                         foreach (var pc in PlayerControl.AllPlayerControls)
                         {
