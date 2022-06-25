@@ -576,6 +576,10 @@ namespace TownOfHost
                 sender.StartMessage(-1);
                 foreach (var pair in StoragedData)
                 {
+                    //この"canContinue"は"continue;"以下の処理を続行できるかどうかを指している。
+                    bool canContinue = Spy.Patch_RpcSetRoleReplacer_Release(pair.Item1, pair.Item2, sender, StoragedData);
+                    if (!canContinue) continue;
+
                     pair.Item1.SetRole(pair.Item2);
                     sender.StartRpc(pair.Item1.NetId, RpcCalls.SetRole)
                         .Write((ushort)pair.Item2)

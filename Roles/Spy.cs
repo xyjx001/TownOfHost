@@ -46,24 +46,28 @@ namespace TownOfHost
         #endregion
 
         //戻り値: 元の処理を行うかどうか(trueで続行, falseで中断)
-        public static bool Patch_RpcSetRole(PlayerControl player, RoleTypes roleType, CustomRpcSender sender)
+        public static bool Patch_RpcSetRoleReplacer_Release(PlayerControl target, RoleTypes roleType, CustomRpcSender sender, List<(PlayerControl, RoleTypes)> Storage)
         {
+            if (!IsRoleEnabled) return true;
             if (roleType is RoleTypes.Impostor or RoleTypes.Shapeshifter)
             {
-                // 通常の割り当ての代わりに、自視点のみの割り当てにする
-                sender.EndMessage();
                 foreach (var seer in PlayerControl.AllPlayerControls)
                 {
-                    if (seer.PlayerId == 0) continue;
-                    RoleTypes role = player == seer ? roleType : RoleTypes.Scientist;
-                    sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
-                        .Write((ushort)role)
-                        .EndRpc();
+                    if (seer == target) continue;
+                    var seerPair = Storage.Where(pair => pair.Item1.PlayerId == seer.PlayerId).FirstOrDefault();
+                    if (seerPair.Item2 is RoleTypes.Impostor or RoleTypes.Shapeshifter)
+                    {
+                        //相方限定RPC
+                        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
+                            .Write((ushort)RoleTypes.Scientist)
+                            .EndRpc();
+                    }
                 }
-                if (sender.CurrentState == CustomRpcSender.State.InRootMessage) sender.EndMessage();
-                sender.StartMessage(-1);
-                //ホスト用処理
-                player.SetRole(roleType);
+                //一般用RPC
+                sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, -1)
+                    .Write((ushort)roleType)
+                    .EndRpc();
+                // -1のAutoStartRpcをした後のため、今開いているMessageのtargetは-1で確定
                 return false;
             }
             return true;
