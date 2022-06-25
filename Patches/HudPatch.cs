@@ -265,6 +265,28 @@ namespace TownOfHost
             return true;
         }
     }
+    [HarmonyPatch(typeof(ImpostorRole), nameof(ImpostorRole.IsValidTarget))]
+    class IsValidTarget_Impostor
+    {
+        public static bool Prefix(ImpostorRole __instance, [HarmonyArgument(0)] GameData.PlayerInfo target, ref bool __result)
+        {
+            if (!AmongUsClient.Instance.AmHost) return true;
+            if (Spy.IsRoleEnabled)
+            {
+                __result =
+                    target != null &&
+                    !target.Disconnected &&
+                    !target.IsDead &&
+                    target.PlayerId != __instance.Player.PlayerId &&
+                    target.Role != null &&
+                    target.Object != null &&
+                    !target.Object.inVent;
+                return false;
+            }
+            return true;
+        }
+        //ShapeshifterRoleは継承元がImpostorRoleなのでIsValidTargetPatchは必要ありません。
+    }
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
     class SetHudActivePatch
     {
