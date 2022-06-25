@@ -32,8 +32,7 @@ namespace TownOfHost
                     if (AllPlayers.Count <= 0) break;
                     var target = AllPlayers[rand.Next(0, AllPlayers.Count)];
                     AllPlayers.Remove(target);
-                    Spy.Create(target);
-                    Main.AllPlayerCustomRoles[target.PlayerId] = CustomRoles.Arsonist;
+                    Spy.Assign(target);
                     //Desync開始 そういえば最近ホストもDesyncするようになったんだってね。
                     if (target.PlayerId != 0)
                     {
@@ -74,9 +73,10 @@ namespace TownOfHost
         {
             this.player = player;
         }
-        public static Spy Create(PlayerControl player)
+        public static Spy Assign(PlayerControl player)
         {
             var role = new Spy(player);
+            Main.AllPlayerCustomRoles[player.PlayerId] = Spy.role;
             return role;
         }
         public void Init()
