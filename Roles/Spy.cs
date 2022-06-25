@@ -86,10 +86,34 @@ namespace TownOfHost
             {
                 if (pc.GetCustomRole().IsImpostor() || pc.Is(ThisRole)) AssignTargets.Add(pc);
             }
+            // インポスター視点、他のインポスターとスパイを守護天使化
+            // mt: MessageTarget, at: AssignTarget
+            foreach (var mt in AssignTargets)
+            {
+                if (mt.Is(ThisRole) || mt.PlayerId == 0) continue; //スパイとホストにはRPCを送らない
+                int mt_CID = mt.GetClientId(); //GetClientIdは中でループ処理をしている
+                foreach (var at in AssignTargets)
+                {
+                    if (mt == at) continue; //各視点のLocalPlayerの役職は変えない
+                    sender.AutoStartRpc(at.NetId, (byte)RpcCalls.SetRole, mt_CID)
+                        .Write((ushort)RoleTypes.GuardianAngel)
+                        .EndRpc();
+                }
+            }
+            #region 上の処理後の想定している各視点の役職(表)
+            /*
+            |  PC  | Imp1 | Imp2 | Spy  |
+            | Imp1 | Imp  | Imp  | Sci  |
+            | Imp2 |  GA  | Imp  | Sci  |
+            | Spy  | Crew | Crew | Cr/E |
+            GA = 守護天使, Sci = 科学者, Cr/E = クルーまたはエンジニア
+            */
+            #endregion
 
             //遅延処理
             new LateTask(() =>
             {
+                sender.SendMessage();
             }, 5f, "Spy.AssignGuardianAngelTask");
         }
 
