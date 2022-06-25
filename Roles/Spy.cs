@@ -37,30 +37,27 @@ namespace TownOfHost
                     if (target.PlayerId != 0)
                     {
                         int clientId = target.GetClientId();
-                        sender.RpcSetRole(target, RoleTypes.Impostor, clientId);
+                        //target視点: target = クルー or エンジニア [TODO]
+                        sender.RpcSetRole(target, RoleTypes.Engineer, clientId);
                         //target視点: 他プレイヤー = 科学者
                         foreach (var pc in PlayerControl.AllPlayerControls)
                         {
                             if (pc == target) continue;
                             sender.RpcSetRole(pc, RoleTypes.Scientist, clientId);
                         }
-                        //他プレイヤー: target = 科学者
+                        //他プレイヤー: target = インポスター
                         foreach (var pc in PlayerControl.AllPlayerControls)
                         {
                             if (pc == target) continue;
-                            if (pc.PlayerId == 0) target.SetRole(RoleTypes.Scientist); //ホスト視点用
-                            else sender.RpcSetRole(target, RoleTypes.Scientist, pc.GetClientId());
+                            if (pc.PlayerId == 0) target.SetRole(RoleTypes.Impostor); //ホスト視点用
+                            else sender.RpcSetRole(target, RoleTypes.Impostor, pc.GetClientId());
                         }
                     }
                     else
                     {
-                        //ホストは代わりに自視点守護天使, 他視点普通のクルーにする
-                        target.SetRole(RoleTypes.GuardianAngel); //ホスト視点用
-                        sender.RpcSetRole(target, RoleTypes.Crewmate);
-
-                        //ただし、RoleBehaviourはGuardianAngelRole、RoleTypeはCrewmateという特殊な状態にする。
-                        //これにより、RoleTypeがGuardianEngelになったら本当に守護天使化したと判別できる。
-                        target.Data.Role.Role = RoleTypes.Crewmate;
+                        //ホストは代わりに自視点エンジニア, 他視点インポスターにする
+                        target.SetRole(RoleTypes.Engineer); //ホスト視点用
+                        sender.RpcSetRole(target, RoleTypes.Impostor);
                     }
                     target.Data.IsDead = true;
                 }
