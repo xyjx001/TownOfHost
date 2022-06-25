@@ -13,7 +13,13 @@ namespace TownOfHost
         static readonly int optionId = 21000;
         public static void SetupCustomOption()
         {
+            //21000~21001
             Options.SetupSingleRoleOptions(optionId, role, 1);
+            CustomOption parent = Options.CustomRoleSpawnChances[role];
+            int i = 10; //以降、21010から1ずつ上がっていく。
+            CustomOption.Create(optionId + i++, Color.white, "SpyCanVent", true, parent);
+            CustomOption.Create(optionId + i++, Color.white, "ImpostorCanKillSpy", true, parent);
+            CustomOption.Create(optionId + i++, Color.white, "SheriffCanKillSpy", false, parent);
         }
         #endregion
 
@@ -29,7 +35,6 @@ namespace TownOfHost
         }
         public void Init()
         {
-
         }
         public void FixedUpdate()
         {
