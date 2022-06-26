@@ -39,17 +39,17 @@ namespace TownOfHost
             int TaskHalfValue = taskState.AllTasksCount / 2;//TaskHalfValueは設定されたタスク数÷2で出た数値を繰り上げした数値
             if (taskState.CompletedTasksCount <= TaskHalfValue)//キル対象の完了タスク数が設定タスク数の半分か、それ以下
             {
-                Logger.Info($"SlaveDriver Kill 1", "SlaveDriver");
+                //Logger.Info($"SlaveDriver Kill 1", "SlaveDriver");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown * SlaveDriverIncreaseKC.GetFloat();
             }
             if (taskState.CompletedTasksCount > TaskHalfValue)//キル対象の完了タスク数が設定タスク数の半分を超えている
             {
-                Logger.Info($"SlaveDriver Kill 2", "SlaveDriver");
+                //Logger.Info($"SlaveDriver Kill 2", "SlaveDriver");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown / SlaveDriverDecreaseKC.GetFloat();
             }
             if (taskState.IsTaskFinished)//キル対象がタスクを終えている
             {
-                Logger.Info($"SlaveDriver Kill 3", "SlaveDriver");
+                //Logger.Info($"SlaveDriver Kill 3", "SlaveDriver");
                 Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown / SlaveDriverTaskCompleteDecreaseKC.GetFloat();
             }
             if (taskState.hasTasks == false)//キル対象のタスクがない
