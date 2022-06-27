@@ -199,7 +199,8 @@ namespace TownOfHost
                     break;
                 default:
                     // 上のいずれにも当てはまらなかった場合に実行
-                    CustomRoleManager.Instance.HandleRpc(callId, reader);
+                    if (AmongUsClient.Instance.AmHost)
+                        CustomRoleManager.Instance.HandleRpc(callId, reader);
                     break;
             }
         }

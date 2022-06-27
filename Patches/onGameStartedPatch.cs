@@ -13,8 +13,6 @@ namespace TownOfHost
         {
             //注:この時点では役職は設定されていません。
             PlayerState.Init();
-            CustomRoleManager.CreateInstance()
-                .InitAllInstance();
 
             Main.currentWinner = CustomWinner.Default;
             Main.CustomWinTrigger = false;
@@ -91,6 +89,8 @@ namespace TownOfHost
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)
             {
+                CustomRoleManager.CreateInstance()
+                    .InitAllInstance();
                 RPC.SyncCustomSettingsRPC();
                 Main.RefixCooldownDelay = 0;
                 if (Options.CurrentGameMode == CustomGameMode.HideAndSeek)

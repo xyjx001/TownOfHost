@@ -202,7 +202,8 @@ namespace TownOfHost
             Main.witchMeeting = true;
             Utils.NotifyRoles(isMeeting: true, ForceLoop: true);
             Main.witchMeeting = false;
-            CustomRoleManager.Instance.OnStartMeeting();
+            if (AmongUsClient.Instance.AmHost)
+                CustomRoleManager.Instance.OnStartMeeting();
         }
         public static void Postfix(MeetingHud __instance)
         {
@@ -366,7 +367,8 @@ namespace TownOfHost
         public static void Postfix()
         {
             Logger.Info("------------会議終了------------", "Phase");
-            CustomRoleManager.Instance.OnEndMeeting();
+            if (AmongUsClient.Instance.AmHost)
+                CustomRoleManager.Instance.OnEndMeeting();
         }
     }
 }
