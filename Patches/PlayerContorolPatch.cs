@@ -126,12 +126,7 @@ namespace TownOfHost
 
                     //==========役職クラス==========//
                     default:
-                        var rolePlayer = CustomRoleManager.Instance.GetRolePlayer(killer.PlayerId);
-                        if (rolePlayer != null)
-                        {
-                            bool doCancel = rolePlayer.CanMurder(target);
-                            if (doCancel) return false;
-                        }
+                        if (CustomRoleManager.Instance.OnMurderPlayer(killer, target)) return false;
                         break;
                 }
             }
@@ -203,12 +198,7 @@ namespace TownOfHost
 
                 //==========役職クラス==========//
                 default:
-                    var rolePlayer = CustomRoleManager.Instance.GetRolePlayer(target.PlayerId);
-                    if (rolePlayer != null)
-                    {
-                        bool doCancel = rolePlayer.OnMurdered(killer);
-                        if (doCancel) return false;
-                    }
+                    if (CustomRoleManager.Instance.OnMurderPlayer(target, killer)) return false;
                     break;
             }
 
@@ -339,12 +329,7 @@ namespace TownOfHost
 
                     //==========役職クラス==========//
                     default:
-                        var rolePlayer = CustomRoleManager.Instance.GetRolePlayer(killer.PlayerId);
-                        if (rolePlayer != null)
-                        {
-                            bool doCancel = rolePlayer.OnMurderPlayer(target);
-                            if (doCancel) return false;
-                        }
+                        if (CustomRoleManager.Instance.OnMurderPlayer(killer, target)) return false;
                         break;
                 }
             }
