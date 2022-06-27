@@ -6,32 +6,8 @@ using UnityEngine;
 
 namespace TownOfHost
 {
-    public abstract class RoleBase
+    public abstract class RoleClass
     {
-        #region singleton
-        public static RoleBase Instance
-        {
-            get
-            {
-                if (_instance == null) Logger.Error("Instance Is Not Exists", "RoleBase");
-                return _instance;
-            }
-        }
-        public static bool InstanceExists => _instance != null;
-        public static bool TryGetInstance(out RoleBase Instance)
-        {
-            Instance = _instance;
-            return InstanceExists;
-        }
-        protected RoleBase() { }
-        public RoleBase GetOrCreateInstance()
-        {
-            if (InstanceExists) return _instance;
-            CreateInstance();
-            return InstanceExists ? _instance : throw new NotImplementedException("CreateInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
-        }
-        protected static RoleBase _instance;
-        #endregion
         public CustomRoles RoleId { get; protected set; }
         public List<RolePlayer> Players;
         /// <summary>
@@ -66,10 +42,38 @@ namespace TownOfHost
         /// <returns>RPCを処理したかどうか 処理した=>true, 処理してない=>false trueを返した時点でRPCの処理が終了します。</returns>
         public abstract bool HandleRpc(byte callId, MessageReader reader);
     }
+    public abstract class RoleBase<T, P> : RoleClass
+    where T : RoleBase<T, P>, new()
+    where P : new()
+    {
+        #region singleton
+        public static T Instance
+        {
+            get
+            {
+                if (_instance == null) Logger.Error("Instance Is Not Exists", "RoleBase");
+                return _instance;
+            }
+        }
+        public static bool InstanceExists => _instance != null;
+        public static bool TryGetInstance(out T Instance)
+        {
+            Instance = _instance;
+            return InstanceExists;
+        }
+        public T GetOrCreateInstance()
+        {
+            if (InstanceExists) return _instance;
+            CreateInstance();
+            return InstanceExists ? _instance : throw new NotImplementedException("CreateInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
+        }
+        protected static T _instance;
+        #endregion
+    }
 
     public abstract class RolePlayer
     {
-        public RoleBase RoleInstance;
+        public RoleClass RoleInstance;
         public PlayerControl player;
 
         /// <summary>
