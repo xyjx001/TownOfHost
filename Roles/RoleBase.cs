@@ -9,7 +9,7 @@ namespace TownOfHost
     public abstract class RoleClass
     {
         public CustomRoles RoleId { get; protected set; }
-        public List<RolePlayer> Players;
+        public abstract List<RolePlayer> RolePlayers { get; }
         /// <summary>
         /// インスタンス生成時に実行されます。
         /// RoleIdの設定処理や、変数の初期化処理を入れてください。
@@ -70,6 +70,7 @@ namespace TownOfHost
         protected static T _instance;
         #endregion
         #region PlayerList
+        public override List<RolePlayer> RolePlayers => Players.OfType<RolePlayer>().ToList();
         public List<P> Players;
         #endregion
     }
