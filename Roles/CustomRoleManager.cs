@@ -8,8 +8,35 @@ namespace TownOfHost
 {
     public class CustomRoleManager
     {
-        public static List<RoleBase> RoleInstances;
-        public static void InitAllInstance()
+        #region singleton
+        public static CustomRoleManager Instance
+        {
+            get
+            {
+                if (_instance == null) Logger.Error("Instance Is Not Exists", "CustomRoleManager");
+                return _instance;
+            }
+        }
+        public static bool InstanceExists => _instance != null;
+        public static bool TryGetInstance(out CustomRoleManager Instance)
+        {
+            Instance = _instance;
+            return InstanceExists;
+        }
+        private CustomRoleManager() { }
+        public CustomRoleManager CreateInstance()
+        {
+            if (!InstanceExists) _instance = new CustomRoleManager();
+            return _instance;
+        }
+        public void RemoveInstance()
+        {
+            _instance = null;
+        }
+        public static CustomRoleManager _instance;
+        #endregion
+        public List<RoleBase> RoleInstances;
+        public void InitAllInstance()
         {
         }
     }
