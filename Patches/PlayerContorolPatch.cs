@@ -558,6 +558,8 @@ namespace TownOfHost
             Main.PuppeteerList.Clear();
             Sniper.OnStartMeeting();
 
+            CustomRoleManager.Instance.OnReportDeadBody(__instance, target);
+
             if (__instance.Data.IsDead) return true;
             //=============================================
             //以下、ボタンが押されることが確定したものとする。
