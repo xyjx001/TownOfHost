@@ -38,6 +38,8 @@ namespace TownOfHost
         public abstract void Init();
         public abstract void OnStartGame();
         public abstract void OnFixedUpdate();
+        public abstract void OnStartMeeting();
+        public abstract void OnEndMeeting();
     }
 
     public abstract class RolePlayer
@@ -47,6 +49,6 @@ namespace TownOfHost
 
         public abstract void Init();
         public abstract void OnFixedUpdate();
-        public abstract bool OnReportDeadBody();
+        public abstract bool OnReportDeadBody(GameData.PlayerInfo target);
     }
 }
