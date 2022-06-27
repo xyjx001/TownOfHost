@@ -51,6 +51,19 @@ namespace TownOfHost
         public void OnStartGame() => RoleInstances.ForEach(role => role.OnStartGame());
         public void OnStartMeeting() => RoleInstances.ForEach(role => role.OnStartMeeting());
         public void OnEndMeeting() => RoleInstances.ForEach(role => role.OnEndMeeting());
+        public void HandleRpc(byte callId, MessageReader reader)
+        {
+            bool isHandled = false;
+            foreach (var role in RoleInstances)
+            {
+                isHandled = role.HandleRpc(callId, reader);
+                if (isHandled) break;
+            }
+            if (!isHandled)
+            {
+                Logger.Warn($"未処理のRPC: {(CustomRPC)callId}({callId})", "CustomRoleManager");
+            }
+        }
 
         // RolePlayers内の関数呼び出し
         public void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)

@@ -64,6 +64,12 @@ namespace TownOfHost
         /// 会議終了によるリセット処理などを入れてください。
         /// </summary>
         public abstract void OnEndMeeting();
+        /// <summary>
+        /// RPC受信時に実行されます。
+        /// 役職専用のRPCの処理などを入れてください。
+        /// </summary>
+        /// <returns>RPCを処理したかどうか 処理した=>true, 処理してない=>false trueを返した時点でRPCの処理が終了します。</returns>
+        public abstract bool HandleRpc(byte callId, MessageReader reader);
     }
 
     public abstract class RolePlayer
