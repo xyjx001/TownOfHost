@@ -24,12 +24,12 @@ namespace TownOfHost
             return InstanceExists;
         }
         private CustomRoleManager() { }
-        public CustomRoleManager CreateInstance()
+        public static CustomRoleManager CreateInstance()
         {
             if (!InstanceExists) _instance = new CustomRoleManager();
             return _instance;
         }
-        public void RemoveInstance()
+        public static void RemoveInstance()
         {
             _instance = null;
         }
