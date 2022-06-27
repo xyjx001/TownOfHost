@@ -37,6 +37,7 @@ namespace TownOfHost
         #endregion
         public List<RoleBase> RoleInstances;
         public List<RolePlayer> RolePlayers;
+        public RolePlayer GetRolePlayer(byte playerId) => RolePlayers.Where(rp => rp.player.PlayerId == playerId).FirstOrDefault();
         public void InitAllInstance()
         {
         }
@@ -53,16 +54,12 @@ namespace TownOfHost
 
         // RolePlayers内の関数呼び出し
         public void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)
-            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
-                    .OnReportDeadBody(target);
+            => GetRolePlayer(player.PlayerId).OnReportDeadBody(target);
         public bool CanMurder(PlayerControl player, PlayerControl target)
-            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
-                    .CanMurder(target);
+            => GetRolePlayer(player.PlayerId).CanMurder(target);
         public bool OnMurdered(PlayerControl player, PlayerControl target)
-            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
-                    .OnMurdered(target);
+            => GetRolePlayer(player.PlayerId).OnMurdered(target);
         public bool OnMurderPlayer(PlayerControl player, PlayerControl target)
-            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
-                    .OnMurderPlayer(target);
+            => GetRolePlayer(player.PlayerId).OnMurderPlayer(target);
     }
 }
