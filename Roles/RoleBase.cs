@@ -44,7 +44,7 @@ namespace TownOfHost
     }
     public abstract class RoleBase<T, P> : RoleClass
     where T : RoleBase<T, P>, new()
-    where P : new()
+    where P : RolePlayer, new()
     {
         #region singleton
         public static T Instance
