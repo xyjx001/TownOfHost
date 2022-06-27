@@ -55,5 +55,14 @@ namespace TownOfHost
         public void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)
             => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
                     .OnReportDeadBody(target);
+        public bool CanMurder(PlayerControl player, PlayerControl target)
+            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
+                    .CanMurder(target);
+        public bool OnMurdered(PlayerControl player, PlayerControl target)
+            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
+                    .OnMurdered(target);
+        public bool OnMurderPlayer(PlayerControl player, PlayerControl target)
+            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
+                    .OnMurderPlayer(target);
     }
 }

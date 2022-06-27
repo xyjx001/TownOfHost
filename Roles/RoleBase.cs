@@ -55,5 +55,8 @@ namespace TownOfHost
         public abstract void Init();
         public abstract void OnFixedUpdate();
         public abstract bool OnReportDeadBody(GameData.PlayerInfo target);
+        public abstract bool CanMurder(PlayerControl target);
+        public abstract bool OnMurdered(PlayerControl target);
+        public abstract bool OnMurderPlayer(PlayerControl target);
     }
 }
