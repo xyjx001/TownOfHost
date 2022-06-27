@@ -13,6 +13,8 @@ namespace TownOfHost
         {
             //注:この時点では役職は設定されていません。
             PlayerState.Init();
+            CustomRoleManager.CreateInstance()
+                .InitAllInstance();
 
             Main.currentWinner = CustomWinner.Default;
             Main.CustomWinTrigger = false;
@@ -446,6 +448,7 @@ namespace TownOfHost
                     if (pc.Is(CustomRoles.Mayor))
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                 }
+                CustomRoleManager.Instance.OnStartGame();
 
                 //役職の人数を戻す
                 RoleOptionsData roleOpt = PlayerControl.GameOptions.RoleOptions;
