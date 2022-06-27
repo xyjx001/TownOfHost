@@ -41,6 +41,8 @@ namespace TownOfHost
         /// </summary>
         /// <returns>RPCを処理したかどうか 処理した=>true, 処理してない=>false trueを返した時点でRPCの処理が終了します。</returns>
         public abstract bool HandleRpc(byte callId, MessageReader reader);
+
+        public abstract RolePlayer SetRole(PlayerControl player);
     }
     public abstract class RoleBase<T, P> : RoleClass
     where T : RoleBase<T, P>, new()
@@ -72,6 +74,13 @@ namespace TownOfHost
         #region PlayerList
         public override List<RolePlayer> RolePlayers => Players.OfType<RolePlayer>().ToList();
         public List<P> Players;
+        public override RolePlayer SetRole(PlayerControl player)
+        {
+            P rolePlayer = new();
+            rolePlayer.player = player;
+            Players.Add(rolePlayer);
+            return rolePlayer;
+        }
         #endregion
     }
 
