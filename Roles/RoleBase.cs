@@ -8,6 +8,7 @@ namespace TownOfHost
 {
     public abstract class RoleBase
     {
+        #region singleton
         public static RoleBase Instance
         {
             get
@@ -16,7 +17,22 @@ namespace TownOfHost
                 return _instance;
             }
         }
+        public static bool InstanceExists => _instance != null;
+        public static bool TryGetInstance(out RoleBase Instance)
+        {
+            Instance = _instance;
+            return InstanceExists;
+        }
+        private RoleBase() { }
+        public RoleBase GetOrCreateInstance()
+        {
+            if (InstanceExists) return _instance;
+            CreateInstance();
+            return InstanceExists ? _instance : throw new NotImplementedException("CreateInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
+        }
+        public abstract void CreateInstance();
         public static RoleBase _instance;
+        #endregion
 
         public List<RolePlayer> Players;
         public abstract void Init();
