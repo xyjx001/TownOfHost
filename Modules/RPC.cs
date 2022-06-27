@@ -197,6 +197,10 @@ namespace TownOfHost
                     if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
                         Main.currentDousingTarget = dousingTargetId;
                     break;
+                default:
+                    // 上のいずれにも当てはまらなかった場合に実行
+                    CustomRoleManager.Instance.HandleRpc(callId, reader);
+                    break;
             }
         }
     }
