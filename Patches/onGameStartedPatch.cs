@@ -383,7 +383,25 @@ namespace TownOfHost
                 Main.BountyTargets = new Dictionary<byte, PlayerControl>();
                 Main.BountyTimer = new Dictionary<byte, float>();
                 //Spyの名前色変更処理
-                if (Spy.IsRoleEnabled) Spy.SetNameColorData();
+                if (Spy.ApplyDesyncForImpostors)
+                {
+                    List<PlayerControl> looplist = new();
+                    foreach (var pc in PlayerControl.AllPlayerControls)
+                    {
+                        CustomRoles role = pc.GetCustomRole();
+                        if (role.IsImpostor() || role == CustomRoles.Spy) looplist.Add(pc);
+                    }
+
+                    foreach (var seer in looplist)
+                    {
+                        if (seer.Is(CustomRoles.Spy)) continue;
+                        foreach (var target in looplist)
+                        {
+                            NameColorManager.Instance.RpcAdd(seer.PlayerId, target.PlayerId, "#ff0000");
+                        }
+                    }
+                }
+                //Dictionaryの初期化など
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
                     pc.ResetKillCooldown();
@@ -564,16 +582,53 @@ namespace TownOfHost
             public static void Release()
             {
                 sender.StartMessage(-1);
-                foreach (var pair in StoragedData)
+                if (Spy.ApplyDesyncForImpostors)
                 {
-                    //この"canContinue"は"continue;"以下の処理を続行できるかどうかを指している。
-                    bool canContinue = Spy.Patch_RpcSetRoleReplacer_Release(pair.Item1, pair.Item2, sender, StoragedData);
-                    if (!canContinue) continue;
-
-                    pair.Item1.SetRole(pair.Item2);
-                    sender.StartRpc(pair.Item1.NetId, RpcCalls.SetRole)
-                        .Write((ushort)pair.Item2)
-                        .EndRpc();
+                    // インポスターは自分のみインポスター
+                    //
+                    foreach (var pair in StoragedData)
+                    {
+                        var target = pair.Item1;
+                        var roleType = pair.Item2;
+                        if (roleType is RoleTypes.Impostor or RoleTypes.Shapeshifter)
+                        {
+                            foreach (var seer in PlayerControl.AllPlayerControls)
+                            {
+                                if (seer == target || seer.PlayerId == 0) continue;
+                                var seerPair = StoragedData.Where(pair => pair.Item1.PlayerId == seer.PlayerId).FirstOrDefault();
+                                if (seerPair.Item2 is RoleTypes.Impostor or RoleTypes.Shapeshifter)
+                                {
+                                    //相方限定RPC
+                                    sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, seer.GetClientId())
+                                        .Write((ushort)RoleTypes.Scientist)
+                                        .EndRpc();
+                                }
+                            }
+                            //一般用RPC
+                            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetRole, -1)
+                                .Write((ushort)roleType)
+                                .EndRpc();
+                            target.SetRole(roleType);
+                            // -1のAutoStartRpcをした後のため、今開いているMessageのtargetは-1で確定
+                        }
+                        else
+                        {
+                            target.SetRole(roleType);
+                            sender.StartRpc(target.NetId, RpcCalls.SetRole)
+                                .Write((ushort)roleType)
+                                .EndRpc();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var pair in StoragedData)
+                    {
+                        pair.Item1.SetRole(pair.Item2);
+                        sender.StartRpc(pair.Item1.NetId, RpcCalls.SetRole)
+                            .Write((ushort)pair.Item2)
+                            .EndRpc();
+                    }
                 }
                 sender.EndMessage();
                 doReplace = false;
