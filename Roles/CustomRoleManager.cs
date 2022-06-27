@@ -67,13 +67,13 @@ namespace TownOfHost
         }
 
         // RolePlayers内の関数呼び出し
-        public void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)
-            => GetRolePlayer(player.PlayerId).OnReportDeadBody(target);
+        public bool OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)
+            => (GetRolePlayer(player.PlayerId)?.OnReportDeadBody(target)).GetValueOrDefault();
         public bool CanMurder(PlayerControl player, PlayerControl target)
-            => GetRolePlayer(player.PlayerId).CanMurder(target);
+            => (GetRolePlayer(player.PlayerId)?.CanMurder(target)).GetValueOrDefault();
         public bool OnMurdered(PlayerControl player, PlayerControl murderer)
-            => GetRolePlayer(player.PlayerId).OnMurdered(murderer);
+            => (GetRolePlayer(player.PlayerId)?.OnMurdered(murderer)).GetValueOrDefault();
         public bool OnMurderPlayer(PlayerControl player, PlayerControl target)
-            => GetRolePlayer(player.PlayerId).OnMurderPlayer(target);
+            => (GetRolePlayer(player.PlayerId)?.OnMurderPlayer(target)).GetValueOrDefault();
     }
 }
