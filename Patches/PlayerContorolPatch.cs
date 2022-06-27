@@ -126,7 +126,7 @@ namespace TownOfHost
 
                     //==========役職クラス==========//
                     default:
-                        if (CustomRoleManager.Instance.OnMurderPlayer(killer, target)) return false;
+                        if (CustomRoleManager.Instance.CanMurder(killer, target)) return false;
                         break;
                 }
             }
@@ -198,7 +198,7 @@ namespace TownOfHost
 
                 //==========役職クラス==========//
                 default:
-                    if (CustomRoleManager.Instance.OnMurderPlayer(target, killer)) return false;
+                    if (CustomRoleManager.Instance.OnMurdered(target, killer)) return false;
                     break;
             }
 
