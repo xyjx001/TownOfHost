@@ -33,7 +33,7 @@ namespace TownOfHost
         public abstract void CreateInstance();
         public static RoleBase _instance;
         #endregion
-
+        public CustomRoles RoleId { get; protected set; }
         public List<RolePlayer> Players;
         public abstract void Init();
         public abstract void OnStartGame();
