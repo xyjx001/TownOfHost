@@ -39,5 +39,9 @@ namespace TownOfHost
         public void InitAllInstance()
         {
         }
+        public void OnStartGame() => RoleInstances.ForEach(role => role.OnStartGame());
+        public void OnFixedUpdate() => RoleInstances.ForEach(role => role.OnFixedUpdate());
+        public void OnStartMeeting() => RoleInstances.ForEach(role => role.OnStartMeeting());
+        public void OnEndMeeting() => RoleInstances.ForEach(role => role.OnEndMeeting());
     }
 }
