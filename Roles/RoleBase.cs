@@ -39,11 +39,30 @@ namespace TownOfHost
         #endregion
         public CustomRoles RoleId { get; protected set; }
         public List<RolePlayer> Players;
+        /// <summary>
+        /// インスタンス生成時に実行されます。
+        /// RoleIdの設定処理や、変数の初期化処理を入れてください。
+        /// </summary>
         public abstract void CreateInstance();
-        public abstract void Init();
+        /// <summary>
+        /// 役職割り当てが終わった時に実行されます。
+        /// NameColorManagerの設定など、役職が決まらないとできない初期化処理を入れてください。
+        /// </summary>
         public abstract void OnStartGame();
+        /// <summary>
+        /// FixedUpdate毎に実行されます。
+        /// 常時実行していなければならない処理を入れてください。
+        /// </summary>
         public abstract void OnFixedUpdate();
+        /// <summary>
+        /// 会議開始時に実行されます。
+        /// 会議開始によるリセット処理などを入れてください。
+        /// </summary>
         public abstract void OnStartMeeting();
+        /// <summary>
+        /// 会議終了時に実行されます。
+        /// 会議終了によるリセット処理などを入れてください。
+        /// </summary>
         public abstract void OnEndMeeting();
     }
 
@@ -52,11 +71,46 @@ namespace TownOfHost
         public RoleBase RoleInstance;
         public PlayerControl player;
 
+        /// <summary>
+        /// インスタンス生成時に実行されます。
+        /// 変数の初期化処理などを入れてください。
+        /// </summary>
         public abstract void Init();
+        /// <summary>
+        /// FixedUpdate毎に実行されます。
+        /// 常時実行していなければならない処理を入れてください。
+        /// </summary>
         public abstract void OnFixedUpdate();
+        /// <summary>
+        /// プレイヤーが会議を開始しようとしたときに実行されます。
+        /// 死体通報時の処理や、会議を開始できるかの判定処理などを入れてください。
+        /// </summary>
+        /// <param name="target">通報した死体のPlayerInfo ボタンの場合はnullになります。</param>
+        /// <returns>false: 会議処理をキャンセルしない true: 会議をキャンセルする</returns>
         public abstract bool OnReportDeadBody(GameData.PlayerInfo target);
+        /// <summary>
+        /// プレイヤーがほかのプレイヤーをキルしようとしたときに実行されます。
+        /// キルが可能かを判定し、キャンセル処理を入れてください。
+        /// 実行順は"CanMurder"=>"OnMurdered"=>"OnMurderPlayer"です。
+        /// </summary>
+        /// <param name="target">キルしようとしたプレイヤー</param>
+        /// <returns>false: キルをキャンセルしない true: キルをキャンセルする</returns>
         public abstract bool CanMurder(PlayerControl target);
-        public abstract bool OnMurdered(PlayerControl target);
+        /// <summary>
+        /// プレイヤーがほかのプレイヤーにキルされそうになったときに実行されます。
+        /// キルのキャンセル処理や、キルされた時の処理を入れてください。
+        /// 実行順は"CanMurder"=>"OnMurdered"=>"OnMurderPlayer"です。
+        /// </summary>
+        /// <param name="murderer">自分をキルしようとしたプレイヤー</param>
+        /// <returns>false: キルをキャンセルしない true: キルをキャンセルする</returns>
+        public abstract bool OnMurdered(PlayerControl murderer);
+        /// <summary>
+        /// プレイヤーがほかのプレイヤーをキルしようとしたときに実行されます。
+        /// プレイヤーをキルした時の処理を書いてください。
+        /// 実行順は"CanMurder"=>"OnMurdered"=>"OnMurderPlayer"です。
+        /// </summary>
+        /// <param name="target">キルしようとしたプレイヤー</param>
+        /// <returns>false: キルをキャンセルしない true: キルをキャンセルする</returns>
         public abstract bool OnMurderPlayer(PlayerControl target);
     }
 }

@@ -57,8 +57,8 @@ namespace TownOfHost
             => GetRolePlayer(player.PlayerId).OnReportDeadBody(target);
         public bool CanMurder(PlayerControl player, PlayerControl target)
             => GetRolePlayer(player.PlayerId).CanMurder(target);
-        public bool OnMurdered(PlayerControl player, PlayerControl target)
-            => GetRolePlayer(player.PlayerId).OnMurdered(target);
+        public bool OnMurdered(PlayerControl player, PlayerControl murderer)
+            => GetRolePlayer(player.PlayerId).OnMurdered(murderer);
         public bool OnMurderPlayer(PlayerControl player, PlayerControl target)
             => GetRolePlayer(player.PlayerId).OnMurderPlayer(target);
     }
