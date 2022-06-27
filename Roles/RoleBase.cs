@@ -32,11 +32,6 @@ namespace TownOfHost
         }
         private static RoleBase _instance;
         #endregion
-        #region OptionGetter
-        public abstract bool IsRoleEnabled { get; }
-        public abstract float RoleChance { get; }
-        public abstract int RoleCount { get; }
-        #endregion
         public CustomRoles RoleId { get; protected set; }
         public List<RolePlayer> Players;
         /// <summary>
