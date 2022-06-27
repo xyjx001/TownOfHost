@@ -40,9 +40,20 @@ namespace TownOfHost
         public void InitAllInstance()
         {
         }
+        // RoleInstances/Players共通の呼び出し
+        public void OnFixedUpdate()
+        {
+            RoleInstances.ForEach(role => role.OnFixedUpdate());
+            RolePlayers.ForEach(rp => rp.OnFixedUpdate());
+        }
+        // RoleInstances内の関数呼び出し
         public void OnStartGame() => RoleInstances.ForEach(role => role.OnStartGame());
-        public void OnFixedUpdate() => RoleInstances.ForEach(role => role.OnFixedUpdate());
         public void OnStartMeeting() => RoleInstances.ForEach(role => role.OnStartMeeting());
         public void OnEndMeeting() => RoleInstances.ForEach(role => role.OnEndMeeting());
+
+        // RolePlayers内の関数呼び出し
+        public void OnReportDeadBody(PlayerControl player, GameData.PlayerInfo target)
+            => RolePlayers.Where(rp => rp.player == player).FirstOrDefault()
+                    .OnReportDeadBody(target);
     }
 }
