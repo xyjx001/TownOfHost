@@ -30,7 +30,6 @@ namespace TownOfHost
             CreateInstance();
             return InstanceExists ? _instance : throw new NotImplementedException("CreateInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
         }
-        public abstract void CreateInstance();
         public static RoleBase _instance;
         #endregion
         #region OptionGetter
@@ -40,6 +39,7 @@ namespace TownOfHost
         #endregion
         public CustomRoles RoleId { get; protected set; }
         public List<RolePlayer> Players;
+        public abstract void CreateInstance();
         public abstract void Init();
         public abstract void OnStartGame();
         public abstract void OnFixedUpdate();
