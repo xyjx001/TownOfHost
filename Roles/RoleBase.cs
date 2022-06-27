@@ -23,14 +23,14 @@ namespace TownOfHost
             Instance = _instance;
             return InstanceExists;
         }
-        private RoleBase() { }
+        protected RoleBase() { }
         public RoleBase GetOrCreateInstance()
         {
             if (InstanceExists) return _instance;
             CreateInstance();
             return InstanceExists ? _instance : throw new NotImplementedException("CreateInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
         }
-        private static RoleBase _instance;
+        protected static RoleBase _instance;
         #endregion
         public CustomRoles RoleId { get; protected set; }
         public List<RolePlayer> Players;
