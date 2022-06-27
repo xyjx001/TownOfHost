@@ -123,6 +123,16 @@ namespace TownOfHost
                             return false;
                         }
                         break;
+
+                    //==========役職クラス==========//
+                    default:
+                        var rolePlayer = CustomRoleManager.Instance.GetRolePlayer(killer.PlayerId);
+                        if (rolePlayer != null)
+                        {
+                            bool doCancel = rolePlayer.CanMurder(target);
+                            if (doCancel) return false;
+                        }
+                        break;
                 }
             }
 
@@ -188,6 +198,16 @@ namespace TownOfHost
                         if (dataCountBefore != NameColorManager.Instance.NameColors.Count)
                             Utils.NotifyRoles();
                         return false;
+                    }
+                    break;
+
+                //==========役職クラス==========//
+                default:
+                    var rolePlayer = CustomRoleManager.Instance.GetRolePlayer(target.PlayerId);
+                    if (rolePlayer != null)
+                    {
+                        bool doCancel = rolePlayer.OnMurdered(killer);
+                        if (doCancel) return false;
                     }
                     break;
             }
@@ -314,6 +334,16 @@ namespace TownOfHost
                                 killer.RpcMurderPlayerV2(target);
 
                             return false;
+                        }
+                        break;
+
+                    //==========役職クラス==========//
+                    default:
+                        var rolePlayer = CustomRoleManager.Instance.GetRolePlayer(killer.PlayerId);
+                        if (rolePlayer != null)
+                        {
+                            bool doCancel = rolePlayer.OnMurderPlayer(target);
+                            if (doCancel) return false;
                         }
                         break;
                 }
