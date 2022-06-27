@@ -16,6 +16,7 @@ namespace TownOfHost
 
             NameColorManager.Begin();
             Options.Load();
+            CustomRoleManager.RemoveInstance();
         }
     }
     [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
