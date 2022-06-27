@@ -30,7 +30,7 @@ namespace TownOfHost
             CreateInstance();
             return InstanceExists ? _instance : throw new NotImplementedException("CreateInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
         }
-        public static RoleBase _instance;
+        private static RoleBase _instance;
         #endregion
         #region OptionGetter
         public abstract bool IsRoleEnabled { get; }

@@ -33,7 +33,7 @@ namespace TownOfHost
         {
             _instance = null;
         }
-        public static CustomRoleManager _instance;
+        private static CustomRoleManager _instance;
         #endregion
         public List<RoleBase> RoleInstances;
         public List<RolePlayer> RolePlayers;
