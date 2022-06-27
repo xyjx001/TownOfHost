@@ -36,6 +36,7 @@ namespace TownOfHost
         public static CustomRoleManager _instance;
         #endregion
         public List<RoleBase> RoleInstances;
+        public List<RolePlayer> RolePlayers;
         public void InitAllInstance()
         {
         }
