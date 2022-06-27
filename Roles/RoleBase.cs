@@ -69,6 +69,9 @@ namespace TownOfHost
         }
         protected static T _instance;
         #endregion
+        #region PlayerList
+        public List<P> Players;
+        #endregion
     }
 
     public abstract class RolePlayer
