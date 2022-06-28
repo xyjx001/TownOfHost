@@ -74,10 +74,12 @@ namespace TownOfHost
         #region PlayerList
         public override List<RolePlayer> RolePlayers => Players.OfType<RolePlayer>().ToList();
         public List<P> Players;
-        public override RolePlayer SetRole(PlayerControl player)
+        public override RolePlayer SetRole(PlayerControl target)
         {
-            P rolePlayer = new();
-            rolePlayer.player = player;
+            var rolePlayer = new P()
+            {
+                player = target
+            };
             Players.Add(rolePlayer);
             return rolePlayer;
         }
