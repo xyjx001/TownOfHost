@@ -42,6 +42,10 @@ namespace TownOfHost
         public void InitAllInstance()
         {
         }
+        public void SetRolePlayer(PlayerControl player, CustomRoles role)
+        {
+            GetRoleInstance(role)?.SetRole(player);
+        }
         // RoleInstances/Players共通の呼び出し
         public void OnFixedUpdate()
         {
