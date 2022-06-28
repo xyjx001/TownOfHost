@@ -35,9 +35,9 @@ namespace TownOfHost
         }
         private static CustomRoleManager _instance;
         #endregion
-        public List<RoleClass> RoleInstances;
+        public List<RoleBase> RoleInstances;
         public List<RolePlayer> RolePlayers;
-        public RoleClass GetRoleInstance(CustomRoles roleId) => RoleInstances.Where(role => role.RoleId == roleId).FirstOrDefault();
+        public RoleBase GetRoleInstance(CustomRoles roleId) => RoleInstances.Where(role => role.RoleId == roleId).FirstOrDefault();
         public RolePlayer GetRolePlayer(byte playerId) => RolePlayers.Where(rp => rp.player.PlayerId == playerId).FirstOrDefault();
         public void InitAllInstance()
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace TownOfHost
 {
-    public abstract class RoleClass
+    public abstract class RoleBase
     {
         public CustomRoles RoleId { get; protected set; }
         public abstract List<RolePlayer> RolePlayers { get; }
@@ -44,8 +44,8 @@ namespace TownOfHost
 
         public abstract RolePlayer SetRole(PlayerControl player);
     }
-    public abstract class RoleBase<T, P> : RoleClass
-    where T : RoleBase<T, P>, new()
+    public abstract class CustomRole<T, P> : RoleBase
+    where T : CustomRole<T, P>, new()
     where P : RolePlayer, new()
     {
         #region singleton
@@ -86,7 +86,7 @@ namespace TownOfHost
 
     public abstract class RolePlayer
     {
-        public RoleClass RoleInstance;
+        public RoleBase RoleInstance;
         public PlayerControl player;
 
         /// <summary>
