@@ -78,7 +78,8 @@ namespace TownOfHost
         {
             var rolePlayer = new P()
             {
-                player = target
+                player = target,
+                RoleInstance = this
             };
             Players.Add(rolePlayer);
             return rolePlayer;
