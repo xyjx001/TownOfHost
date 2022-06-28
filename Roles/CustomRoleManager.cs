@@ -35,7 +35,6 @@ namespace TownOfHost
         }
         public static void RemoveInstance()
         {
-            _instance.RoleInstances.ForEach(role => role.RemoveInstance());
             _instance = null;
         }
         private static CustomRoleManager _instance;

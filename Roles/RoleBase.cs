@@ -42,47 +42,18 @@ namespace TownOfHost
         /// <returns>RPCを処理したかどうか 処理した=>true, 処理してない=>false trueを返した時点でRPCの処理が終了します。</returns>
         public abstract bool HandleRpc(byte callId, MessageReader reader);
 
-        public abstract void CreateInstance();
-        public abstract void RemoveInstance();
+
         public abstract RolePlayer SetRole(PlayerControl player);
     }
-    public abstract class CustomRole<T, P> : RoleBase
-    where T : CustomRole<T, P>, new()
-    where P : RolePlayer, new()
+    public abstract class CustomRole<T> : RoleBase
+    where T : RolePlayer, new()
     {
-        #region singleton
-        public static T Instance
-        {
-            get
-            {
-                if (_instance == null) Logger.Error("Instance Is Not Exists", "RoleBase");
-                return _instance;
-            }
-        }
-        public static bool InstanceExists => _instance != null;
-        public static bool TryGetInstance(out T Instance)
-        {
-            Instance = _instance;
-            return InstanceExists;
-        }
-        public override void CreateInstance()
-        {
-            InitInstance();
-            if (!InstanceExists)
-                throw new NotImplementedException("InitInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
-        }
-        public override void RemoveInstance()
-        {
-            _instance = null;
-        }
-        protected static T _instance;
-        #endregion
         #region PlayerList
         public override List<RolePlayer> RolePlayers => Players.OfType<RolePlayer>().ToList();
-        public List<P> Players;
+        public List<T> Players;
         public override RolePlayer SetRole(PlayerControl target)
         {
-            var rolePlayer = new P()
+            var rolePlayer = new T()
             {
                 player = target,
                 RoleInstance = this
