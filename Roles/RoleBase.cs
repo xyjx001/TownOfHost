@@ -14,7 +14,7 @@ namespace TownOfHost
         /// インスタンス生成時に実行されます。
         /// RoleIdの設定処理や、変数の初期化処理を入れてください。
         /// </summary>
-        public abstract void CreateInstance();
+        public abstract void InitInstance();
         /// <summary>
         /// 役職割り当てが終わった時に実行されます。
         /// NameColorManagerの設定など、役職が決まらないとできない初期化処理を入れてください。
@@ -42,6 +42,8 @@ namespace TownOfHost
         /// <returns>RPCを処理したかどうか 処理した=>true, 処理してない=>false trueを返した時点でRPCの処理が終了します。</returns>
         public abstract bool HandleRpc(byte callId, MessageReader reader);
 
+        public abstract void CreateInstance();
+        public abstract void RemoveInstance();
         public abstract RolePlayer SetRole(PlayerControl player);
     }
     public abstract class CustomRole<T, P> : RoleBase
@@ -63,11 +65,15 @@ namespace TownOfHost
             Instance = _instance;
             return InstanceExists;
         }
-        public T GetOrCreateInstance()
+        public override void CreateInstance()
         {
-            if (InstanceExists) return _instance;
-            CreateInstance();
-            return InstanceExists ? _instance : throw new NotImplementedException("CreateInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
+            InitInstance();
+            if (!InstanceExists)
+                throw new NotImplementedException("InitInstanceメソッドが正常に実装されていません。_instanceがnullのままです。");
+        }
+        public override void RemoveInstance()
+        {
+            _instance = null;
         }
         protected static T _instance;
         #endregion

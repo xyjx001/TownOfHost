@@ -23,7 +23,11 @@ namespace TownOfHost
             Instance = _instance;
             return InstanceExists;
         }
-        private CustomRoleManager() { }
+        private CustomRoleManager()
+        {
+            RoleInstances = new List<RoleBase>();
+            RolePlayers = new List<RolePlayer>();
+        }
         public static CustomRoleManager CreateInstance()
         {
             if (!InstanceExists) _instance = new CustomRoleManager();
@@ -31,6 +35,7 @@ namespace TownOfHost
         }
         public static void RemoveInstance()
         {
+            _instance.RoleInstances.ForEach(role => role.RemoveInstance());
             _instance = null;
         }
         private static CustomRoleManager _instance;
@@ -41,6 +46,8 @@ namespace TownOfHost
         public RolePlayer GetRolePlayer(byte playerId) => RolePlayers.Where(rp => rp.player.PlayerId == playerId).FirstOrDefault();
         public void InitAllInstance()
         {
+            RoleInstances.Clear();
+            RolePlayers.Clear();
         }
         public void SetRolePlayer(PlayerControl player, CustomRoles role)
         {
