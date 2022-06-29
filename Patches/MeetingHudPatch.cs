@@ -9,6 +9,12 @@ namespace TownOfHost
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CheckForEndVoting))]
     class CheckForEndVotingPatch
     {
+<<<<<<< HEAD
+=======
+        public static bool recall = false;
+        public static PlayerControl ExliedPlayer = null;
+        public static bool isExiledNekomata = false;
+>>>>>>> 95111587be06895886b90c6beae5321238652d20
         public static bool Prefix(MeetingHud __instance)
         {
             if (!AmongUsClient.Instance.AmHost) return true;
@@ -41,7 +47,7 @@ namespace TownOfHost
                 }
 
                 MeetingHud.VoterState[] states;
-                GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
+                GameData.PlayerInfo exiledPlayerInfo = PlayerControl.LocalPlayer.Data;
                 bool tie = false;
 
                 List<MeetingHud.VoterState> statesList = new();
@@ -133,11 +139,26 @@ namespace TownOfHost
                     Logger.Info($"exileId: {exileId}, max: {max}票", "Vote");
                 }
 
+<<<<<<< HEAD
                 Logger.Info($"追放者決定: {exileId}({Utils.GetVoteName(exileId)})", "Vote");
                 exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
 
                 __instance.RpcVotingComplete(states, exiledPlayer, tie); //RPC
                 if (!Utils.GetPlayerById(exileId).Is(CustomRoles.Witch))
+=======
+                Logger.info("追放者決定: " + exileId);
+                exiledPlayerInfo = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+                PlayerControl exiledPlayer = exiledPlayerInfo.Object;
+
+                if (exiledPlayer.isNiceNekomata() || exiledPlayer.isEvilNekomata())
+                {
+                    ExliedPlayer = exiledPlayer;
+                    recall = true;
+                }
+
+                __instance.RpcVotingComplete(states, exiledPlayerInfo, tie); //RPC
+                foreach (var p in main.SpelledPlayer)
+>>>>>>> 95111587be06895886b90c6beae5321238652d20
                 {
                     foreach (var p in Main.SpelledPlayer)
                         Main.AfterMeetingDeathPlayers.TryAdd(p.PlayerId, PlayerState.DeathReason.Spell);
@@ -149,13 +170,13 @@ namespace TownOfHost
                 {
                     FixedUpdatePatch.LoversSuicide(exiledPlayer.PlayerId, true);
                 }
-                foreach (var p in main.RevengeTarget)
+                /*foreach (var p in main.RevengeTarget)
                 {
                     PlayerState.setDeathReason(p.PlayerId, PlayerState.DeathReason.Revenge);
                     main.IgnoreReportPlayers.Add(p.PlayerId);
                     p.RpcMurderPlayer(p);
                     recall = true;
-                }
+                }*/
 
                 //霊界用暗転バグ対処
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -371,7 +392,42 @@ namespace TownOfHost
     {
         public static void Postfix()
         {
+<<<<<<< HEAD
             Logger.Info("------------会議終了------------", "Phase");
+=======
+            Logger.info("会議が終了", "Phase");
+            if (!AmongUsClient.Instance.AmHost) return;
+            var ExiledPlayer = CheckForEndVotingPatch.ExliedPlayer;
+
+            if (CheckForEndVotingPatch.isExiledNekomata)
+            {
+                ExiledPlayer.RpcMurderPlayer(ExiledPlayer.SelectRevengePlayer());
+                main.IgnoreReportPlayers.Add(ExiledPlayer.PlayerId);
+                PlayerState.setDeathReason(ExiledPlayer.PlayerId, PlayerState.DeathReason.Revenge);
+                CheckForEndVotingPatch.isExiledNekomata = false;
+            }
+            if (CheckForEndVotingPatch.recall)
+            {
+                foreach (var pc in PlayerControl.AllPlayerControls)
+                {
+                    if (!pc.Data.IsDead)
+                    {
+                        new LateTask(() =>
+                        {
+                            pc.ReportDeadBody(Utils.getPlayerById(main.IgnoreReportPlayers.Last()).Data);
+                        },
+                            0.2f, "Recall Meeting");
+                        new LateTask(() =>
+                        {
+                            MeetingHud.Instance.RpcClose();
+                            CheckForEndVotingPatch.recall = false;
+                        },
+                            0.5f, "Cancel Meeting");
+                        break;
+                    }
+                }
+            }
+>>>>>>> 95111587be06895886b90c6beae5321238652d20
         }
     }
 }
