@@ -1,6 +1,7 @@
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using static TownOfHost.Translator;
 
 namespace TownOfHost
 {
@@ -13,7 +14,7 @@ namespace TownOfHost
         private static ToggleButtonBehaviour JapaneseRoleName;
         public static float xOffset = 1.75f;
         public static float yOffset = -0.25f;
-        private static void updateToggle(ToggleButtonBehaviour button, string text, bool on)
+        private static void UpdateToggle(ToggleButtonBehaviour button, string text, bool on)
         {
             if (button == null || button.gameObject == null) return;
 
@@ -22,7 +23,7 @@ namespace TownOfHost
             button.Text.text = $"{text}{(on ? "On" : "Off")}";
             if (button.Rollover) button.Rollover.ChangeOutColor(color);
         }
-        private static ToggleButtonBehaviour createCustomToggle(string text, bool on, Vector3 offset, UnityEngine.Events.UnityAction onClick, OptionsMenuBehaviour __instance)
+        private static ToggleButtonBehaviour CreateCustomToggle(string text, bool on, Vector3 offset, UnityEngine.Events.UnityAction onClick, OptionsMenuBehaviour __instance)
         {
             if (__instance.CensorChatButton != null)
             {
@@ -31,7 +32,7 @@ namespace TownOfHost
                 PassiveButton passiveButton = button.GetComponent<PassiveButton>();
                 passiveButton.OnClick = new Button.ButtonClickedEvent();
                 passiveButton.OnClick.AddListener(onClick);
-                updateToggle(button, text, on);
+                UpdateToggle(button, text, on);
 
                 return button;
             }
@@ -52,35 +53,43 @@ namespace TownOfHost
                 __instance.EnableFriendInvitesButton.transform.localPosition = origin.Value + Vector3.right * 3.125f + Vector3.up * 0.2f;
                 __instance.EnableFriendInvitesButton.transform.localScale = Vector3.one * 0.7f;
             }
-
-            if ((HideCodesButton == null || HideCodesButton.gameObject == null))
+            if (__instance.ColorBlindButton != null)
             {
-                HideCodesButton = createCustomToggle("Hide Game Codes: ", main.HideCodes.Value, new Vector3(1.375f, 0.2f, 0), (UnityEngine.Events.UnityAction)HideCodesButtonToggle, __instance);
+                if (origin == null) origin = __instance.ColorBlindButton.transform.localPosition;// + Vector3.up * 0.075f;
+                __instance.ColorBlindButton.transform.localPosition = origin.Value + Vector3.right * 3.125f + Vector3.up * 0.83f;
+                __instance.ColorBlindButton.transform.localScale = Vector3.one * 0.7f;
+            }
+            if (__instance.StreamerModeButton != null)
+                __instance.StreamerModeButton.transform.localScale = Vector3.one * 0.0f;
+
+            if (HideCodesButton == null || HideCodesButton.gameObject == null)
+            {
+                HideCodesButton = CreateCustomToggle($"{GetString("HideGameCodes")}: ", Main.HideCodes.Value, new Vector3(1.375f, 0.2f, 0), (UnityEngine.Events.UnityAction)HideCodesButtonToggle, __instance);
 
                 void HideCodesButtonToggle()
                 {
-                    main.HideCodes.Value = !main.HideCodes.Value;
-                    updateToggle(HideCodesButton, "Hide Game Codes: ", main.HideCodes.Value);
+                    Main.HideCodes.Value = !Main.HideCodes.Value;
+                    UpdateToggle(HideCodesButton, $"{GetString("HideGameCodes")}: ", Main.HideCodes.Value);
                 }
             }
-            if ((ForceJapanese == null || ForceJapanese?.gameObject == null))
+            if (ForceJapanese == null || ForceJapanese?.gameObject == null)
             {
-                ForceJapanese = createCustomToggle("Force Japanese: ", main.ForceJapanese.Value, new Vector3(-0.375f, yOffset + 0.1f, 0), (UnityEngine.Events.UnityAction)ForceJapaneseButtonToggle, __instance);
+                ForceJapanese = CreateCustomToggle("Force Japanese: ", Main.ForceJapanese.Value, new Vector3(-0.375f, yOffset + 0.1f, 0), (UnityEngine.Events.UnityAction)ForceJapaneseButtonToggle, __instance);
 
                 void ForceJapaneseButtonToggle()
                 {
-                    main.ForceJapanese.Value = !main.ForceJapanese.Value;
-                    updateToggle(ForceJapanese, "Force Japanese: ", main.ForceJapanese.Value);
+                    Main.ForceJapanese.Value = !Main.ForceJapanese.Value;
+                    UpdateToggle(ForceJapanese, "Force Japanese: ", Main.ForceJapanese.Value);
                 }
             }
-            if ((JapaneseRoleName == null || JapaneseRoleName.gameObject == null))
+            if (JapaneseRoleName == null || JapaneseRoleName.gameObject == null)
             {
-                JapaneseRoleName = createCustomToggle("Japanese Role Name: ", main.JapaneseRoleName.Value, new Vector3(1.375f, yOffset + 0.1f, 0), (UnityEngine.Events.UnityAction)LangModeButtonToggle, __instance);
+                JapaneseRoleName = CreateCustomToggle("Japanese Role Name: ", Main.JapaneseRoleName.Value, new Vector3(1.375f, yOffset + 0.1f, 0), (UnityEngine.Events.UnityAction)LangModeButtonToggle, __instance);
 
                 void LangModeButtonToggle()
                 {
-                    main.JapaneseRoleName.Value = !main.JapaneseRoleName.Value;
-                    updateToggle(JapaneseRoleName, "Japanese Role Name: ", main.JapaneseRoleName.Value);
+                    Main.JapaneseRoleName.Value = !Main.JapaneseRoleName.Value;
+                    UpdateToggle(JapaneseRoleName, "Japanese Role Name: ", Main.JapaneseRoleName.Value);
                 }
             }
         }

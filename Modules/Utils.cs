@@ -1,49 +1,72 @@
+using System.Text.RegularExpressions;
 using System;
-using System.Linq;
-using UnityEngine;
-using Hazel;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Hazel;
+using UnityEngine;
 using static TownOfHost.Translator;
+
 namespace TownOfHost
 {
     public static class Utils
     {
-        public static string getOnOff(bool value) => value ? "ON" : "OFF";
-        public static int SetRoleCountToggle(int currentCount)
+        public static bool IsActive(SystemTypes type)
         {
-            if (currentCount > 0) return 0;
-            else return 1;
+            var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
+            Logger.Info($"SystemTypes:{type}", "SwitchSystem");
+            return SwitchSystem != null && SwitchSystem.IsActive;
         }
+        public static void SetVision(this GameOptionsData opt, PlayerControl player, bool HasImpVision)
+        {
+            if (HasImpVision)
+            {
+                opt.CrewLightMod = opt.ImpostorLightMod;
+                if (IsActive(SystemTypes.Electrical))
+                    opt.CrewLightMod *= 5;
+                return;
+            }
+            else
+            {
+                opt.ImpostorLightMod = opt.CrewLightMod;
+                if (IsActive(SystemTypes.Electrical))
+                    opt.ImpostorLightMod /= 5;
+                return;
+            }
+        }
+        public static string GetOnOff(bool value) => value ? "ON" : "OFF";
+        public static int SetRoleCountToggle(int currentCount) => currentCount > 0 ? 0 : 1;
         public static void SetRoleCountToggle(CustomRoles role)
         {
-            int count = Options.getRoleCount(role);
+            int count = Options.GetRoleCount(role);
             count = SetRoleCountToggle(count);
-            Options.setRoleCount(role, count);
+            Options.SetRoleCount(role, count);
         }
-        public static string getRoleName(CustomRoles role)
+        public static string GetRoleName(CustomRoles role)
         {
-            var lang = (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese || main.ForceJapanese.Value) &&
-                main.JapaneseRoleName.Value == true ? SupportedLangs.Japanese : SupportedLangs.English;
+            var lang = (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese || Main.ForceJapanese.Value) &&
+                Main.JapaneseRoleName.Value == true ? SupportedLangs.Japanese : SupportedLangs.English;
 
-            return getRoleName(role, lang);
+            return GetRoleName(role, lang);
         }
-        public static string getRoleName(CustomRoles role, SupportedLangs lang)
+        public static string GetRoleName(CustomRoles role, SupportedLangs lang)
         {
-            return getString(Enum.GetName(typeof(CustomRoles), role), lang);
+            return GetString(Enum.GetName(typeof(CustomRoles), role), lang);
         }
-        public static string getDeathReason(PlayerState.DeathReason status)
+        public static string GetDeathReason(PlayerState.DeathReason status)
         {
-            return getString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
+            return GetString("DeathReason." + Enum.GetName(typeof(PlayerState.DeathReason), status));
         }
-        public static Color getRoleColor(CustomRoles role)
+        public static Color GetRoleColor(CustomRoles role)
         {
-            if (!main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
+            if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
             ColorUtility.TryParseHtmlString(hexColor, out Color c);
             return c;
         }
-        public static string getRoleColorCode(CustomRoles role)
+        public static string GetRoleColorCode(CustomRoles role)
         {
-            if (!main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
+            if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
             return hexColor;
         }
         public static (string, Color) GetRoleText(PlayerControl player)
@@ -51,32 +74,19 @@ namespace TownOfHost
             string RoleText = "Invalid Role";
             Color TextColor = Color.red;
 
-            var cRole = player.getCustomRole();
+            var cRole = player.GetCustomRole();
             /*if (player.isLastImpostor())
             {
                 RoleText = $"{getRoleName(cRole)} ({getString("Last")})";
             }
             else*/
-            RoleText = getRoleName(cRole);
-            if (player.isSheriff())
-                RoleText += $" ({main.SheriffShotLimit[player.PlayerId]})";
+            RoleText = GetRoleName(cRole);
 
-            return (RoleText, getRoleColor(cRole));
+            return (RoleText, GetRoleColor(cRole));
         }
 
-        public static string getVitalText(byte player)
-        {
-            string text = null;
-            if (PlayerState.isDead[player])
-            {
-                text = getString("DeathReason." + PlayerState.getDeathReason(player));
-            }
-            else
-            {
-                text = getString("Alive");
-            }
-            return text;
-        }
+        public static string GetVitalText(byte player) =>
+            PlayerState.isDead[player] ? GetString("DeathReason." + PlayerState.GetDeathReason(player)) : GetString("Alive");
         public static (string, Color) GetRoleTextHideAndSeek(RoleTypes oRole, CustomRoles hRole)
         {
             string text = "Invalid";
@@ -95,11 +105,11 @@ namespace TownOfHost
                             text = "Crewmate";
                             color = Color.white;
                             break;
-                        case CustomRoles.Fox:
+                        case CustomRoles.HASFox:
                             text = "Fox";
                             color = Color.magenta;
                             break;
-                        case CustomRoles.Troll:
+                        case CustomRoles.HASTroll:
                             text = "Troll";
                             color = Color.green;
                             break;
@@ -108,7 +118,8 @@ namespace TownOfHost
             }
             return (text, color);
         }
-        public static bool hasTasks(GameData.PlayerInfo p, bool ForRecompute = true)
+
+        public static bool HasTasks(GameData.PlayerInfo p, bool ForRecompute = true)
         {
             //Tasksがnullの場合があるのでその場合タスク無しとする
             if (p.Tasks == null) return false;
@@ -121,15 +132,15 @@ namespace TownOfHost
             if (Options.CurrentGameMode == CustomGameMode.HideAndSeek)
             {
                 if (p.IsDead) hasTasks = false;
-                var hasRole = main.AllPlayerCustomRoles.TryGetValue(p.PlayerId, out var role);
+                var hasRole = Main.AllPlayerCustomRoles.TryGetValue(p.PlayerId, out var role);
                 if (hasRole)
                 {
-                    if (role == CustomRoles.Fox || role == CustomRoles.Troll) hasTasks = false;
+                    if (role is CustomRoles.HASFox or CustomRoles.HASTroll) hasTasks = false;
                 }
             }
             else
             {
-                var cRoleFound = main.AllPlayerCustomRoles.TryGetValue(p.PlayerId, out var cRole);
+                var cRoleFound = Main.AllPlayerCustomRoles.TryGetValue(p.PlayerId, out var cRole);
                 if (cRoleFound)
                 {
                     if (cRole == CustomRoles.Jester) hasTasks = false;
@@ -140,6 +151,7 @@ namespace TownOfHost
                     if (cRole == CustomRoles.Madmate) hasTasks = false;
                     if (cRole == CustomRoles.SKMadmate) hasTasks = false;
                     if (cRole == CustomRoles.Terrorist && ForRecompute) hasTasks = false;
+                    if (cRole == CustomRoles.Executioner) hasTasks = false;
                     if (cRole == CustomRoles.Impostor) hasTasks = false;
                     if (cRole == CustomRoles.Shapeshifter) hasTasks = false;
                     if (cRole == CustomRoles.Arsonist) hasTasks = false;
@@ -148,152 +160,251 @@ namespace TownOfHost
                     if (cRole == CustomRoles.MSchrodingerCat) hasTasks = false;
                     if (cRole == CustomRoles.EgoSchrodingerCat) hasTasks = false;
                     if (cRole == CustomRoles.Egoist) hasTasks = false;
+
                     //foreach (var pc in PlayerControl.AllPlayerControls)
                     //{
                     //if (cRole == CustomRoles.Sheriff && main.SheriffShotLimit[pc.PlayerId] == 0) hasTasks = true;
                     //}
                 }
+                var cSubRoleFound = Main.AllPlayerCustomSubRoles.TryGetValue(p.PlayerId, out var cSubRole);
+                if (cSubRoleFound)
+                {
+                    if (cSubRole == CustomRoles.Lovers)
+                    {
+                        //ラバーズがクルー陣営の場合タスクを付与しない
+                        if (cRole.GetRoleType() == RoleType.Crewmate)
+                        {
+                            hasTasks = false;
+                        }
+                    }
+                }
             }
             return hasTasks;
         }
-        public static string getTaskText(PlayerControl pc)
+        public static string GetProgressText(PlayerControl pc)
         {
-            var taskState = pc.getPlayerTaskState();
-            if (!taskState.hasTasks) return "null";
-            return $"<color=#ffff00>({taskState.CompletedTasksCount}/{taskState.AllTasksCount})</color>";
+            if (!Main.playerVersion.ContainsKey(0)) return ""; //ホストがMODを入れていなければ未記入を返す
+            var taskState = pc.GetPlayerTaskState();
+            var Comms = false;
+            if (taskState.hasTasks)
+            {
+                foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
+                    if (task.TaskType == TaskTypes.FixComms)
+                    {
+                        Comms = true;
+                        break;
+                    }
+            }
+            return GetProgressText(pc.PlayerId, Comms);
         }
-        public static void ShowActiveRoles()
+        public static string GetProgressText(byte playerId, bool comms = false)
         {
-            SendMessage(getString("CurrentActiveSettingsHelp") + ":");
+            if (!Main.playerVersion.ContainsKey(0)) return ""; //ホストがMODを入れていなければ未記入を返す
+            string colorCode = "<color=#ffff00>";
+            string closeCode = "</color>";
+            if (!Main.AllPlayerCustomRoles.TryGetValue(playerId, out var role)) return $" {colorCode}Invalid{closeCode}";
+            string ProgressText = "";
+            switch (role)
+            {
+                case CustomRoles.Arsonist:
+                    var doused = Utils.getDousedPlayerCount(playerId);
+                    ProgressText = $"<color={GetRoleColorCode(CustomRoles.Arsonist)}>({doused.Item1}/{doused.Item2}){closeCode}";
+                    break;
+                case CustomRoles.Sheriff:
+                    ProgressText += colorCode + (Main.SheriffShotLimit.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid") + closeCode;
+                    break;
+                case CustomRoles.Sniper:
+                    ProgressText += $" {Sniper.GetBulletCount(playerId)}";
+                    break;
+                default:
+                    //タスクテキスト
+                    var taskState = PlayerState.taskState?[playerId];
+                    if (taskState.hasTasks)
+                    {
+                        string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
+                        ProgressText = $"{colorCode}({Completed}/{taskState.AllTasksCount}){closeCode}";
+                    }
+                    break;
+            }
+            if (GetPlayerById(playerId).CanMakeMadmate()) ProgressText += $" [{Options.CanMakeMadmateCount.GetInt() - Main.SKMadmateNowCount}]";
+
+            return ProgressText;
+        }
+        public static void ShowActiveSettingsHelp()
+        {
+            SendMessage(GetString("CurrentActiveSettingsHelp") + ":");
             if (Options.CurrentGameMode == CustomGameMode.HideAndSeek)
             {
-                SendMessage(getString("HideAndSeekInfo"));
-                if (CustomRoles.Fox.isEnable()) { SendMessage(getRoleName(CustomRoles.Fox) + getString("FoxInfoLong")); }
-                if (CustomRoles.Troll.isEnable()) { SendMessage(getRoleName(CustomRoles.Troll) + getString("TrollInfoLong")); }
+                SendMessage(GetString("HideAndSeekInfo"));
+                if (CustomRoles.HASFox.IsEnable()) { SendMessage(GetRoleName(CustomRoles.HASFox) + GetString("HASFoxInfoLong")); }
+                if (CustomRoles.HASTroll.IsEnable()) { SendMessage(GetRoleName(CustomRoles.HASTroll) + GetString("HASTrollInfoLong")); }
             }
             else
             {
-                if (Options.SyncButtonMode.GetBool()) { SendMessage(getString("SyncButtonModeInfo")); }
-                if (Options.RandomMapsMode.GetBool()) { SendMessage(getString("RandomMapsModeInfo")); }
+                if (Options.SyncButtonMode.GetBool()) { SendMessage(GetString("SyncButtonModeInfo")); }
+                if (Options.SabotageTimeControl.GetBool()) { SendMessage(GetString("SabotageTimeControlInfo")); }
+                if (Options.RandomMapsMode.GetBool()) { SendMessage(GetString("RandomMapsModeInfo")); }
+                if (Options.IsStandardHAS) { SendMessage(GetString("StandardHASInfo")); }
                 foreach (var role in Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>())
                 {
-                    if (role == CustomRoles.Fox || role == CustomRoles.Troll) continue;
-                    if (role.isEnable()) SendMessage(getRoleName(role) + getString(Enum.GetName(typeof(CustomRoles), role) + "InfoLong"));
+                    if (role is CustomRoles.HASFox or CustomRoles.HASTroll) continue;
+                    if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetString(Enum.GetName(typeof(CustomRoles), role) + "InfoLong"));
                 }
-                if (Options.EnableLastImpostor.GetBool()) { SendMessage(getString("LastImpostor") + getString("LastImpostorInfo")); }
+                if (Options.EnableLastImpostor.GetBool()) { SendMessage(GetString("LastImpostor") + GetString("LastImpostorInfo")); }
             }
-            if (Options.NoGameEnd.GetBool()) { SendMessage(getString("NoGameEndInfo")); }
+            if (Options.NoGameEnd.GetBool()) { SendMessage(GetString("NoGameEndInfo")); }
         }
-        public static void ShowActiveSettings()
+        public static void ShowActiveSettings(byte PlayerId = byte.MaxValue)
         {
-            var text = getString("Roles") + ":";
+            var text = "";
             if (Options.CurrentGameMode == CustomGameMode.HideAndSeek)
             {
-                if (CustomRoles.Fox.isEnable()) text += String.Format("\n{0}:{1}", getRoleName(CustomRoles.Fox), CustomRoles.Fox.getCount());
-                if (CustomRoles.Troll.isEnable()) text += String.Format("\n{0}:{1}", getRoleName(CustomRoles.Troll), CustomRoles.Troll.getCount());
-                SendMessage(text);
-                text = getString("Settings") + ":";
-                text += getString("HideAndSeek");
+                text = GetString("Roles") + ":";
+                if (CustomRoles.HASFox.IsEnable()) text += String.Format("\n{0}:{1}", GetRoleName(CustomRoles.HASFox), CustomRoles.HASFox.GetCount());
+                if (CustomRoles.HASTroll.IsEnable()) text += String.Format("\n{0}:{1}", GetRoleName(CustomRoles.HASTroll), CustomRoles.HASTroll.GetCount());
+                SendMessage(text, PlayerId);
+                text = GetString("Settings") + ":";
+                text += GetString("HideAndSeek");
             }
             else
             {
-                foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
-                {
-                    if (role == CustomRoles.Fox || role == CustomRoles.Troll) continue;
-                    if (role.isEnable()) text += String.Format("\n{0}:{1}", getRoleName(role), role.getCount());
-                }
-                SendMessage(text);
-                text = getString("Attributes") + ":";
+                ShowActiveRoles(PlayerId);
+                text = GetString("Attributes") + ":";
                 if (Options.EnableLastImpostor.GetBool())
                 {
-                    text += String.Format("\n{0}:{1}", getString("LastImpostor"), Options.EnableLastImpostor.GetString());
+                    text += String.Format("\n{0}:{1}", GetString("LastImpostor"), Options.EnableLastImpostor.GetString());
                 }
-                SendMessage(text);
-                text = getString("Settings") + ":";
+                SendMessage(text, PlayerId);
+                text = GetString("Settings") + ":";
                 foreach (var role in Options.CustomRoleCounts)
                 {
-                    if (!role.Key.isEnable()) continue;
+                    if (!role.Key.IsEnable()) continue;
                     bool isFirst = true;
                     foreach (var c in Options.CustomRoleSpawnChances[role.Key].Children)
                     {
                         if (isFirst) { isFirst = false; continue; }
-                        text += $"\n{getString(c.Name)}:{c.GetString()}";
+                        text += $"\n{c.GetName(disableColor: true)}:{c.GetString()}";
+
+                        //タスク上書き設定用の処理
+                        if (c.Name == "doOverride" && c.GetBool() == true)
+                        {
+                            foreach (var d in c.Children)
+                            {
+                                text += $"\n{d.GetName(disableColor: true)}:{d.GetString()}";
+                            }
+                        }
+                        //メイヤーのポータブルボタン使用可能回数
+                        if (c.Name == "MayorHasPortableButton" && c.GetBool() == true)
+                        {
+                            foreach (var d in c.Children)
+                            {
+                                text += $"\n{d.GetName(disableColor: true)}:{d.GetString()}";
+                            }
+                        }
                     }
                 }
-                if (Options.EnableLastImpostor.GetBool()) text += String.Format("\n{0}:{1}", getString("LastImpostorKillCooldown"), Options.LastImpostorKillCooldown.GetString());
-                if (Options.SyncButtonMode.GetBool()) text += String.Format("\n{0}:{1}", getString("SyncedButtonCount"), Options.SyncedButtonCount);
-                if (Options.GetWhenSkipVote() != VoteMode.Default) text += String.Format("\n{0}:{1}", getString("WhenSkipVote"), Options.WhenSkipVote.GetString());
-                if (Options.GetWhenNonVote() != VoteMode.Default) text += String.Format("\n{0}:{1}", getString("WhenNonVote"), Options.WhenNonVote.GetString());
-                if ((Options.GetWhenNonVote() == VoteMode.Suicide || Options.GetWhenSkipVote() == VoteMode.Suicide) && CustomRoles.Terrorist.isEnable()) text += String.Format("\n{0}:{1}", getString("CanTerroristSuicideWin"), Options.CanTerroristSuicideWin.GetBool());
+                if (Options.EnableLastImpostor.GetBool()) text += String.Format("\n{0}:{1}", GetString("LastImpostorKillCooldown"), Options.LastImpostorKillCooldown.GetString());
+                if (Options.SyncButtonMode.GetBool()) text += String.Format("\n{0}:{1}", GetString("SyncedButtonCount"), Options.SyncedButtonCount.GetInt());
+                if (Options.SabotageTimeControl.GetBool())
+                {
+                    if (PlayerControl.GameOptions.MapId == 2) text += String.Format("\n{0}:{1}", GetString("PolusReactorTimeLimit"), Options.PolusReactorTimeLimit.GetString());
+                    if (PlayerControl.GameOptions.MapId == 4) text += String.Format("\n{0}:{1}", GetString("AirshipReactorTimeLimit"), Options.AirshipReactorTimeLimit.GetString());
+                }
+                if (Options.VoteMode.GetBool())
+                {
+                    if (Options.GetWhenSkipVote() != VoteMode.Default) text += String.Format("\n{0}:{1}", GetString("WhenSkipVote"), Options.WhenSkipVote.GetString());
+                    if (Options.GetWhenNonVote() != VoteMode.Default) text += String.Format("\n{0}:{1}", GetString("WhenNonVote"), Options.WhenNonVote.GetString());
+                    if ((Options.GetWhenNonVote() == VoteMode.Suicide || Options.GetWhenSkipVote() == VoteMode.Suicide) && CustomRoles.Terrorist.IsEnable()) text += String.Format("\n{0}:{1}", GetString("CanTerroristSuicideWin"), Options.CanTerroristSuicideWin.GetBool());
+                }
             }
-            if (Options.NoGameEnd.GetBool()) text += String.Format("\n{0}:{1}", getString("NoGameEnd"), getOnOff(Options.NoGameEnd.GetBool()));
-            SendMessage(text);
+            if (Options.IsStandardHAS) text += String.Format("\n{0}:{1}", GetString("StandardHAS"), GetOnOff(Options.StandardHAS.GetBool()));
+            if (Options.NoGameEnd.GetBool()) text += String.Format("\n{0}:{1}", GetString("NoGameEnd"), GetOnOff(Options.NoGameEnd.GetBool()));
+            SendMessage(text, PlayerId);
         }
-        public static void ShowLastRoles()
+        public static void ShowActiveRoles(byte PlayerId = byte.MaxValue)
+        {
+            var text = GetString("Roles") + ":";
+            foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
+            {
+                if (role is CustomRoles.HASFox or CustomRoles.HASTroll) continue;
+                if (role.IsEnable()) text += string.Format("\n{0}:{1}x{2}", GetRoleName(role), $"{role.GetChance() * 100}%", role.GetCount());
+            }
+            SendMessage(text, PlayerId);
+        }
+        public static void ShowLastResult(byte PlayerId = byte.MaxValue)
         {
             if (AmongUsClient.Instance.IsGameStarted)
             {
-                SendMessage("試合中に/lastrolesを使用することはできません。");
+                SendMessage(GetString("CantUse.lastroles"), PlayerId);
                 return;
             }
-            var text = getString("LastResult") + ":";
-            Dictionary<byte, CustomRoles> cloneRoles = new(main.AllPlayerCustomRoles);
-            foreach (var id in main.winnerList)
+            var text = GetString("LastResult") + ":";
+            Dictionary<byte, CustomRoles> cloneRoles = new(Main.AllPlayerCustomRoles);
+            text += $"\n{SetEverythingUpPatch.LastWinsText}\n";
+            foreach (var id in Main.winnerList)
             {
-                text += $"\n★ {main.AllPlayerNames[id]}:{getRoleName(main.AllPlayerCustomRoles[id])}";
-                text += $" {getVitalText(id)}";
+                text += $"\n★ {Main.AllPlayerNames[id]}:{GetRoleName(Main.AllPlayerCustomRoles[id])}{GetShowLastSubRolesText(id, disableColor: true)}";
+                text += $" {GetVitalText(id)}";
                 cloneRoles.Remove(id);
             }
             foreach (var kvp in cloneRoles)
             {
                 var id = kvp.Key;
-                text += $"\n　 {main.AllPlayerNames[id]} : {getRoleName(main.AllPlayerCustomRoles[id])}";
-                text += $" {getVitalText(id)}";
+                text += $"\n　 {Main.AllPlayerNames[id]}:{GetRoleName(Main.AllPlayerCustomRoles[id])}{GetShowLastSubRolesText(id, disableColor: true)}";
+                text += $" {GetVitalText(id)}";
             }
-            SendMessage(text);
+            SendMessage(text, PlayerId);
+        }
+
+        public static string GetShowLastSubRolesText(byte id, bool disableColor = false)
+        {
+            var cSubRoleFound = Main.AllPlayerCustomSubRoles.TryGetValue(id, out var cSubRole);
+            if (!cSubRoleFound || cSubRole == CustomRoles.NoSubRoleAssigned) return "";
+            return disableColor ? " + " + GetRoleName(cSubRole) : " <color=#ffffff>+ " + Helpers.ColorString(GetRoleColor(cSubRole), GetRoleName(cSubRole)) + "</color>";
         }
 
         public static void ShowHelp()
         {
             SendMessage(
-                "コマンド一覧:"
-                + "\n/winner - 勝者を表示"
-                + "\n/lastroles - 最後の役職割り当てを表示"
-                + "\n/rename - ホストの名前を変更"
-                + "\n/now - 現在有効な設定を表示"
-                + "\n/h now - 現在有効な設定の説明を表示"
-                + "\n/h roles <役職名> - 役職の説明を表示"
-                + "\n/h attributes <属性名> - 属性の説明を表示"
-                + "\n/h modes <モード名> - モードの説明を表示"
-                + "\n/dump - デスクトップにログを出力"
+                GetString("CommandList")
+                + $"\n/winner - {GetString("Command.winner")}"
+                + $"\n/lastresult - {GetString("Command.lastresult")}"
+                + $"\n/rename - {GetString("Command.rename")}"
+                + $"\n/now - {GetString("Command.now")}"
+                + $"\n/h now - {GetString("Command.h_now")}"
+                + $"\n/h roles {GetString("Command.h_roles")}"
+                + $"\n/h attributes {GetString("Command.h_attributes")}"
+                + $"\n/h modes {GetString("Command.h_modes")}"
+                + $"\n/dump - {GetString("Command.dump")}"
                 );
 
         }
         public static void CheckTerroristWin(GameData.PlayerInfo Terrorist)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            var taskState = getPlayerById(Terrorist.PlayerId).getPlayerTaskState();
-            if (taskState.isTaskFinished && (!PlayerState.isSuicide(Terrorist.PlayerId) || Options.CanTerroristSuicideWin.GetBool())) //タスクが完了で（自殺じゃない OR 自殺勝ちが許可）されていれば
+            var taskState = GetPlayerById(Terrorist.PlayerId).GetPlayerTaskState();
+            if (taskState.IsTaskFinished && (!PlayerState.IsSuicide(Terrorist.PlayerId) || Options.CanTerroristSuicideWin.GetBool())) //タスクが完了で（自殺じゃない OR 自殺勝ちが許可）されていれば
             {
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
-                    if (pc.isTerrorist())
+                    if (pc.Is(CustomRoles.Terrorist))
                     {
-                        if (PlayerState.getDeathReason(pc.PlayerId) != PlayerState.DeathReason.Vote)
+                        if (PlayerState.GetDeathReason(pc.PlayerId) != PlayerState.DeathReason.Vote)
                         {
                             //キルされた場合は自爆扱い
-                            PlayerState.setDeathReason(pc.PlayerId, PlayerState.DeathReason.Suicide);
+                            PlayerState.SetDeathReason(pc.PlayerId, PlayerState.DeathReason.Suicide);
                         }
                     }
                     else if (!pc.Data.IsDead)
                     {
                         //生存者は爆死
-                        pc.MurderPlayer(pc);
-                        PlayerState.setDeathReason(pc.PlayerId, PlayerState.DeathReason.Bombed);
-                        PlayerState.isDead[pc.PlayerId] = true;
+                        pc.RpcMurderPlayerV2(pc);
+                        PlayerState.SetDeathReason(pc.PlayerId, PlayerState.DeathReason.Bombed);
+                        PlayerState.SetDead(pc.PlayerId);
                     }
                 }
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.TerroristWin, Hazel.SendOption.Reliable, -1);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, Hazel.SendOption.Reliable, -1);
+                writer.Write((byte)CustomWinner.Terrorist);
                 writer.Write(Terrorist.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPC.TerroristWin(Terrorist.PlayerId);
@@ -302,55 +413,41 @@ namespace TownOfHost
         public static void SendMessage(string text, byte sendTo = byte.MaxValue)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            var tmp_text = text.Replace("#", "＃").Replace("<", "＜").Replace(">", "＞");
-            string[] textList = tmp_text.Split('\n');
-            string tmp = "";
-            var l = 0;
-            foreach (string t in textList)
-            {
-                if (tmp.Length + t.Length < 120 && l < 4)
-                {
-                    tmp += t + "\n";
-                    l++;
-                }
-                else
-                {
-                    main.MessagesToSend.Add((tmp, sendTo));
-                    tmp = t + "\n";
-                    l = 1;
-                }
-            }
-            if (tmp.Length != 0) main.MessagesToSend.Add((tmp, sendTo));
+            Main.MessagesToSend.Add((text, sendTo));
         }
         public static void ApplySuffix()
         {
             if (!AmongUsClient.Instance.AmHost) return;
             string name = SaveManager.PlayerName;
-            if (main.nickName != "") name = main.nickName;
-            if (!AmongUsClient.Instance.IsGameStarted)
+            if (Main.nickName != "") name = Main.nickName;
+            if (AmongUsClient.Instance.IsGameStarted)
+            {
+                if (Options.ColorNameMode.GetBool() && Main.nickName == "") name = Palette.GetColorName(PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId);
+            }
+            else
             {
                 switch (Options.GetSuffixMode())
                 {
                     case SuffixModes.None:
                         break;
                     case SuffixModes.TOH:
-                        name += "\r\n<color=" + main.modColor + ">TOH v" + main.PluginVersion + main.VersionSuffix + "</color>";
+                        name += "\r\n<color=" + Main.modColor + ">TOH v" + Main.PluginVersion + "</color>";
                         break;
                     case SuffixModes.Streaming:
-                        name += "\r\n配信中";
+                        name += $"\r\n{GetString("SuffixMode.Streaming")}";
                         break;
                     case SuffixModes.Recording:
-                        name += "\r\n録画中";
+                        name += $"\r\n{GetString("SuffixMode.Recording")}";
                         break;
                 }
             }
             if (name != PlayerControl.LocalPlayer.name && PlayerControl.LocalPlayer.CurrentOutfitType == PlayerOutfitType.Default) PlayerControl.LocalPlayer.RpcSetName(name);
         }
-        public static PlayerControl getPlayerById(int PlayerId)
+        public static PlayerControl GetPlayerById(int PlayerId)
         {
             return PlayerControl.AllPlayerControls.ToArray().Where(pc => pc.PlayerId == PlayerId).FirstOrDefault();
         }
-        public static void NotifyRoles(bool isMeeting = false)
+        public static void NotifyRoles(bool isMeeting = false, PlayerControl SpecifySeer = null, bool NoCache = false, bool ForceLoop = false)
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (PlayerControl.AllPlayerControls == null) return;
@@ -359,177 +456,291 @@ namespace TownOfHost
             var callerMethod = caller.GetMethod();
             string callerMethodName = callerMethod.Name;
             string callerClassName = callerMethod.DeclaringType.FullName;
-            TownOfHost.Logger.info("NotifyRolesが" + callerClassName + "." + callerMethodName + "から呼び出されました", "NotifyRoles");
+            TownOfHost.Logger.Info("NotifyRolesが" + callerClassName + "." + callerMethodName + "から呼び出されました", "NotifyRoles");
             HudManagerPatch.NowCallNotifyRolesCount++;
             HudManagerPatch.LastSetNameDesyncCount = 0;
 
             //Snitch警告表示のON/OFF
             bool ShowSnitchWarning = false;
-            if (CustomRoles.Snitch.isEnable())
+            if (CustomRoles.Snitch.IsEnable())
             {
                 foreach (var snitch in PlayerControl.AllPlayerControls)
                 {
-                    if (snitch.isSnitch() && !snitch.Data.IsDead && !snitch.Data.Disconnected)
+                    if (snitch.Is(CustomRoles.Snitch) && !snitch.Data.IsDead && !snitch.Data.Disconnected)
                     {
-                        var taskState = snitch.getPlayerTaskState();
-                        if (taskState.doExpose)
+                        var taskState = snitch.GetPlayerTaskState();
+                        if (taskState.DoExpose)
                         {
                             ShowSnitchWarning = true;
+                            break;
                         }
                     }
                 }
             }
 
+            var seerList = PlayerControl.AllPlayerControls;
+            if (SpecifySeer != null)
+            {
+                seerList = new();
+                seerList.Add(SpecifySeer);
+            }
             //seer:ここで行われた変更を見ることができるプレイヤー
             //target:seerが見ることができる変更の対象となるプレイヤー
-            foreach (var seer in PlayerControl.AllPlayerControls)
+            foreach (var seer in seerList)
             {
+                if (seer.IsModClient()) continue;
                 string fontSize = "1.5";
-                if (isMeeting && (seer.getClient().PlatformData.Platform.ToString() == "Playstation" || seer.getClient().PlatformData.Platform.ToString() == "Switch")) fontSize = "70%";
-                TownOfHost.Logger.info("NotifyRoles-Loop1-" + seer.name + ":START", "NotifyRoles");
+                if (isMeeting && (seer.GetClient().PlatformData.Platform.ToString() == "Playstation" || seer.GetClient().PlatformData.Platform.ToString() == "Switch")) fontSize = "70%";
+                TownOfHost.Logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START", "NotifyRoles");
                 //Loop1-bottleのSTART-END間でKeyNotFoundException
                 //seerが落ちているときに何もしない
                 if (seer.Data.Disconnected) continue;
 
-                //seerがタスクを持っている：タスク残量の色コードなどを含むテキスト
-                //seerがタスクを持っていない：空
-                string SelfTaskText = hasTasks(seer.Data, false) ? $"{getTaskText(seer)}" : "";
-                //Loversのハートマークなどを入れてください。
+                //タスクなど進行状況を含むテキスト
+                string SelfTaskText = GetProgressText(seer);
+
+                //名前の後ろに付けるマーカー
                 string SelfMark = "";
-                //インポスターに対するSnitch警告
-                if (ShowSnitchWarning && seer.getCustomRole().isImpostor())
-                    SelfMark += $"<color={getRoleColorCode(CustomRoles.Snitch)}>★</color>";
+
+                //インポスター/キル可能な第三陣営に対するSnitch警告
+                var canFindSnitchRole = seer.GetCustomRole().IsImpostor() || //LocalPlayerがインポスター
+                    (Options.SnitchCanFindNeutralKiller.GetBool() && seer.Is(CustomRoles.Egoist));//or エゴイスト
+
+                if (canFindSnitchRole && ShowSnitchWarning && !isMeeting)
+                {
+                    var arrows = "";
+                    foreach (var arrow in Main.targetArrows)
+                    {
+                        if (arrow.Key.Item1 == seer.PlayerId && !PlayerState.isDead[arrow.Key.Item2])
+                        {
+                            //自分用の矢印で対象が死んでない時
+                            arrows += arrow.Value;
+                        }
+                    }
+                    SelfMark += $"<color={GetRoleColorCode(CustomRoles.Snitch)}>★{arrows}</color>";
+                }
+
+                //ハートマークを付ける(自分に)
+                if (seer.Is(CustomRoles.Lovers)) SelfMark += $"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>";
+
                 //呪われている場合
-                if (main.SpelledPlayer.Find(x => x.PlayerId == seer.PlayerId) != null && isMeeting)
+                if (Main.SpelledPlayer.Find(x => x.PlayerId == seer.PlayerId) != null && isMeeting)
                     SelfMark += "<color=#ff0000>†</color>";
+
+                if (Sniper.IsEnable())
+                {
+                    //銃声が聞こえるかチェック
+                    SelfMark += Sniper.GetShotNotify(seer.PlayerId);
+                }
                 //Markとは違い、改行してから追記されます。
                 string SelfSuffix = "";
 
-                if (seer.isBountyHunter() && seer.getBountyTarget() != null)
+                if (seer.Is(CustomRoles.BountyHunter) && seer.GetBountyTarget() != null)
                 {
-                    string BountyTargetName = seer.getBountyTarget().getRealName(isMeeting);
+                    string BountyTargetName = seer.GetBountyTarget().GetRealName(isMeeting);
                     SelfSuffix = $"<size={fontSize}>Target:{BountyTargetName}</size>";
                 }
-                if (seer.isWitch())
+                if (seer.Is(CustomRoles.FireWorks))
                 {
-                    if (seer.GetKillOrSpell() == false) SelfSuffix = "Mode:" + getString("WitchModeKill");
-                    if (seer.GetKillOrSpell() == true) SelfSuffix = "Mode:" + getString("WitchModeSpell");
+                    string stateText = FireWorks.GetStateText(seer);
+                    SelfSuffix = $"{stateText}";
                 }
-
-
-                //RealNameを取得 なければ現在の名前をRealNamesに書き込む
-                string SeerRealName = seer.getRealName(isMeeting);
-
-                //seerの役職名とSelfTaskTextとseerのプレイヤー名とSelfMarkを合成
-                string SelfRoleName = "";
-                if (seer.isSheriff())
-                    SelfRoleName = $"<size={fontSize}><color={seer.getRoleColorCode()}>{seer.getRoleName()} ({main.SheriffShotLimit[seer.PlayerId]})</color>";
-                else
-                    SelfRoleName = $"<size={fontSize}><color={seer.getRoleColorCode()}>{seer.getRoleName()}</color>";
-                string SelfName = $"{SelfTaskText}</size>\r\n<color={seer.getRoleColorCode()}>{SeerRealName}</color>{SelfMark}";
-                SelfName = SelfRoleName += SelfName;
-                SelfRoleName += SelfName += SelfSuffix == "" ? "" : "\r\n" + SelfSuffix;
-
-                //適用
-                seer.RpcSetNamePrivate(SelfName, true);
-                HudManagerPatch.LastSetNameDesyncCount++;
+                if (seer.Is(CustomRoles.Witch))
+                {
+                    SelfSuffix = seer.IsSpellMode() ? "Mode:" + GetString("WitchModeSpell") : "Mode:" + GetString("WitchModeKill");
+                }
 
                 //他人用の変数定義
                 bool SeerKnowsImpostors = false; //trueの時、インポスターの名前が赤色に見える
-                //タスクを終えたSnitchがインポスターを確認できる
-                if (seer.isSnitch())
+
+                //タスクを終えたSnitchがインポスター/キル可能な第三陣営の方角を確認できる
+                if (seer.Is(CustomRoles.Snitch))
                 {
-                    var TaskState = seer.getPlayerTaskState();
-                    if (TaskState.isTaskFinished)
+                    var TaskState = seer.GetPlayerTaskState();
+                    if (TaskState.IsTaskFinished)
+                    {
+                        SeerKnowsImpostors = true;
+                        //ミーティング以外では矢印表示
+                        if (!isMeeting)
+                        {
+                            foreach (var arrow in Main.targetArrows)
+                            {
+                                //自分用の矢印で対象が死んでない時
+                                if (arrow.Key.Item1 == seer.PlayerId && !PlayerState.isDead[arrow.Key.Item2])
+                                    SelfSuffix += arrow.Value;
+                            }
+                        }
+                    }
+                }
+
+                if (seer.Is(CustomRoles.MadSnitch))
+                {
+                    var TaskState = seer.GetPlayerTaskState();
+                    if (TaskState.IsTaskFinished)
                         SeerKnowsImpostors = true;
                 }
-                if (seer.isMadSnitch())
-                {
-                    var TaskState = seer.getPlayerTaskState();
-                    if (TaskState.isTaskFinished)
-                        SeerKnowsImpostors = true;
-                }
+
+                //RealNameを取得 なければ現在の名前をRealNamesに書き込む
+                string SeerRealName = seer.GetRealName(isMeeting);
+
+                //seerの役職名とSelfTaskTextとseerのプレイヤー名とSelfMarkを合成
+                string SelfRoleName = $"<size={fontSize}><color={seer.GetRoleColorCode()}>{seer.GetRoleName()}</color>{SelfTaskText}</size>";
+                string SelfName = $"<color={seer.GetRoleColorCode()}>{SeerRealName}</color>{SelfMark}";
+                if (seer.Is(CustomRoles.Arsonist) && seer.IsDouseDone())
+                    SelfName = $"</size>\r\n<color={seer.GetRoleColorCode()}>{GetString("EnterVentToWin")}</color>";
+                SelfName = SelfRoleName + "\r\n" + SelfName;
+                SelfName += SelfSuffix == "" ? "" : "\r\n " + SelfSuffix;
+                if (!isMeeting) SelfName += "\r\n";
+
+                //適用
+                seer.RpcSetNamePrivate(SelfName, true, force: NoCache);
 
                 //seerが死んでいる場合など、必要なときのみ第二ループを実行する
                 if (seer.Data.IsDead //seerが死んでいる
                     || SeerKnowsImpostors //seerがインポスターを知っている状態
-                    || seer.getCustomRole().isImpostor() //seerがインポスター
-                    || seer.isEgoSchrodingerCat() //seerがエゴイストのシュレディンガーの猫
+                    || seer.GetCustomRole().IsImpostor() //seerがインポスター
+                    || seer.Is(CustomRoles.EgoSchrodingerCat) //seerがエゴイストのシュレディンガーの猫
                     || NameColorManager.Instance.GetDataBySeer(seer.PlayerId).Count > 0 //seer視点用の名前色データが一つ以上ある
-                    || seer.isArsonist()
-                    || main.SpelledPlayer.Count > 0
+                    || seer.Is(CustomRoles.Arsonist)
+                    || seer.Is(CustomRoles.Lovers)
+                    || Main.SpelledPlayer.Count > 0
+                    || seer.Is(CustomRoles.Executioner)
+                    || seer.Is(CustomRoles.Doctor) //seerがドクター
+                    || seer.Is(CustomRoles.Puppeteer)
+                    || IsActive(SystemTypes.Electrical)
+                    || NoCache
+                    || ForceLoop
                 )
                 {
                     foreach (var target in PlayerControl.AllPlayerControls)
                     {
                         //targetがseer自身の場合は何もしない
                         if (target == seer) continue;
-                        TownOfHost.Logger.info("NotifyRoles-Loop2-" + target.name + ":START", "NotifyRoles");
+                        TownOfHost.Logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START", "NotifyRoles");
 
                         //他人のタスクはtargetがタスクを持っているかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
-                        string TargetTaskText = hasTasks(target.Data, false) && seer.Data.IsDead ? $"{getTaskText(target)}" : "";
+                        string TargetTaskText = seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool() ? $"{GetProgressText(target)}" : "";
 
-                        //Loversのハートマークなどを入れてください。
+                        //名前の後ろに付けるマーカー
                         string TargetMark = "";
                         //呪われている人
-                        if (main.SpelledPlayer.Find(x => x.PlayerId == target.PlayerId) != null && isMeeting)
+                        if (Main.SpelledPlayer.Find(x => x.PlayerId == target.PlayerId) != null && isMeeting)
                             TargetMark += "<color=#ff0000>†</color>";
                         //タスク完了直前のSnitchにマークを表示
-                        if (target.isSnitch() && seer.getCustomRole().isImpostor())
+                        canFindSnitchRole = seer.GetCustomRole().IsImpostor() || //Seerがインポスター
+                            (Options.SnitchCanFindNeutralKiller.GetBool() && seer.Is(CustomRoles.Egoist));//or エゴイスト
+
+                        if (target.Is(CustomRoles.Snitch) && canFindSnitchRole)
                         {
-                            var taskState = target.getPlayerTaskState();
-                            if (taskState.doExpose)
-                                TargetMark += $"<color={getRoleColorCode(CustomRoles.Snitch)}>★</color>";
-                        }
-                        if (seer.isArsonist() && seer.isDousedPlayer(target))
-                        {
-                            TargetMark += $"<color={getRoleColorCode(CustomRoles.Arsonist)}>▲</color>";
+                            var taskState = target.GetPlayerTaskState();
+                            if (taskState.DoExpose)
+                                TargetMark += $"<color={GetRoleColorCode(CustomRoles.Snitch)}>★</color>";
                         }
 
-                        //他人の役職とタスクはtargetがタスクを持っているかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
-                        string TargetRoleText = "";
-                        if (target.isSheriff())
-                            TargetRoleText = seer.Data.IsDead ? $"<size={fontSize}><color={target.getRoleColorCode()}>{target.getRoleName()} ({main.SheriffShotLimit[target.PlayerId]})</color>{TargetTaskText}</size>\r\n" : "";
-                        else
-                            TargetRoleText = seer.Data.IsDead ? $"<size={fontSize}><color={target.getRoleColorCode()}>{target.getRoleName()}</color>{TargetTaskText}</size>\r\n" : "";
+                        //ハートマークを付ける(相手に)
+                        if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
+                        {
+                            TargetMark += $"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>";
+                        }
+                        //霊界からラバーズ視認
+                        else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
+                        {
+                            TargetMark += $"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>";
+                        }
+
+                        if (seer.Is(CustomRoles.Arsonist))//seerがアーソニストの時
+                        {
+                            if (seer.IsDousedPlayer(target)) //seerがtargetに既にオイルを塗っている(完了)
+                            {
+                                TargetMark += $"<color={GetRoleColorCode(CustomRoles.Arsonist)}>▲</color>";
+                            }
+                            if (
+                                Main.ArsonistTimer.TryGetValue(seer.PlayerId, out var ar_kvp) && //seerがオイルを塗っている途中(現在進行)
+                                ar_kvp.Item1 == target //オイルを塗っている対象がtarget
+                            )
+                            {
+                                TargetMark += $"<color={GetRoleColorCode(CustomRoles.Arsonist)}>△</color>";
+                            }
+                        }
+                        if (seer.Is(CustomRoles.Puppeteer) &&
+                        Main.PuppeteerList.ContainsValue(seer.PlayerId) &&
+                        Main.PuppeteerList.ContainsKey(target.PlayerId))
+                            TargetMark += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>◆</color>";
+
+                        //他人の役職とタスクは幽霊が他人の役職を見れるようになっていてかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
+                        string TargetRoleText = seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool() ? $"<size={fontSize}><color={target.GetRoleColorCode()}>{target.GetRoleName()}</color>{TargetTaskText}</size>\r\n" : "";
 
                         //RealNameを取得 なければ現在の名前をRealNamesに書き込む
-                        string TargetPlayerName = target.getRealName(isMeeting);
+                        string TargetPlayerName = target.GetRealName(isMeeting);
 
                         //ターゲットのプレイヤー名の色を書き換えます。
-                        if (SeerKnowsImpostors && target.getCustomRole().isImpostor()) //Seerがインポスターが誰かわかる状態
+                        if (SeerKnowsImpostors) //Seerがインポスターが誰かわかる状態
                         {
-                            TargetPlayerName = "<color=#ff0000>" + TargetPlayerName + "</color>";
+                            //スニッチはオプション有効なら第三陣営のキル可能役職も見れる
+                            var snitchOption = seer.Is(CustomRoles.Snitch) && Options.SnitchCanFindNeutralKiller.GetBool();
+                            var foundCheck = target.GetCustomRole().IsImpostor() || (snitchOption && target.Is(CustomRoles.Egoist));
+                            if (foundCheck)
+                                TargetPlayerName = $"<color={target.GetRoleColorCode()}>{TargetPlayerName}</color>";
                         }
-                        else if (seer.getCustomRole().isImpostor() && target.isEgoist())
-                            TargetPlayerName = $"<color={getRoleColorCode(CustomRoles.Egoist)}>{TargetPlayerName}</color>";
-                        else if (seer.isEgoSchrodingerCat() && target.isEgoist())
-                            TargetPlayerName = $"<color={getRoleColorCode(CustomRoles.Egoist)}>{TargetPlayerName}</color>";
+                        else if (seer.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Egoist))
+                            TargetPlayerName = $"<color={GetRoleColorCode(CustomRoles.Egoist)}>{TargetPlayerName}</color>";
+                        else if (seer.Is(CustomRoles.EgoSchrodingerCat) && target.Is(CustomRoles.Egoist))
+                            TargetPlayerName = $"<color={GetRoleColorCode(CustomRoles.Egoist)}>{TargetPlayerName}</color>";
+                        else if (Utils.IsActive(SystemTypes.Electrical) && target.Is(CustomRoles.Mare) && !isMeeting)
+                            TargetPlayerName = $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>{TargetPlayerName}</color>"; //targetの赤色で表示
                         else
                         {
                             //NameColorManager準拠の処理
                             var ncd = NameColorManager.Instance.GetData(seer.PlayerId, target.PlayerId);
                             TargetPlayerName = ncd.OpenTag + TargetPlayerName + ncd.CloseTag;
                         }
+                        foreach (var ExecutionerTarget in Main.ExecutionerTarget)
+                        {
+                            if ((seer.PlayerId == ExecutionerTarget.Key || seer.Data.IsDead) && //seerがKey or Dead
+                            target.PlayerId == ExecutionerTarget.Value) //targetがValue
+                                TargetMark += $"<color={Utils.GetRoleColorCode(CustomRoles.Executioner)}>♦</color>";
+                        }
+
+                        string TargetDeathReason = "";
+                        if (seer.Is(CustomRoles.Doctor) && //seerがDoctor
+                        target.Data.IsDead //変更対象が死人
+                        )
+                            TargetDeathReason = $"(<color={GetRoleColorCode(CustomRoles.Doctor)}>{GetVitalText(target.PlayerId)}</color>)";
 
                         //全てのテキストを合成します。
-                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetMark}";
-                        //適用
-                        target.RpcSetNamePrivate(TargetName, true, seer);
-                        HudManagerPatch.LastSetNameDesyncCount++;
+                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
 
-                        TownOfHost.Logger.info("NotifyRoles-Loop2-" + target.name + ":END", "NotifyRoles");
+                        //適用
+                        target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
+
+                        TownOfHost.Logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END", "NotifyRoles");
                     }
                 }
-                TownOfHost.Logger.info("NotifyRoles-Loop1-" + seer.name + ":END", "NotifyRoles");
+                TownOfHost.Logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END", "NotifyRoles");
             }
-            main.witchMeeting = false;
+            Main.witchMeeting = false;
         }
         public static void CustomSyncAllSettings()
         {
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
                 pc.CustomSyncSettings();
+            }
+        }
+        public static void AfterMeetingTasks()
+        {
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (pc.Is(CustomRoles.SerialKiller))
+                {
+                    pc.RpcResetAbilityCooldown();
+                    Main.SerialKillerTimer.TryAdd(pc.PlayerId, 0f);
+                }
+                if (pc.Is(CustomRoles.BountyHunter))
+                {
+                    pc.RpcResetAbilityCooldown();
+                    Main.BountyTimer.TryAdd(pc.PlayerId, 0f);
+                }
             }
         }
 
@@ -544,11 +755,71 @@ namespace TownOfHost
             int AliveImpostorCount = 0;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                CustomRoles pc_role = pc.getCustomRole();
-                if (pc_role.isImpostor() && !pc.Data.IsDead) AliveImpostorCount++;
+                CustomRoles pc_role = pc.GetCustomRole();
+                if (pc_role.IsImpostor() && !pc.Data.IsDead) AliveImpostorCount++;
             }
-            TownOfHost.Logger.info("生存しているインポスター:" + AliveImpostorCount + "人");
-            main.AliveImpostorCount = AliveImpostorCount;
+            TownOfHost.Logger.Info("生存しているインポスター:" + AliveImpostorCount + "人", "CountAliveImpostors");
+            Main.AliveImpostorCount = AliveImpostorCount;
         }
+        public static string GetAllRoleName(byte playerId)
+        {
+            return GetPlayerById(playerId)?.GetAllRoleName() ?? "";
+        }
+        public static string GetNameWithRole(byte playerId)
+        {
+            return GetPlayerById(playerId)?.GetNameWithRole() ?? "";
+        }
+        public static string GetNameWithRole(this GameData.PlayerInfo player)
+        {
+            return GetPlayerById(player.PlayerId)?.GetNameWithRole() ?? "";
+        }
+        public static string GetVoteName(byte num)
+        {
+            string name = "invalid";
+            var player = GetPlayerById(num);
+            if (num < 15 && player != null) name = player?.GetNameWithRole();
+            if (num == 253) name = "Skip";
+            if (num == 254) name = "None";
+            if (num == 255) name = "Dead";
+            return name;
+        }
+        public static string PadRightV2(this object text, int num)
+        {
+            int bc = 0;
+            var t = text.ToString();
+            foreach (char c in t) bc += Encoding.GetEncoding("UTF-8").GetByteCount(c.ToString()) == 1 ? 1 : 2;
+            return t?.PadRight(Mathf.Max(num - (bc - t.Length), 0));
+        }
+        public static void DumpLog()
+        {
+            string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
+            string filename = $"{System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TownOfHost-v{Main.PluginVersion}-{t}.log";
+            FileInfo file = new(@$"{System.Environment.CurrentDirectory}/BepInEx/LogOutput.log");
+            file.CopyTo(@filename);
+            System.Diagnostics.Process.Start(@$"{System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}");
+            if (PlayerControl.LocalPlayer != null)
+                HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, "デスクトップにログを保存しました。バグ報告チケットを作成してこのファイルを添付してください。");
+        }
+        public static (int, int) getDousedPlayerCount(byte playerId)
+        {
+            int doused = 0, all = 0; //学校で習った書き方
+            //多分この方がMain.isDousedでforeachするより他のアーソニストの分ループ数少なくて済む
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (pc == null ||
+                    pc.Data.IsDead ||
+                    pc.Data.Disconnected ||
+                    pc.PlayerId == playerId
+                ) continue; //塗れない人は除外 (死んでたり切断済みだったり あとアーソニスト自身も)
+
+                all++;
+                if (Main.isDoused.TryGetValue((playerId, pc.PlayerId), out var isDoused) && isDoused)
+                    //塗れている場合
+                    doused++;
+            }
+
+            return (doused, all);
+        }
+        public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
     }
 }

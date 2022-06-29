@@ -1,5 +1,3 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.InteropServices;
 using System;
 using System.Reflection;
 using UnhollowerBaseLib;
@@ -22,7 +20,7 @@ namespace TownOfHost
             }
             catch
             {
-                Logger.error($"Error loading sprite from path: {path}");
+                Logger.Error($"Error loading sprite from path: {path}", "LoadSprite");
             }
             return null;
         }
@@ -42,7 +40,7 @@ namespace TownOfHost
             }
             catch
             {
-                Logger.error($"Error loading texture from resources: {path}");
+                Logger.Error($"Error loading texture from resources: {path}", "LoadTexture");
             }
             return null;
         }
@@ -57,12 +55,12 @@ namespace TownOfHost
 
             return _callLoadImage.Invoke(tex.Pointer, il2cppArray.Pointer, markNonReadable);
         }
-        
+
         public static string ColorString(Color c, string s)
         {
             return $"<color=#{ToByte(c.r):X2}{ToByte(c.g):X2}{ToByte(c.b):X2}{ToByte(c.a):X2}>{s}</color>";
         }
-        
+
         private static byte ToByte(float f)
         {
             f = Mathf.Clamp01(f);
@@ -73,23 +71,15 @@ namespace TownOfHost
     public class PlayerVersion
     {
         public readonly Version version;
-        public readonly int beta_ver;
         public readonly string tag;
-        public PlayerVersion(int major, int minor, int patch, int revision, int beta, string tag_str)
+        public PlayerVersion(string ver, string tag_str)
         {
-            version = new Version(major,minor,patch == -1?0:patch,revision == -1?0:revision);
-            beta_ver = beta;
+            version = Version.Parse(ver);
             tag = tag_str;
         }
-        public PlayerVersion(Version ver, int beta, string tag_str)
+        public bool IsEqual(PlayerVersion pv)
         {
-            version = new Version(ver.Major,ver.Minor,ver.Build == -1?0:ver.Build,ver.Revision == -1?0:ver.Revision);
-            beta_ver = beta;
-            tag = tag_str;
-        }
-        public bool isEqual(PlayerVersion pv)
-        {
-            return (pv.version == version && pv.beta_ver == beta_ver && pv.tag == tag);
+            return pv.version == version && pv.tag == tag;
         }
     }
 }

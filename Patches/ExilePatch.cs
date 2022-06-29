@@ -1,5 +1,5 @@
-using Hazel;
 using HarmonyLib;
+using Hazel;
 
 namespace TownOfHost
 {
@@ -24,91 +24,79 @@ namespace TownOfHost
         }
         static void WrapUpPostfix(GameData.PlayerInfo exiled)
         {
-            main.witchMeeting = false;
+            Main.witchMeeting = false;
+            bool DecidedWinner = false;
             if (!AmongUsClient.Instance.AmHost) return; //ホスト以外はこれ以降の処理を実行しません
             if (exiled != null)
             {
-                PlayerState.setDeathReason(exiled.PlayerId, PlayerState.DeathReason.Vote);
-                var role = exiled.getCustomRole();
+                PlayerState.SetDeathReason(exiled.PlayerId, PlayerState.DeathReason.Vote);
+                var role = exiled.GetCustomRole();
                 if (role == CustomRoles.Jester && AmongUsClient.Instance.AmHost)
                 {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.JesterExiled, Hazel.SendOption.Reliable, -1);
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, Hazel.SendOption.Reliable, -1);
+                    writer.Write((byte)CustomWinner.Jester);
                     writer.Write(exiled.PlayerId);
                     AmongUsClient.Instance.FinishRpcImmediately(writer);
                     RPC.JesterExiled(exiled.PlayerId);
+                    DecidedWinner = true;
                 }
                 if (role == CustomRoles.Terrorist && AmongUsClient.Instance.AmHost)
-                    Utils.CheckTerroristWin(exiled);
-                if (role != CustomRoles.Witch && main.SpelledPlayer != null)
                 {
-                    foreach (var p in main.SpelledPlayer)
+                    Utils.CheckTerroristWin(exiled);
+                    DecidedWinner = true;
+                }
+                foreach (var kvp in Main.ExecutionerTarget)
+                {
+                    var executioner = Utils.GetPlayerById(kvp.Key);
+                    if (executioner == null) continue;
+                    if (executioner.Data.IsDead || executioner.Data.Disconnected) continue; //Keyが死んでいたらor切断していたらこのforeach内の処理を全部スキップ
+                    if (kvp.Value == exiled.PlayerId && AmongUsClient.Instance.AmHost && !DecidedWinner)
                     {
-                        PlayerState.setDeathReason(p.PlayerId, PlayerState.DeathReason.Spell);
-                        main.IgnoreReportPlayers.Add(p.PlayerId);
-                        p.RpcMurderPlayer(p);
+                        //RPC送信開始
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, Hazel.SendOption.Reliable, -1);
+                        writer.Write((byte)CustomWinner.Executioner);
+                        writer.Write(kvp.Key);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer); //終了
+
+                        RPC.ExecutionerWin(kvp.Key);
                     }
                 }
-                PlayerState.isDead[exiled.PlayerId] = true;
+                if (exiled.Object.Is(CustomRoles.TimeThief))
+                    exiled.Object.ResetThiefVotingTime();
+                if (exiled.Object.Is(CustomRoles.SchrodingerCat) && Options.SchrodingerCatExiledTeamChanges.GetBool())
+                    exiled.Object.ExiledSchrodingerCatTeamChange();
+
+
+                PlayerState.SetDead(exiled.PlayerId);
             }
-            if (exiled == null && main.SpelledPlayer != null)
-            {
-                foreach (var p in main.SpelledPlayer)
-                {
-                    PlayerState.setDeathReason(p.PlayerId, PlayerState.DeathReason.Spell);
-                    main.IgnoreReportPlayers.Add(p.PlayerId);
-                    p.RpcMurderPlayer(p);
-                }
-            }
-            if (AmongUsClient.Instance.AmHost && main.isFixedCooldown)
-                main.RefixCooldownDelay = main.RealOptionsData.KillCooldown - 3f;
-            main.SpelledPlayer.RemoveAll(pc => pc == null || pc.Data == null || pc.Data.IsDead || pc.Data.Disconnected);
+            if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
+                Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
+            Main.SpelledPlayer.RemoveAll(pc => pc == null || pc.Data == null || pc.Data.IsDead || pc.Data.Disconnected);
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
                 pc.ResetKillCooldown();
-                if (PlayerControl.GameOptions.MapId != 4)
+                if (Options.MayorHasPortableButton.GetBool() && pc.Is(CustomRoles.Mayor))
+                    pc.RpcResetAbilityCooldown();
+                if (pc.Is(CustomRoles.Warlock))
                 {
-                    if (pc.isSerialKiller())
-                    {
-                        pc.RpcGuardAndKill(pc);
-                        main.SerialKillerTimer.Add(pc.PlayerId, 0f);
-                    }
-                    if (pc.isBountyHunter())
-                    {
-                        main.AllPlayerKillCooldown[pc.PlayerId] *= 2;
-                        pc.RpcGuardAndKill(pc);
-                        main.BountyTimer.Add(pc.PlayerId, 0f);
-                    }
-                    if (pc.isWarlock())
-                    {
-                        main.CursedPlayers[pc.PlayerId] = (null);
-                        main.isCurseAndKill[pc.PlayerId] = false;
-                    }
-                    if (pc.isNiceNekomata() || pc.isEvilNekomata())
-                    {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NekomataExiled, Hazel.SendOption.Reliable, -1);
-                        writer.Write(exiled.PlayerId);
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
-                        pc.SelectRevengePlayer();
-                    }
-                }
-                if (PlayerControl.GameOptions.MapId == 4)//Airship用
-                {
-                    if (pc.isSerialKiller() || pc.isBountyHunter())
-                    {
-                        main.AirshipMeetingTimer.Add(pc.PlayerId, 0f);
-                        main.AllPlayerKillCooldown[pc.PlayerId] *= 2;
-                    }
-                    if (pc.isWarlock())
-                    {
-                        main.CursedPlayers[pc.PlayerId] = (null);
-                        main.isCurseAndKill[pc.PlayerId] = false;
-                    }
+                    Main.CursedPlayers[pc.PlayerId] = null;
+                    Main.isCurseAndKill[pc.PlayerId] = false;
                 }
             }
+            Main.AfterMeetingDeathPlayers.Do(x =>
+            {
+                var player = Utils.GetPlayerById(x.Key);
+                Logger.Info($"{player.GetNameWithRole()}を{x.Value}で死亡させました", "AfterMeetingDeath");
+                PlayerState.SetDeathReason(x.Key, x.Value);
+                PlayerState.SetDead(x.Key);
+                player?.RpcExileV2();
+            });
+            Main.AfterMeetingDeathPlayers.Clear();
             Utils.CountAliveImpostors();
+            Utils.AfterMeetingTasks();
             Utils.CustomSyncAllSettings();
             Utils.NotifyRoles();
-            Logger.info("タスクフェイズ開始", "Phase");
+            Logger.Info("タスクフェイズ開始", "Phase");
         }
     }
 }
