@@ -493,7 +493,6 @@ namespace TownOfHost
         {
             if (GameStates.IsMeeting) return false;
             Logger.Info($"{__instance.GetNameWithRole()} => {target?.GetNameWithRole() ?? "null"}", "ReportDeadBody");
-            if (Main.IgnoreReportBody.Contains(target.PlayerId)) return false;
             if (Options.IsStandardHAS && target != null && __instance == target.Object) return true; //[StandardHAS] ボタンでなく、通報者と死体が同じなら許可
             if (Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) return false;
             if (!AmongUsClient.Instance.AmHost) return true;
@@ -505,6 +504,14 @@ namespace TownOfHost
                 if (__instance.Is(CustomRoles.Mayor))
                 {
                     Main.MayorUsedButtonCount[__instance.PlayerId] += 1;
+                }
+            }
+            else
+            {
+                if (Main.IgnoreReportBody.Contains(target.PlayerId))
+                {
+                    Logger.Info($"{target.PlayerName}は通報が禁止された死体なのでキャンセルされました", "ReportDeadBody");
+                    return false;
                 }
             }
 
