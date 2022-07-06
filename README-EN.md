@@ -233,6 +233,15 @@ Precision Shooting:ON<BR>
 | Sniper Bullet Count       |
 | Sniper Precision Shooting |
 
+### TimeManager
+
+Create and idea by そうくん<br>
+
+Team : Impostors<br>
+Decision : Impostor<br>
+
+When you make a kill, this position makes it impossible to report a corpse that you have killed one kill ago.<br>
+
 ### TimeThief
 
 Created by integral, しゅー, そうくん, ゆりの<br>
