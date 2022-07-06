@@ -277,6 +277,7 @@ namespace TownOfHost
             SetupRoleOptions(1600, CustomRoles.Mafia);
             FireWorks.SetupCustomOption();
             Sniper.SetupCustomOption();
+            TimeManager.SetupCustomOption();
             SetupRoleOptions(2000, CustomRoles.Puppeteer);
             SetupRoleOptions(2300, CustomRoles.Mare);
             BlackOutMareSpeed = CustomOption.Create(2310, Color.white, "BlackOutMareSpeed", 2f, 0.25f, 3f, 0.25f, CustomRoleSpawnChances[CustomRoles.Mare]);

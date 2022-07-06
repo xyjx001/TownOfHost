@@ -362,7 +362,8 @@ namespace TownOfHost
                 Main.AllPlayerCustomSubRoles[targetId] = role;
             }
             if (role == CustomRoles.FireWorks) FireWorks.Add(targetId);
-            if (role == CustomRoles.Sniper) Sniper.Add(targetId);
+            else if (role == CustomRoles.Sniper) Sniper.Add(targetId);
+            else if (role == CustomRoles.TimeManager) TimeManager.Add(targetId);
             HudManager.Instance.SetHudActive(true);
         }
         public static void AddNameColorData(byte seerId, byte targetId, string color)

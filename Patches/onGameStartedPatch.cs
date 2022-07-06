@@ -35,7 +35,9 @@ namespace TownOfHost
             Main.SKMadmateNowCount = 0;
             Main.isCursed = false;
             Main.PuppeteerList = new Dictionary<byte, byte>();
+            Main.KillInfo = new();
 
+            Main.IgnoreReportBody = new();
             Main.AfterMeetingDeathPlayers = new();
             Main.ResetCamPlayerList = new();
 
@@ -103,6 +105,7 @@ namespace TownOfHost
             LadderDeathPatch.Reset();
             FireWorks.Init();
             Sniper.Init();
+            TimeManager.Init();
         }
     }
     [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
@@ -327,6 +330,7 @@ namespace TownOfHost
 
                 AssignCustomRolesFromList(CustomRoles.FireWorks, Shapeshifters);
                 AssignCustomRolesFromList(CustomRoles.Sniper, Shapeshifters);
+                AssignCustomRolesFromList(CustomRoles.TimeManager, Impostors);
                 AssignCustomRolesFromList(CustomRoles.Jester, Crewmates);
                 AssignCustomRolesFromList(CustomRoles.Madmate, Engineers);
                 AssignCustomRolesFromList(CustomRoles.Bait, Crewmates);
@@ -385,38 +389,61 @@ namespace TownOfHost
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
                     pc.ResetKillCooldown();
-                    if (pc.Is(CustomRoles.Sheriff))
+                    switch (pc.GetCustomRole())
                     {
-                        Main.SheriffShotLimit[pc.PlayerId] = Options.SheriffShotLimit.GetFloat();
-                        pc.RpcSetSheriffShotLimit();
-                        Logger.Info($"{pc.GetNameWithRole()} : 残り{Main.SheriffShotLimit[pc.PlayerId]}発", "Sheriff");
+                        case CustomRoles.BountyHunter:
+                            pc.ResetBountyTarget();
+                            Main.isTargetKilled.Add(pc.PlayerId, false);
+                            Main.BountyTimer.Add(pc.PlayerId, 0f); //BountyTimerにBountyHunterのデータを入力
+                            break;
+                        case CustomRoles.Witch:
+                            Main.KillOrSpell.Add(pc.PlayerId, false);
+                            break;
+                        case CustomRoles.Warlock:
+                            Main.CursedPlayers.Add(pc.PlayerId, null);
+                            Main.isCurseAndKill.Add(pc.PlayerId, false);
+                            break;
+                        case CustomRoles.FireWorks:
+                            FireWorks.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Sniper:
+                            Sniper.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.TimeThief:
+                            Main.TimeThiefKillCount[pc.PlayerId] = 0;
+                            pc.RpcSetTimeThiefKillCount();
+                            break;
+
+                        case CustomRoles.Arsonist:
+                            foreach (var ar in PlayerControl.AllPlayerControls)
+                                Main.isDoused.Add((pc.PlayerId, ar.PlayerId), false);
+                            break;
+                        case CustomRoles.Executioner:
+                            List<PlayerControl> targetList = new();
+                            rand = new Random();
+                            foreach (var target in PlayerControl.AllPlayerControls)
+                            {
+                                if (pc == target) continue;
+                                else if (!Options.ExecutionerCanTargetImpostor.GetBool() && target.GetCustomRole().IsImpostor()) continue;
+
+                                targetList.Add(target);
+                            }
+                            var Target = targetList[rand.Next(targetList.Count)];
+                            Main.ExecutionerTarget.Add(pc.PlayerId, Target.PlayerId);
+                            RPC.SendExecutionerTarget(pc.PlayerId, Target.PlayerId);
+                            Logger.Info($"{pc.GetNameWithRole()}:{Target.GetNameWithRole()}", "Executioner");
+                            break;
+
+                        case CustomRoles.Sheriff:
+                            Main.SheriffShotLimit[pc.PlayerId] = Options.SheriffShotLimit.GetFloat();
+                            pc.RpcSetSheriffShotLimit();
+                            Logger.Info($"{pc.GetNameWithRole()} : 残り{Main.SheriffShotLimit[pc.PlayerId]}発", "Sheriff");
+                            break;
+                        case CustomRoles.Mayor:
+                            Main.MayorUsedButtonCount[pc.PlayerId] = 0;
+                            break;
                     }
-                    if (pc.Is(CustomRoles.BountyHunter))
-                    {
-                        pc.ResetBountyTarget();
-                        Main.isTargetKilled.Add(pc.PlayerId, false);
-                        Main.BountyTimer.Add(pc.PlayerId, 0f); //BountyTimerにBountyHunterのデータを入力
-                    }
-                    if (pc.Is(CustomRoles.Witch)) Main.KillOrSpell.Add(pc.PlayerId, false);
-                    if (pc.Is(CustomRoles.Warlock))
-                    {
-                        Main.CursedPlayers.Add(pc.PlayerId, null);
-                        Main.isCurseAndKill.Add(pc.PlayerId, false);
-                    }
-                    if (pc.Is(CustomRoles.FireWorks)) FireWorks.Add(pc.PlayerId);
                     if (pc.Data.Role.Role == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
-                    if (pc.Is(CustomRoles.Arsonist))
-                    {
-                        foreach (var ar in PlayerControl.AllPlayerControls)
-                        {
-                            Main.isDoused.Add((pc.PlayerId, ar.PlayerId), false);
-                        }
-                    }
-                    if (pc.Is(CustomRoles.TimeThief))
-                    {
-                        Main.TimeThiefKillCount[pc.PlayerId] = 0;
-                        pc.RpcSetTimeThiefKillCount();
-                    }
                     //通常モードでかくれんぼをする人用
                     if (Options.IsStandardHAS)
                     {
@@ -427,25 +454,6 @@ namespace TownOfHost
                                 NameColorManager.Instance.RpcAdd(seer.PlayerId, pc.PlayerId, $"{pc.GetRoleColorCode()}");
                         }
                     }
-                    if (pc.Is(CustomRoles.Sniper)) Sniper.Add(pc.PlayerId);
-                    if (pc.Is(CustomRoles.Executioner))
-                    {
-                        List<PlayerControl> targetList = new();
-                        rand = new System.Random();
-                        foreach (var target in PlayerControl.AllPlayerControls)
-                        {
-                            if (pc == target) continue;
-                            else if (!Options.ExecutionerCanTargetImpostor.GetBool() && target.GetCustomRole().IsImpostor()) continue;
-
-                            targetList.Add(target);
-                        }
-                        var Target = targetList[rand.Next(targetList.Count)];
-                        Main.ExecutionerTarget.Add(pc.PlayerId, Target.PlayerId);
-                        RPC.SendExecutionerTarget(pc.PlayerId, Target.PlayerId);
-                        Logger.Info($"{pc.GetNameWithRole()}:{Target.GetNameWithRole()}", "Executioner");
-                    }
-                    if (pc.Is(CustomRoles.Mayor))
-                        Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                 }
 
                 //役職の人数を戻す
