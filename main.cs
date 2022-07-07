@@ -90,7 +90,7 @@ namespace TownOfHost
         public static Dictionary<byte, int> MayorUsedButtonCount = new();
         public static Dictionary<byte, int> TimeThiefKillCount = new();
         public static Dictionary<byte, byte> KillInfo = new(); // Key: target, Value: killer
-        public static Dictionary<byte, byte> TimeManagerKillInfo = new(); // Key: killer, Value: target
+        public static Dictionary<byte, byte> ReportManagerKillInfo = new(); // Key: killer, Value: target
         public static int AliveImpostorCount;
         public static int SKMadmateNowCount;
         public static bool witchMeeting;
@@ -195,7 +195,7 @@ namespace TownOfHost
                 {CustomRoles.FireWorks, "#ff0000"},
                 {CustomRoles.TimeThief, "#ff0000"},
                 {CustomRoles.Sniper, "#ff0000"},
-                {CustomRoles.TimeManager, "#ff0000"},
+                {CustomRoles.ReportManager, "#ff0000"},
                 //マッドメイト系役職
                 {CustomRoles.Madmate, "#ff0000"},
                 {CustomRoles.SKMadmate, "#ff0000"},
@@ -284,7 +284,7 @@ namespace TownOfHost
         Mare,
         Puppeteer,
         TimeThief,
-        TimeManager,
+        ReportManager,
         //Madmate
         MadGuardian,
         Madmate,

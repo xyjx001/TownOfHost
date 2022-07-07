@@ -335,8 +335,8 @@ namespace TownOfHost
         {
             Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}{(target.protectedByGuardian ? "(Protected)" : "")}", "MurderPlayer");
             Main.KillInfo.TryAdd(target.PlayerId, __instance.PlayerId);
-            if (__instance.Is(CustomRoles.TimeManager))
-                TimeManager.OnPlayerKilled(__instance, target);
+            if (__instance.Is(CustomRoles.ReportManager))
+                ReportManager.OnPlayerKilled(__instance, target);
         }
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
         {

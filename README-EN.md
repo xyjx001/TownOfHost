@@ -233,7 +233,7 @@ Precision Shooting:ON<BR>
 | Sniper Bullet Count       |
 | Sniper Precision Shooting |
 
-### TimeManager
+### ReportManager
 
 Create and idea by そうくん<br>
 

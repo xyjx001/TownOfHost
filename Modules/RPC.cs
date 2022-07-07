@@ -363,7 +363,7 @@ namespace TownOfHost
             }
             if (role == CustomRoles.FireWorks) FireWorks.Add(targetId);
             else if (role == CustomRoles.Sniper) Sniper.Add(targetId);
-            else if (role == CustomRoles.TimeManager) TimeManager.Add(targetId);
+            else if (role == CustomRoles.ReportManager) ReportManager.Add(targetId);
             HudManager.Instance.SetHudActive(true);
         }
         public static void AddNameColorData(byte seerId, byte targetId, string color)

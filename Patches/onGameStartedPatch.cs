@@ -107,7 +107,7 @@ namespace TownOfHost
             LadderDeathPatch.Reset();
             FireWorks.Init();
             Sniper.Init();
-            TimeManager.Init();
+            ReportManager.Init();
         }
     }
     [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
@@ -322,7 +322,7 @@ namespace TownOfHost
 
                 AssignCustomRolesFromList(CustomRoles.FireWorks, Shapeshifters);
                 AssignCustomRolesFromList(CustomRoles.Sniper, Shapeshifters);
-                AssignCustomRolesFromList(CustomRoles.TimeManager, Impostors);
+                AssignCustomRolesFromList(CustomRoles.ReportManager, Impostors);
                 AssignCustomRolesFromList(CustomRoles.Jester, Crewmates);
                 AssignCustomRolesFromList(CustomRoles.Madmate, Engineers);
                 AssignCustomRolesFromList(CustomRoles.Bait, Crewmates);
