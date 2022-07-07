@@ -239,7 +239,7 @@ namespace TownOfHost
                 { CustomRoles.ShapeMaster, "sha" },
                 { CustomRoles.TimeThief, "tt"},
                 { CustomRoles.Sniper, "snp" },
-                { CustomRoles.ReportManager, "tmn" },
+                { CustomRoles.ReportManager, "rmn" },
                 { CustomRoles.Puppeteer, "pup" },
                 { CustomRoles.Vampire, "va" },
                 { CustomRoles.Warlock, "wa" },
