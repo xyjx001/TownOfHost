@@ -1,8 +1,9 @@
 using System;
-using HarmonyLib;
-using UnityEngine;
-using UnhollowerBaseLib;
 using System.Collections.Generic;
+using System.Linq;
+using HarmonyLib;
+using UnhollowerBaseLib;
+using UnityEngine;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -27,8 +28,8 @@ namespace TownOfHost
             //壁抜け
             if (Input.GetKeyDown(KeyCode.LeftControl))
             {
-                if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started ||
-                    AmongUsClient.Instance.GameMode == GameModes.FreePlay)
+                if ((AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started || GameStates.IsFreePlay)
+                    && player.MyAnim.ClipName is "Idle" or "Walk")
                 {
                     player.Collider.offset = new Vector2(0f, 127f);
                 }
@@ -41,10 +42,58 @@ namespace TownOfHost
                     player.Collider.offset = new Vector2(0f, -0.3636f);
                 }
             }
+            //MOD入り用のボタン下テキスト変更
+            switch (player.GetCustomRole())
+            {
+                case CustomRoles.Sniper:
+                    __instance.AbilityButton.OverrideText($"{GetString("SniperSnipeButtonText")}");
+                    break;
+                case CustomRoles.FireWorks:
+                    if (FireWorks.nowFireWorksCount[player.PlayerId] == 0)
+                        __instance.AbilityButton.OverrideText($"{GetString("FireWorksExplosionButtonText")}");
+                    else
+                        __instance.AbilityButton.OverrideText($"{GetString("FireWorksInstallAtionButtonText")}");
+                    break;
+                case CustomRoles.SerialKiller:
+                    __instance.AbilityButton.OverrideText($"{GetString("SerialKillerSuicideButtonText")}");
+                    break;
+                case CustomRoles.Warlock:
+                    if (!Main.CheckShapeshift[player.PlayerId] && !Main.isCurseAndKill[player.PlayerId])
+                    {
+                        __instance.KillButton.OverrideText($"{GetString("WarlockCurseButtonText")}");
+                    }
+                    else
+                    {
+                        __instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
+                    }
+                    break;
+                case CustomRoles.Witch:
+                    if (player.IsSpellMode())
+                    {
+                        __instance.KillButton.OverrideText($"{GetString("WitchSpellButtonText")}");
+                    }
+                    else
+                    {
+                        __instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
+                    }
+                    break;
+                case CustomRoles.Vampire:
+                    __instance.KillButton.OverrideText($"{GetString("VampireBiteButtonText")}");
+                    break;
+                case CustomRoles.Arsonist:
+                    __instance.KillButton.OverrideText($"{GetString("ArsonistDouseButtonText")}");
+                    break;
+                case CustomRoles.Puppeteer:
+                    __instance.KillButton.OverrideText($"{GetString("PuppeteerOperateButtonText")}");
+                    break;
+                case CustomRoles.BountyHunter:
+                    __instance.AbilityButton.OverrideText($"{GetString("BountyHunterChangeButtonText")}");
+                    break;
+            }
 
-            __instance.GameSettings.text = OptionShower.getText();
+            __instance.GameSettings.text = OptionShower.GetText();
             __instance.GameSettings.fontSizeMin =
-            __instance.GameSettings.fontSizeMax = (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese || main.ForceJapanese.Value) ? 1.05f : 1.2f;
+            __instance.GameSettings.fontSizeMax = (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese || Main.ForceJapanese.Value) ? 1.05f : 1.2f;
             //ゲーム中でなければ以下は実行されない
             if (!AmongUsClient.Instance.IsGameStarted) return;
             //バウンティハンターのターゲットテキスト
@@ -64,15 +113,15 @@ namespace TownOfHost
             if (player.Is(CustomRoles.BountyHunter))
             {
                 //バウンティハンター用処理
-                var target = player.getBountyTarget();
-                LowerInfoText.text = target == null ? "null" : getString("BountyCurrentTarget") + ":" + player.getBountyTarget().name;
-                LowerInfoText.enabled = target != null || main.AmDebugger.Value;
+                var target = player.GetBountyTarget();
+                LowerInfoText.text = target == null ? "null" : GetString("BountyCurrentTarget") + ":" + player.GetBountyTarget().name;
+                LowerInfoText.enabled = target != null || Main.AmDebugger.Value;
             }
             else if (player.Is(CustomRoles.Witch))
             {
                 //魔女用処理
-                var ModeLang = player.GetKillOrSpell() ? "WitchModeSpell" : "WitchModeKill";
-                LowerInfoText.text = getString("WitchCurrentMode") + ":" + getString(ModeLang);
+                var ModeLang = player.IsSpellMode() ? "WitchModeSpell" : "WitchModeKill";
+                LowerInfoText.text = GetString("WitchCurrentMode") + ":" + GetString(ModeLang);
                 LowerInfoText.enabled = true;
             }
             else if (player.Is(CustomRoles.FireWorks))
@@ -83,7 +132,6 @@ namespace TownOfHost
             }
             else
             {
-                //バウンティハンターじゃない
                 LowerInfoText.enabled = false;
             }
             if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.GameMode != GameModes.FreePlay)
@@ -91,33 +139,59 @@ namespace TownOfHost
                 LowerInfoText.enabled = false;
             }
 
-            if (!player.getCustomRole().isVanilla())
+            if (!player.GetCustomRole().IsVanilla())
             {
-                TaskTextPrefix = $"<color={player.getRoleColorCode()}>{player.getRoleName()}\r\n";
+                TaskTextPrefix = $"<color={player.GetRoleColorCode()}>{player.GetRoleName()}\r\n";
                 if (player.Is(CustomRoles.Mafia))
                 {
                     if (!player.CanUseKillButton())
-                        TaskTextPrefix += $"{getString("BeforeMafiaInfo")}";
+                        TaskTextPrefix += $"{GetString("BeforeMafiaInfo")}";
                     else
-                        TaskTextPrefix += $"{getString("AfterMafiaInfo")}";
+                        TaskTextPrefix += $"{GetString("AfterMafiaInfo")}";
                 }
                 else
-                    TaskTextPrefix += $"{getString(player.getCustomRole() + "Info")}";
+                    TaskTextPrefix += $"{GetString(player.GetCustomRole() + "Info")}";
                 TaskTextPrefix += "</color>\r\n";
             }
-            switch (player.getCustomRole())
+            switch (player.GetCustomRole())
             {
                 case CustomRoles.Madmate:
-                case CustomRoles.SKMadmate:
                 case CustomRoles.Jester:
                     TaskTextPrefix += FakeTasksText;
                     break;
                 case CustomRoles.Mafia:
-                    if (!player.CanUseKillButton())
+                case CustomRoles.Mare:
+                case CustomRoles.FireWorks:
+                case CustomRoles.Sniper:
+                    if (player.CanUseKillButton())
+                    {
+                        __instance.KillButton.ToggleVisible(true && !player.Data.IsDead);
+                    }
+                    else
+                    {
                         __instance.KillButton.SetDisabled();
+                        __instance.KillButton.ToggleVisible(false);
+                    }
+                    break;
+                case CustomRoles.SKMadmate:
+                    TaskTextPrefix += FakeTasksText;
+                    __instance.KillButton.SetDisabled();
+                    __instance.KillButton.ToggleVisible(false);
                     break;
                 case CustomRoles.Sheriff:
+                    if (Main.SheriffShotLimit[player.PlayerId] == 0)
+                    {
+                        __instance.KillButton.SetDisabled();
+                        __instance.KillButton.ToggleVisible(false);
+                    }
+                    player.CanUseImpostorVent();
+                    goto DesyncImpostor;
                 case CustomRoles.Arsonist:
+                    if (player.IsDouseDone())
+                    {
+                        __instance.KillButton.SetDisabled();
+                        __instance.KillButton.ToggleVisible(false);
+                    }
                     player.CanUseImpostorVent();
                     goto DesyncImpostor;
 
@@ -139,25 +213,6 @@ namespace TownOfHost
                     ConsoleJoystick.SetMode_Task();
                 }
             }
-            if (Input.GetKeyDown(KeyCode.F3)) ShowDebugText = !ShowDebugText;
-            if (ShowDebugText)
-            {
-                string text = "==Debug State==\r\n";
-                text += "Frame Per Second: " + LastFPS + "\r\n";
-                text += "Call Notify Roles Per Second: " + LastCallNotifyRolesPerSecond + "\r\n";
-                text += "Last Set Name Desync Count: " + LastSetNameDesyncCount;
-                __instance.TaskText.text = text;
-            }
-            if (FrameRateTimer >= 1.0f)
-            {
-                FrameRateTimer = 0.0f;
-                LastFPS = NowFrameCount;
-                LastCallNotifyRolesPerSecond = NowCallNotifyRolesCount;
-                NowFrameCount = 0;
-                NowCallNotifyRolesCount = 0;
-            }
-            NowFrameCount++;
-            FrameRateTimer += Time.deltaTime;
 
             if (AmongUsClient.Instance.GameMode == GameModes.OnlineGame) RepairSender.enabled = false;
             if (Input.GetKeyDown(KeyCode.RightShift) && AmongUsClient.Instance.GameMode != GameModes.OnlineGame)
@@ -178,7 +233,7 @@ namespace TownOfHost
                 if (Input.GetKeyDown(KeyCode.Alpha8)) RepairSender.Input(8);
                 if (Input.GetKeyDown(KeyCode.Alpha9)) RepairSender.Input(9);
                 if (Input.GetKeyDown(KeyCode.Return)) RepairSender.InputEnter();
-                __instance.TaskText.text = RepairSender.getText();
+                __instance.TaskText.text = RepairSender.GetText();
             }
         }
     }
@@ -188,22 +243,9 @@ namespace TownOfHost
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team)
         {
             var player = PlayerControl.LocalPlayer;
-            if ((player.getCustomRole() == CustomRoles.Sheriff || player.getCustomRole() == CustomRoles.Arsonist) && !player.Data.IsDead)
+            if ((player.GetCustomRole() == CustomRoles.Sheriff || player.GetCustomRole() == CustomRoles.Arsonist) && !player.Data.IsDead)
             {
-                ((Renderer)__instance.MyRend).material.SetColor("_OutlineColor", Utils.getRoleColor(player.getCustomRole()));
-            }
-        }
-    }
-    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FindClosestTarget))]
-    class FindClosestTargetPatch
-    {
-        public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref bool protecting)
-        {
-            var player = PlayerControl.LocalPlayer;
-            if ((player.getCustomRole() == CustomRoles.Sheriff || player.getCustomRole() == CustomRoles.Arsonist) &&
-                __instance.Data.Role.Role != RoleTypes.GuardianAngel)
-            {
-                protecting = true;
+                ((Renderer)__instance.cosmetics.currentBodySprite.BodySprite).material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
             }
         }
     }
@@ -213,7 +255,7 @@ namespace TownOfHost
         public static void Postfix(HudManager __instance, [HarmonyArgument(0)] bool isActive)
         {
             var player = PlayerControl.LocalPlayer;
-            switch (player.getCustomRole())
+            switch (player.GetCustomRole())
             {
                 case CustomRoles.Sheriff:
                 case CustomRoles.Arsonist:
@@ -248,42 +290,6 @@ namespace TownOfHost
             }
         }
     }
-    [HarmonyPatch(typeof(HudManager), nameof(HudManager.CoShowIntro))]
-    class CoShowIntroPatch
-    {
-        public static void Prefix(HudManager __instance)
-        {
-            Logger.info("--------名前表示--------");
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                Logger.info($"{pc.PlayerId}:{pc.name}:{pc.nameText.text}");
-                main.RealNames[pc.PlayerId] = pc.name;
-                pc.nameText.text = pc.name;
-            }
-            Logger.info("------役職割り当て------");
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                Logger.info($"{pc.name}({pc.PlayerId}):{pc.getRoleName()}");
-            }
-            Logger.info("----------環境----------");
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                var text = pc.PlayerId == PlayerControl.LocalPlayer.PlayerId ? "[*]" : "";
-                text += $"{pc.PlayerId}:{pc.name}:{(pc.getClient().PlatformData.Platform).ToString().Replace("Standalone", "")}";
-                if (main.playerVersion.TryGetValue(pc.PlayerId, out PlayerVersion pv))
-                {
-                    text += $":Mod({pv.version}:";
-                    text += $"{pv.tag})";
-                }
-                else text += ":Vanilla";
-                Logger.info(text);
-            }
-            Logger.info("--------基本設定--------");
-            Logger.info(PlayerControl.GameOptions.ToHudString(GameData.Instance ? GameData.Instance.PlayerCount : 10));
-            Logger.info("---------その他---------");
-            Logger.info($"プレイヤー数: {PlayerControl.AllPlayerControls.Count}人");
-        }
-    }
     class RepairSender
     {
         public static bool enabled = false;
@@ -297,13 +303,13 @@ namespace TownOfHost
             if (!TypingAmount)
             {
                 //SystemType入力中
-                SystemType = SystemType * 10;
+                SystemType *= 10;
                 SystemType += num;
             }
             else
             {
                 //Amount入力中
-                amount = amount * 10;
+                amount *= 10;
                 amount += num;
             }
         }
@@ -317,10 +323,10 @@ namespace TownOfHost
             else
             {
                 //Amount入力中
-                send();
+                Send();
             }
         }
-        public static void send()
+        public static void Send()
         {
             ShipStatus.Instance.RpcRepairSystem((SystemTypes)SystemType, amount);
             Reset();
@@ -331,7 +337,7 @@ namespace TownOfHost
             SystemType = 0;
             amount = 0;
         }
-        public static string getText()
+        public static string GetText()
         {
             return SystemType.ToString() + "(" + ((SystemTypes)SystemType).ToString() + ")\r\n" + amount;
         }

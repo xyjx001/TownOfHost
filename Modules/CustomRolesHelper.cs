@@ -2,89 +2,74 @@ namespace TownOfHost
 {
     static class CustomRolesHelper
     {
-        public static bool isImpostor(this CustomRoles role)
+        public static bool IsImpostor(this CustomRoles role)
         {
             return
-                role == CustomRoles.Impostor ||
-                role == CustomRoles.Shapeshifter ||
-                role == CustomRoles.BountyHunter ||
-                role == CustomRoles.Vampire ||
-                role == CustomRoles.Witch ||
-                role == CustomRoles.ShapeMaster ||
-                role == CustomRoles.Warlock ||
-                role == CustomRoles.Obstacle ||
-                role == CustomRoles.SerialKiller ||
-                role == CustomRoles.Puppeteer ||
-                role == CustomRoles.EvilWatcher ||
-                role == CustomRoles.Mafia ||
-                role == CustomRoles.FireWorks ||
-                role == CustomRoles.Sniper;
+                role is CustomRoles.Impostor or
+                CustomRoles.Shapeshifter or
+                CustomRoles.BountyHunter or
+                CustomRoles.Vampire or
+                CustomRoles.Witch or
+                CustomRoles.ShapeMaster or
+                CustomRoles.Warlock or
+                CustomRoles.Obstacle or
+                CustomRoles.SerialKiller or
+                CustomRoles.Mare or
+                CustomRoles.Puppeteer or
+                CustomRoles.EvilWatcher or
+                CustomRoles.TimeThief or
+                CustomRoles.Mafia or
+                CustomRoles.FireWorks or
+                CustomRoles.Sniper;
         }
-        public static bool isMadmate(this CustomRoles role)
+        public static bool IsMadmate(this CustomRoles role)
         {
             return
-                role == CustomRoles.Madmate ||
-                role == CustomRoles.SKMadmate ||
-                role == CustomRoles.MadGuardian ||
-                role == CustomRoles.MadSnitch ||
-                role == CustomRoles.MSchrodingerCat;
+                role is CustomRoles.Madmate or
+                CustomRoles.SKMadmate or
+                CustomRoles.MadGuardian or
+                CustomRoles.MadSnitch or
+                CustomRoles.MSchrodingerCat;
         }
-        public static bool isImpostorTeam(this CustomRoles role) => role.isImpostor() || role.isMadmate();
-        public static bool isNeutral(this CustomRoles role)
+        public static bool IsImpostorTeam(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
+        public static bool IsNeutral(this CustomRoles role)
         {
             return
-                role == CustomRoles.Jester ||
-                role == CustomRoles.Opportunist ||
-                role == CustomRoles.SchrodingerCat ||
-                role == CustomRoles.Terrorist ||
-                role == CustomRoles.Executioner ||
-                role == CustomRoles.Arsonist ||
-                role == CustomRoles.Egoist ||
-                role == CustomRoles.EgoSchrodingerCat ||
-                role == CustomRoles.HASTroll ||
-                role == CustomRoles.HASFox;
+                role is CustomRoles.Jester or
+                CustomRoles.Opportunist or
+                CustomRoles.SchrodingerCat or
+                CustomRoles.Terrorist or
+                CustomRoles.Executioner or
+                CustomRoles.Arsonist or
+                CustomRoles.Egoist or
+                CustomRoles.EgoSchrodingerCat or
+                CustomRoles.HASTroll or
+                CustomRoles.HASFox;
         }
-        public static bool isVanilla(this CustomRoles role)
+        public static bool IsCrewmate(this CustomRoles role) => !role.IsImpostorTeam() && !role.IsNeutral();
+        public static bool IsVanilla(this CustomRoles role)
         {
             return
-                role == CustomRoles.Crewmate ||
-                role == CustomRoles.Engineer ||
-                role == CustomRoles.Scientist ||
-                role == CustomRoles.GuardianAngel ||
-                role == CustomRoles.Impostor ||
-                role == CustomRoles.Shapeshifter;
+                role is CustomRoles.Crewmate or
+                CustomRoles.Engineer or
+                CustomRoles.Scientist or
+                CustomRoles.GuardianAngel or
+                CustomRoles.Impostor or
+                CustomRoles.Shapeshifter;
         }
-        public static bool CanUseKillButton(this CustomRoles role)
-        {
-            bool canUse =
-                role.isImpostor() ||
-                role == CustomRoles.Sheriff ||
-                role == CustomRoles.Arsonist;
 
-            if (role == CustomRoles.Mafia)
-            {
-                int AliveImpostorCount = 0;
-                foreach (var pc in PlayerControl.AllPlayerControls)
-                {
-                    CustomRoles pc_role = pc.getCustomRole();
-                    if (pc_role.isImpostor() && !pc.Data.IsDead && pc_role != CustomRoles.Mafia) AliveImpostorCount++;
-                }
-                if (AliveImpostorCount > 0) canUse = false;
-            }
-            return canUse;
-        }
-        public static RoleType getRoleType(this CustomRoles role)
+        public static RoleType GetRoleType(this CustomRoles role)
         {
             RoleType type = RoleType.Crewmate;
-            if (role.isImpostor()) type = RoleType.Impostor;
-            if (role.isNeutral()) type = RoleType.Neutral;
-            if (role.isMadmate()) type = RoleType.Madmate;
+            if (role.IsImpostor()) type = RoleType.Impostor;
+            if (role.IsNeutral()) type = RoleType.Neutral;
+            if (role.IsMadmate()) type = RoleType.Madmate;
             return type;
         }
-        public static void setCount(this CustomRoles role, int num) => Options.setRoleCount(role, num);
-        public static int getCount(this CustomRoles role)
+        public static void SetCount(this CustomRoles role, int num) => Options.SetRoleCount(role, num);
+        public static int GetCount(this CustomRoles role)
         {
-            if (role.isVanilla())
+            if (role.IsVanilla())
             {
                 RoleOptionsData roleOpt = PlayerControl.GameOptions.RoleOptions;
                 return role switch
@@ -99,10 +84,30 @@ namespace TownOfHost
             }
             else
             {
-                return Options.getRoleCount(role);
+                return Options.GetRoleCount(role);
             }
         }
-        public static bool isEnable(this CustomRoles role) => role.getCount() > 0;
+        public static float GetChance(this CustomRoles role)
+        {
+            if (role.IsVanilla())
+            {
+                RoleOptionsData roleOpt = PlayerControl.GameOptions.RoleOptions;
+                return role switch
+                {
+                    CustomRoles.Engineer => roleOpt.GetChancePerGame(RoleTypes.Engineer),
+                    CustomRoles.Scientist => roleOpt.GetChancePerGame(RoleTypes.Scientist),
+                    CustomRoles.Shapeshifter => roleOpt.GetChancePerGame(RoleTypes.Shapeshifter),
+                    CustomRoles.GuardianAngel => roleOpt.GetChancePerGame(RoleTypes.GuardianAngel),
+                    CustomRoles.Crewmate => roleOpt.GetChancePerGame(RoleTypes.Crewmate),
+                    _ => 0
+                } / 100f;
+            }
+            else
+            {
+                return Options.GetRoleChance(role);
+            }
+        }
+        public static bool IsEnable(this CustomRoles role) => role.GetCount() > 0;
     }
     public enum RoleType
     {

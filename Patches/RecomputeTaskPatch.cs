@@ -1,4 +1,3 @@
-
 using HarmonyLib;
 
 namespace TownOfHost
@@ -13,7 +12,7 @@ namespace TownOfHost
             foreach (var p in __instance.AllPlayers)
             {
                 if (p == null) continue;
-                var hasTasks = Utils.hasTasks(p);
+                var hasTasks = Utils.HasTasks(p);
                 if (hasTasks)
                 {
                     // if (p.Tasks == null)
@@ -37,12 +36,6 @@ namespace TownOfHost
     {
         public static void Postfix(GameData __instance)
         {
-            if (!AmongUsClient.Instance.AmHost) return;
-
-            Utils.NotifyRoles();
-            foreach (var p in __instance.AllPlayers)
-                if (p.Object.getCustomRole() == CustomRoles.Lighter || p.Object.Is(CustomRoles.SpeedBooster) || p.Object.Is(CustomRoles.Doctor))
-                    Utils.CustomSyncAllSettings();//ライターもしくはスピードブースターもしくはドクターがいる試合のみタスク終了時にCustomSyncAllSettingsを実行する
         }
     }
 }
