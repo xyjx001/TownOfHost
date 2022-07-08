@@ -172,34 +172,34 @@ namespace TownOfHost
         }
         public static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player)
         {
-            if (CustomRoles.Obstacle.isEnable() && systemType == SystemTypes.Sabotage)
+            if (CustomRoles.Obstacle.IsEnable() && systemType == SystemTypes.Sabotage)
             {
-                if (!main.ObstacleTarget.ContainsKey(player.PlayerId))
+                if (!Main.ObstacleTarget.ContainsKey(player.PlayerId))
                 {
                     var rand = new System.Random();
                     List<PlayerControl> targetplayers = new List<PlayerControl>();
                     //切断者と死亡者を除外
                     foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                     {
-                        if (!p.Data.Disconnected && !p.Data.IsDead && !p.Is(CustomRoles.Obstacle) && !main.ObstacleTarget.ContainsValue(p.PlayerId)) targetplayers.Add(p);
+                        if (!p.Data.Disconnected && !p.Data.IsDead && !p.Is(CustomRoles.Obstacle) && !Main.ObstacleTarget.ContainsValue(p.PlayerId)) targetplayers.Add(p);
                     }
                     //ターゲットが0ならアップ先をプレイヤーをnullに
                     if (targetplayers.Count >= 1)
                     {
                         PlayerControl target = targetplayers[rand.Next(0, targetplayers.Count)];
-                        Logger.SendInGame("ジャマーのターゲット:" + target.nameText.text);
-                        main.ObstacleTarget.Add(player.PlayerId, target.PlayerId);
+                        Logger.SendInGame("ジャマーのターゲット:" + target.cosmetics.nameText.text);
+                        Main.ObstacleTarget.Add(player.PlayerId, target.PlayerId);
                     }
                     else
                     {
-                        main.ObstacleTarget.Add(player.PlayerId, 255);
+                        Main.ObstacleTarget.Add(player.PlayerId, 255);
                     }
                 }
-                if (main.ObstacleTarget.ContainsValue(player.PlayerId))
-                    main.AllPlayerSpeed[player.PlayerId] = Options.ObstacleDownSpeed.GetFloat();
+                if (Main.ObstacleTarget.ContainsValue(player.PlayerId))
+                    Main.AllPlayerSpeed[player.PlayerId] = Options.ObstacleDownSpeed.GetFloat();
                 new LateTask(() =>
                 {
-                    main.AllPlayerSpeed[player.PlayerId] = main.RealOptionsData.PlayerSpeedMod;
+                    Main.AllPlayerSpeed[player.PlayerId] = Main.RealOptionsData.PlayerSpeedMod;
                 }, Options.ReturnPlayerSpeedTime.GetFloat());
             }
             Logger.SendInGame("サボタージュ" + player.PlayerId);
