@@ -382,7 +382,7 @@ namespace TownOfHost
                     }
                     break;
                 case CustomRoles.MimicA:
-                    opt.RoleOptions.ShapeshifterCooldown = 0.1f;
+                    opt.RoleOptions.ShapeshifterCooldown = 5f;
                     opt.RoleOptions.ShapeshifterDuration = 0f;
                 break;
 
