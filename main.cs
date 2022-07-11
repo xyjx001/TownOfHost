@@ -326,26 +326,26 @@ namespace TownOfHost
     //WinData
     public enum CustomWinner
     {
-        Draw = 0,
-        Default,
-        Impostor,
-        Crewmate,
-        Jester,
-        Terrorist,
-        Lovers,
-        Executioner,
-        Arsonist,
-        Egoist,
-        HASTroll
+        Draw = -1,
+        Default = -2,
+        Impostor = CustomRoles.Impostor,
+        Crewmate = CustomRoles.Crewmate,
+        Jester = CustomRoles.Jester,
+        Terrorist = CustomRoles.Terrorist,
+        Lovers = CustomRoles.Lovers,
+        Executioner = CustomRoles.Executioner,
+        Arsonist = CustomRoles.Arsonist,
+        Egoist = CustomRoles.Egoist,
+        HASTroll = CustomRoles.HASTroll,
     }
     public enum AdditionalWinners
     {
-        None = 0,
-        Opportunist,
-        SchrodingerCat,
-        Executioner,
-        Alice,
-        HASFox
+        None = -1,
+        Opportunist = CustomRoles.Opportunist,
+        SchrodingerCat = CustomRoles.SchrodingerCat,
+        Executioner = CustomRoles.Executioner,
+        Alice = CustomRoles.Alice,
+        HASFox = CustomRoles.HASFox,
     }
     /*public enum CustomRoles : byte
     {
