@@ -103,6 +103,7 @@ namespace TownOfHost
             LadderDeathPatch.Reset();
             FireWorks.Init();
             Sniper.Init();
+            Alice.Init();
         }
     }
     [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]

@@ -10,6 +10,7 @@ namespace TownOfHost
         static readonly int Id = 50800;
         public static List<byte> playerIdList = new();
 
+        public static List<PlayerControl> KilledPlayer = new();
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, CustomRoles.Alice);
@@ -17,6 +18,7 @@ namespace TownOfHost
         public static void Init()
         {
             playerIdList = new();
+            KilledPlayer = new();
         }
         public static void Add(byte playerId)
         {
