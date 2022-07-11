@@ -344,6 +344,7 @@ namespace TownOfHost
                         }
                     }
                     if (pc.Is(CustomRoles.Sniper)) Sniper.Add(pc.PlayerId);
+                    if (pc.Is(CustomRoles.Alice)) Alice.Add(pc.PlayerId);
                     if (pc.Is(CustomRoles.Executioner))
                     {
                         List<PlayerControl> targetList = new();
