@@ -337,9 +337,15 @@ namespace TownOfHost
         }
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
         {
-            if (!target.Data.IsDead || !AmongUsClient.Instance.AmHost) return;
+            if (!target.Data.IsDead) return;
 
             PlayerControl killer = __instance; //読み替え変数
+
+            if (__instance.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Alice) && !Alice.CompleteWinCondition.Contains(target.PlayerId))
+                Alice.CompleteWinCondition.Add(target.PlayerId); //インポスター陣営にキルされたアリスを追加
+
+            if (!AmongUsClient.Instance.AmHost) return;//以下、ホストのみ実行
+
             if (PlayerState.GetDeathReason(target.PlayerId) == PlayerState.DeathReason.Sniped)
             {
                 killer = Utils.GetPlayerById(Sniper.GetSniper(target.PlayerId));
@@ -391,8 +397,6 @@ namespace TownOfHost
             }
             if (target.Is(CustomRoles.TimeThief))
                 target.ResetThiefVotingTime();
-            if (killer.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Alice) && !Alice.CompleteWinCondition.Contains(target.PlayerId))
-                Alice.CompleteWinCondition.Add(target.PlayerId); //インポスター陣営にキルされたアリスを追加
 
 
             foreach (var pc in PlayerControl.AllPlayerControls)
@@ -798,7 +802,7 @@ namespace TownOfHost
             if (__instance.AmOwner)
             {
                 //キルターゲットの上書き処理
-                if (GameStates.IsInTask && (__instance.Is(CustomRoles.Sheriff) || __instance.Is(CustomRoles.Arsonist)) && !__instance.Data.IsDead)
+                if (GameStates.IsInTask && Main.ResetCamPlayerList.Contains(__instance.PlayerId) && !__instance.Data.IsDead)
                 {
                     var players = __instance.GetPlayersInAbilityRangeSorted(false);
                     PlayerControl closest = players.Count <= 0 ? null : players[0];

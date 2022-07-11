@@ -212,13 +212,13 @@ namespace TownOfHost
         {
             if (player.GetButtonDown(8) && // 8:キルボタンのactionId
             PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
-            (PlayerControl.LocalPlayer.Is(CustomRoles.Sheriff) || PlayerControl.LocalPlayer.Is(CustomRoles.Arsonist)) && PlayerControl.LocalPlayer.Data.Role.Role != RoleTypes.GuardianAngel)
+            Main.ResetCamPlayerList.Contains(PlayerControl.LocalPlayer.PlayerId) && PlayerControl.LocalPlayer.Data.Role.Role != RoleTypes.GuardianAngel)
             {
                 DestroyableSingleton<HudManager>.Instance.KillButton.DoClick();
             }
             if (player.GetButtonDown(50) && // 50:インポスターのベントボタンのactionId
             PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
-            PlayerControl.LocalPlayer.Is(CustomRoles.Arsonist) && PlayerControl.LocalPlayer.Data.Role.Role != RoleTypes.GuardianAngel)
+            (PlayerControl.LocalPlayer.Is(CustomRoles.Arsonist) || PlayerControl.LocalPlayer.Is(CustomRoles.Alice)) && PlayerControl.LocalPlayer.Data.Role.Role != RoleTypes.GuardianAngel)
             {
                 DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.DoClick();
             }

@@ -25,6 +25,7 @@ namespace TownOfHost
         ResetNameColorData,
         DoSpell,
         SniperSync,
+        AliceList,
         SetLoversPlayers,
         SetExecutionerTarget,
         RemoveExecutionerTarget,
@@ -172,6 +173,9 @@ namespace TownOfHost
                     break;
                 case CustomRPC.SniperSync:
                     Sniper.ReceiveRPC(reader);
+                    break;
+                case CustomRPC.AliceList:
+                    Alice.ReceiveRPC(reader);
                     break;
                 case CustomRPC.SetLoversPlayers:
                     Main.LoversPlayers.Clear();

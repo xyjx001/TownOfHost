@@ -157,7 +157,7 @@ namespace TownOfHost
 
                 AssignDesyncRole(CustomRoles.Sheriff, AllPlayers, sender, BaseRole: RoleTypes.Impostor);
                 AssignDesyncRole(CustomRoles.Arsonist, AllPlayers, sender, BaseRole: RoleTypes.Impostor);
-                AssignDesyncRole(CustomRoles.Alice, AllPlayers, sender, BaseRole: RoleTypes.Impostor, hostBaseRole: RoleTypes.Impostor);
+                AssignDesyncRole(CustomRoles.Alice, AllPlayers, sender, BaseRole: RoleTypes.Impostor);
             }
             if (sender.CurrentState == CustomRpcSender.State.InRootMessage) sender.EndMessage();
             //以下、バニラ側の役職割り当てが入る
@@ -390,12 +390,12 @@ namespace TownOfHost
             }
 
             // ResetCamが必要なプレイヤーのリスト
-            Main.ResetCamPlayerList = PlayerControl.AllPlayerControls.ToArray().Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Sheriff).Select(p => p.PlayerId).ToList();
+            Main.ResetCamPlayerList = PlayerControl.AllPlayerControls.ToArray().Where(p => p.GetCustomRole() is CustomRoles.Arsonist or CustomRoles.Sheriff or CustomRoles.Alice).Select(p => p.PlayerId).ToList();
             Utils.CountAliveImpostors();
             Utils.CustomSyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
         }
-        private static void AssignDesyncRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
+        private static void AssignDesyncRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole)
         {
             if (!role.IsEnable()) return;
 
@@ -429,8 +429,8 @@ namespace TownOfHost
                 else
                 {
                     //ホストは代わりに普通のクルーにする
-                    player.SetRole(hostBaseRole); //ホスト視点用
-                    sender.RpcSetRole(player, hostBaseRole);
+                    player.SetRole(RoleTypes.Crewmate); //ホスト視点用
+                    sender.RpcSetRole(player, RoleTypes.Crewmate);
                 }
                 player.Data.IsDead = true;
             }

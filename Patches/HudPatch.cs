@@ -153,53 +153,62 @@ namespace TownOfHost
                     TaskTextPrefix += $"{GetString(player.GetCustomRole() + "Info")}";
                 TaskTextPrefix += "</color>\r\n";
             }
-            switch (player.GetCustomRole())
-            {
-                case CustomRoles.Madmate:
-                case CustomRoles.Jester:
-                    TaskTextPrefix += FakeTasksText;
-                    break;
-                case CustomRoles.Mafia:
-                case CustomRoles.Mare:
-                case CustomRoles.FireWorks:
-                case CustomRoles.Sniper:
-                    if (player.CanUseKillButton())
-                    {
-                        __instance.KillButton.ToggleVisible(true && !player.Data.IsDead);
-                    }
-                    else
-                    {
+            if (GameStates.IsInTask)
+                switch (player.GetCustomRole())
+                {
+                    case CustomRoles.Madmate:
+                    case CustomRoles.Jester:
+                        TaskTextPrefix += FakeTasksText;
+                        break;
+                    case CustomRoles.Mafia:
+                    case CustomRoles.Mare:
+                    case CustomRoles.FireWorks:
+                    case CustomRoles.Sniper:
+                        if (player.CanUseKillButton())
+                        {
+                            __instance.KillButton.ToggleVisible(true && !player.Data.IsDead);
+                        }
+                        else
+                        {
+                            __instance.KillButton.SetDisabled();
+                            __instance.KillButton.ToggleVisible(false);
+                        }
+                        break;
+                    case CustomRoles.SKMadmate:
+                        TaskTextPrefix += FakeTasksText;
                         __instance.KillButton.SetDisabled();
                         __instance.KillButton.ToggleVisible(false);
-                    }
-                    break;
-                case CustomRoles.SKMadmate:
-                    TaskTextPrefix += FakeTasksText;
-                    __instance.KillButton.SetDisabled();
-                    __instance.KillButton.ToggleVisible(false);
-                    break;
-                case CustomRoles.Sheriff:
-                    if (Main.SheriffShotLimit[player.PlayerId] == 0)
-                    {
-                        __instance.KillButton.SetDisabled();
-                        __instance.KillButton.ToggleVisible(false);
-                    }
-                    player.CanUseImpostorVent();
-                    goto DesyncImpostor;
-                case CustomRoles.Arsonist:
-                    if (player.IsDouseDone())
-                    {
-                        __instance.KillButton.SetDisabled();
-                        __instance.KillButton.ToggleVisible(false);
-                    }
-                    player.CanUseImpostorVent();
-                    goto DesyncImpostor;
+                        break;
+                    case CustomRoles.Sheriff:
+                        if (Main.SheriffShotLimit[player.PlayerId] == 0)
+                        {
+                            __instance.KillButton.SetDisabled();
+                            __instance.KillButton.ToggleVisible(false);
+                        }
+                        player.CanUseImpostorVent();
+                        goto DesyncImpostor;
+                    case CustomRoles.Arsonist:
+                        if (player.IsDouseDone())
+                        {
+                            __instance.KillButton.SetDisabled();
+                            __instance.KillButton.ToggleVisible(false);
+                        }
+                        player.CanUseImpostorVent();
+                        goto DesyncImpostor;
+                    case CustomRoles.Alice:
+                        __instance.KillButton.ToggleVisible(true);
+                        __instance.SabotageButton.SetEnabled();
+                        __instance.SabotageButton.ToggleVisible(true);
+                        player.CanUseImpostorVent();
+                        goto DesyncImpostor;
 
-                DesyncImpostor:
-                    if (player.Data.Role.Role != RoleTypes.GuardianAngel)
-                        player.Data.Role.CanUseKillButton = true;
-                    break;
-            }
+                    DesyncImpostor:
+                        if (player.Data.Role.Role != RoleTypes.GuardianAngel)
+                        {
+                            player.Data.Role.CanUseKillButton = true;
+                        }
+                        break;
+                }
 
             if (!__instance.TaskText.text.Contains(TaskTextPrefix)) __instance.TaskText.text = TaskTextPrefix + "\r\n" + __instance.TaskText.text;
 
@@ -265,6 +274,12 @@ namespace TownOfHost
                     __instance.ImpostorVentButton.ToggleVisible(false);
                     __instance.AbilityButton.ToggleVisible(false);
                     break;
+                case CustomRoles.Alice:
+                    if (player.Data.Role.Role != RoleTypes.GuardianAngel)
+                        __instance.KillButton.ToggleVisible(isActive && !player.Data.IsDead);
+                    __instance.SabotageButton.ToggleVisible(true);
+                    __instance.ImpostorVentButton.ToggleVisible(true);
+                    break;
             }
         }
     }
@@ -279,15 +294,31 @@ namespace TownOfHost
                 __state = player.Data.Role.TeamType;
                 player.Data.Role.TeamType = RoleTeamTypes.Crewmate;
             }
+            if (player.Is(CustomRoles.Alice))
+            {
+                __state = player.Data.Role.TeamType;
+                player.Data.Role.TeamType = RoleTeamTypes.Impostor;
+            }
         }
 
         public static void Postfix(ref RoleTeamTypes __state)
         {
             var player = PlayerControl.LocalPlayer;
-            if (player.Is(CustomRoles.Sheriff) || player.Is(CustomRoles.Arsonist))
+            if (Main.ResetCamPlayerList.Contains(player.PlayerId))
             {
                 player.Data.Role.TeamType = __state;
             }
+        }
+    }
+    [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.DoClick))]
+    class SabotageButtonDoClickPatch
+    {
+        public static bool Prefix(ref RoleBehaviour __state)
+        {
+            var player = PlayerControl.LocalPlayer;
+            if (player.Is(CustomRoles.Alice))
+                __state = player.Data.Role;
+            return false;
         }
     }
     class RepairSender

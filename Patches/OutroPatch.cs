@@ -154,12 +154,12 @@ namespace TownOfHost
                             Main.additionalwinners.Add(AdditionalWinners.Executioner);
                         }
                     }
-                //Alice
+                /*//Alice
                 if (pc.Is(CustomRoles.Alice) && Alice.CanWin(pc.PlayerId))
                 {
                     winner.Add(pc);
                     Main.additionalwinners.Add(AdditionalWinners.Alice);
-                }
+                }*/
             }
             //Alice
             Alice.AddWinners(winner);

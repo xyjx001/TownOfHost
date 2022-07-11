@@ -14,6 +14,8 @@ namespace TownOfHost
             var statistics = new PlayerStatistics(__instance);
             if (Options.NoGameEnd.GetBool()) return false;
 
+            CheckAdditionalWinForAlice(statistics);
+
             if (CheckAndEndGameForJester(__instance)) return false;
             if (CheckAndEndGameForTerrorist(__instance)) return false;
             if (CheckAndEndGameForExecutioner(__instance)) return false;
@@ -183,12 +185,14 @@ namespace TownOfHost
         }
         public static void CheckAdditionalWinForAlice(PlayerStatistics statistics)
         {
+            if (statistics.TotalAlive != 2) return;
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                if (Alice.playerIdList.Contains(pc.PlayerId)) continue;
-                if (statistics.TotalAlive - 1 == 1 && PlayerState.isDead[pc.PlayerId] && !pc.Is(RoleType.Neutral))
+                if (Alice.playerIdList.Contains(pc.PlayerId) && Alice.CompleteWinCondition.Contains(pc.PlayerId)) continue;
+                if (PlayerState.isDead[pc.PlayerId] && !pc.Is(RoleType.Neutral))
                 {
                     Alice.CompleteWinCondition.Add(pc.PlayerId);
+                    Alice.SendRPC(pc.PlayerId);
                     break;
                 }
             }
@@ -206,7 +210,10 @@ namespace TownOfHost
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
                 var LoseImpostorRole = Main.AliveImpostorCount == 0 ? pc.Is(RoleType.Impostor) : pc.Is(CustomRoles.Egoist);
-                if (pc.Is(CustomRoles.Sheriff) || (!(Main.currentWinner == CustomWinner.Arsonist) && pc.Is(CustomRoles.Arsonist)) || LoseImpostorRole)
+                if (pc.Is(CustomRoles.Sheriff) ||
+                (!(Main.currentWinner == CustomWinner.Arsonist) && pc.Is(CustomRoles.Arsonist)) ||
+                (!Alice.CanWin(pc.PlayerId) && pc.Is(CustomRoles.Alice)) ||
+                LoseImpostorRole)
                 {
                     pc.RpcSetRole(RoleTypes.GuardianAngel);
                 }
@@ -251,7 +258,7 @@ namespace TownOfHost
                             }
 
                             if (playerInfo.Role.TeamType == RoleTeamTypes.Impostor &&
-                            (playerInfo.GetCustomRole() != CustomRoles.Sheriff || playerInfo.GetCustomRole() != CustomRoles.Arsonist))
+                            (!Main.ResetCamPlayerList.Contains(playerInfo.PlayerId)))
                             {
                                 numImpostorsAlive++;
                             }

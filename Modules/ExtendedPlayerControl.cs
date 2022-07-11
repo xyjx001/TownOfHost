@@ -233,7 +233,7 @@ namespace TownOfHost
                 case CustomRoles.Egoist:
                     return Options.SheriffCanKillEgoist.GetBool();
                 case CustomRoles.Alice:
-                    return Options.SheriffCanKillEgoist.GetBool();
+                    return Options.SheriffCanKillAlice.GetBool();
                 case CustomRoles.EgoSchrodingerCat:
                     return Options.SheriffCanKillEgoShrodingerCat.GetBool();
                 case CustomRoles.SchrodingerCat:
@@ -321,6 +321,9 @@ namespace TownOfHost
                 case CustomRoles.Sheriff:
                 case CustomRoles.Arsonist:
                     opt.SetVision(player, false);
+                    break;
+                case CustomRoles.Alice:
+                    opt.SetVision(player, true);
                     break;
                 case CustomRoles.Lighter:
                     if (player.GetPlayerTaskState().IsTaskFinished)
@@ -591,8 +594,7 @@ namespace TownOfHost
         {
             bool canUse =
                 pc.GetCustomRole().IsImpostor() ||
-                pc.Is(CustomRoles.Sheriff) ||
-                pc.Is(CustomRoles.Arsonist);
+                Main.ResetCamPlayerList.Contains(pc.PlayerId);
 
             return pc.GetCustomRole() switch
             {
@@ -685,6 +687,10 @@ namespace TownOfHost
                     DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(CanUse && !player.Data.IsDead);
                     player.Data.Role.CanVent = CanUse;
                     return;
+                case CustomRoles.Alice:
+                    DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(true && !player.Data.IsDead);
+                    player.Data.Role.CanVent = true;
+                    break;
             }
         }
         public static bool IsDouseDone(this PlayerControl player)

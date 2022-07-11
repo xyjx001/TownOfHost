@@ -121,9 +121,6 @@ namespace TownOfHost
                     break;
 
                 case CustomRoles.Executioner:
-                    PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
-                    break;
-
                 case CustomRoles.Vampire:
                     PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                     break;
@@ -137,15 +134,13 @@ namespace TownOfHost
                     __instance.BackgroundBar.material.color = Palette.CrewmateBlue;
                     break;
                 case CustomRoles.Arsonist:
+                case CustomRoles.Alice:
+                case CustomRoles.Mayor:
                     PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                     break;
 
                 case CustomRoles.SchrodingerCat:
                     PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-                    break;
-
-                case CustomRoles.Mayor:
-                    PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                     break;
 
             }

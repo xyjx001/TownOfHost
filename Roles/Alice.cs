@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using Hazel;
-using UnityEngine;
 
 namespace TownOfHost
 {
@@ -42,6 +40,16 @@ namespace TownOfHost
                     Main.additionalwinners.Add(AdditionalWinners.Alice);
                 }
             }
+        }
+        public static void SendRPC(byte id)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AliceList, SendOption.Reliable, -1);
+            writer.Write(id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void ReceiveRPC(MessageReader reader)
+        {
+            CompleteWinCondition.Add(reader.ReadByte());
         }
     }
 }
