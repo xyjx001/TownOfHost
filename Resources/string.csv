@@ -304,6 +304,9 @@ NumberOfLovers,"Number Of Lovers(x2members)",ラバーズの組数(x2人数)
 TimeThiefDecreaseMeetingTime,TimeThief Decrease Meeting Time,減少する会議時間
 TimeThiefLowerLimitVotingTime,TimeThief Lower Limit Voting Time,投票時間の下限
 TimeThiefReturnStolenTimeUponDeath,Return Stolen Time Upon Death,死亡後に盗んだ時間を返す
+AliceKillCooldown,Alice KillCooldown,アリスのキルクールダウン
+AlicePlayerVision,Alice Vision,アリスの視界
+AliceAffectedByLightsOut,Alice affected by lights out,アリスが停電の影響を受ける
 
 ## かくれんぼ設定
 HideAndSeekOptions,HideAndSeek Options,かくれんぼの設定

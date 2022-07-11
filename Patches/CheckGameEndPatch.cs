@@ -186,16 +186,7 @@ namespace TownOfHost
         public static void CheckAdditionalWinForAlice(PlayerStatistics statistics)
         {
             if (statistics.TotalAlive != 2) return;
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (Alice.playerIdList.Contains(pc.PlayerId) && Alice.CompleteWinCondition.Contains(pc.PlayerId)) continue;
-                if (PlayerState.isDead[pc.PlayerId] && !pc.Is(RoleType.Neutral))
-                {
-                    Alice.CompleteWinCondition.Add(pc.PlayerId);
-                    Alice.SendRPC(pc.PlayerId);
-                    break;
-                }
-            }
+            Alice.CheckAdditionalWin();
         }
 
 
