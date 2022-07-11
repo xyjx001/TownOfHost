@@ -155,17 +155,14 @@ namespace TownOfHost
                         }
                     }
                 //Alice
-            }
-            foreach (var id in Alice.playerIdList)
-            {
-                var alice = Utils.GetPlayerById(id);
-                if (alice == null) continue;
-                if (Alice.KilledPlayer.Contains(alice))
+                if (pc.Is(CustomRoles.Alice) && Alice.CanWin(pc.PlayerId))
                 {
-                    winner.Add(alice);
+                    winner.Add(pc);
                     Main.additionalwinners.Add(AdditionalWinners.Alice);
                 }
             }
+            //Alice
+            Alice.AddWinners(winner);
 
             //HideAndSeek専用
             if (Options.CurrentGameMode == CustomGameMode.HideAndSeek &&

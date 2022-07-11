@@ -181,6 +181,18 @@ namespace TownOfHost
             }
             return false;
         }
+        public static void CheckAdditionalWinForAlice(PlayerStatistics statistics)
+        {
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                if (Alice.playerIdList.Contains(pc.PlayerId)) continue;
+                if (statistics.TotalAlive - 1 == 1 && PlayerState.isDead[pc.PlayerId] && !pc.Is(RoleType.Neutral))
+                {
+                    Alice.CompleteWinCondition.Add(pc.PlayerId);
+                    break;
+                }
+            }
+        }
 
 
         private static void EndGameForSabotage(ShipStatus __instance)

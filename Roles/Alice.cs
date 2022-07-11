@@ -10,7 +10,7 @@ namespace TownOfHost
         static readonly int Id = 50800;
         public static List<byte> playerIdList = new();
 
-        public static List<PlayerControl> KilledPlayer = new();
+        public static HashSet<byte> CompleteWinCondition = new();
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, CustomRoles.Alice);
@@ -18,7 +18,7 @@ namespace TownOfHost
         public static void Init()
         {
             playerIdList = new();
-            KilledPlayer = new();
+            CompleteWinCondition = new();
         }
         public static void Add(byte playerId)
         {
@@ -27,6 +27,21 @@ namespace TownOfHost
         public static bool IsEnable()
         {
             return playerIdList.Count > 0;
+        }
+        public static bool CanWin(byte id) => CompleteWinCondition.Contains(id);
+        public static void AddWinners(List<PlayerControl> winner)
+        {
+            foreach (var id in playerIdList)
+            {
+                var alice = Utils.GetPlayerById(id);
+                if (alice == null) continue;
+                if (CanWin(alice.PlayerId))
+                {
+                    Logger.Info("Runned", "Alice");
+                    winner.Add(alice);
+                    Main.additionalwinners.Add(AdditionalWinners.Alice);
+                }
+            }
         }
     }
 }
