@@ -52,7 +52,6 @@ namespace TownOfHost
                 if (alice == null) continue;
                 if (CanWin(alice.PlayerId))
                 {
-                    Logger.Info("Runned", "Alice");
                     winner.Add(alice);
                     Main.additionalwinners.Add(AdditionalWinners.Alice);
                 }
