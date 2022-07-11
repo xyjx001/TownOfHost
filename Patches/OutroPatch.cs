@@ -160,6 +160,11 @@ namespace TownOfHost
             {
                 var alice = Utils.GetPlayerById(id);
                 if (alice == null) continue;
+                if (Alice.KilledPlayer.Contains(alice))
+                {
+                    winner.Add(alice);
+                    Main.additionalwinners.Add(AdditionalWinners.Alice);
+                }
             }
 
             //HideAndSeek専用
