@@ -18,7 +18,7 @@ namespace TownOfHost
             Options.SetupRoleOptions(Id, CustomRoles.Alice);
             KillCooldown = CustomOption.Create(Id + 10, Color.white, "AliceKillCooldown", 30f, 0f, 180f, 2.5f, Options.CustomRoleSpawnChances[CustomRoles.Alice]);
             PlayerVision = CustomOption.Create(Id + 11, Color.white, "AlicePlayerVision", 1.5f, 0.25f, 5f, 0.25f, Options.CustomRoleSpawnChances[CustomRoles.Alice]);
-            AffectedByLightsOut = CustomOption.Create(Id + 12, Color.white, "AliceAffectedByLightsOut", 1.5f, 0.25f, 5f, 0.25f, Options.CustomRoleSpawnChances[CustomRoles.Alice]);
+            AffectedByLightsOut = CustomOption.Create(Id + 12, Color.white, "AliceAffectedByLightsOut", false, Options.CustomRoleSpawnChances[CustomRoles.Alice]);
         }
         public static void Init()
         {
