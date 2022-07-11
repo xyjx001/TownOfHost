@@ -232,6 +232,8 @@ namespace TownOfHost
                     return Options.SheriffCanKillArsonist.GetBool();
                 case CustomRoles.Egoist:
                     return Options.SheriffCanKillEgoist.GetBool();
+                case CustomRoles.Alice:
+                    return Options.SheriffCanKillEgoist.GetBool();
                 case CustomRoles.EgoSchrodingerCat:
                     return Options.SheriffCanKillEgoShrodingerCat.GetBool();
                 case CustomRoles.SchrodingerCat:
@@ -411,7 +413,7 @@ namespace TownOfHost
             if ((Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) && Options.HideAndSeekKillDelayTimer > 0)
             {
                 opt.ImpostorLightMod = 0f;
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Egoist)) opt.PlayerSpeedMod = 0.0001f;
+                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Egoist) || player.Is(CustomRoles.Alice)) opt.PlayerSpeedMod = 0.0001f;
             }
             opt.DiscussionTime = Mathf.Clamp(Main.DiscussionTime, 0, 300);
             opt.VotingTime = Mathf.Clamp(Main.VotingTime, Options.TimeThiefLowerLimitVotingTime.GetInt(), 300);
@@ -756,6 +758,10 @@ namespace TownOfHost
             }
             return rangePlayers;
         }
+        public static bool IsNeutralKiller(this PlayerControl player) =>
+            player.GetCustomRole() is
+                CustomRoles.Egoist or
+                CustomRoles.Alice;
 
         //汎用
         public static bool Is(this PlayerControl target, CustomRoles role) =>

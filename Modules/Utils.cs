@@ -1,3 +1,4 @@
+using System.Security.AccessControl;
 using System.Text.RegularExpressions;
 using System;
 using System.Collections.Generic;
@@ -160,6 +161,7 @@ namespace TownOfHost
                     if (cRole == CustomRoles.MSchrodingerCat) hasTasks = false;
                     if (cRole == CustomRoles.EgoSchrodingerCat) hasTasks = false;
                     if (cRole == CustomRoles.Egoist) hasTasks = false;
+                    if (cRole == CustomRoles.Alice) hasTasks = false;
 
                     //foreach (var pc in PlayerControl.AllPlayerControls)
                     //{
@@ -507,7 +509,7 @@ namespace TownOfHost
 
                 //インポスター/キル可能な第三陣営に対するSnitch警告
                 var canFindSnitchRole = seer.GetCustomRole().IsImpostor() || //LocalPlayerがインポスター
-                    (Options.SnitchCanFindNeutralKiller.GetBool() && seer.Is(CustomRoles.Egoist));//or エゴイスト
+                    (Options.SnitchCanFindNeutralKiller.GetBool() && seer.IsNeutralKiller());//or エゴイスト
 
                 if (canFindSnitchRole && ShowSnitchWarning && !isMeeting)
                 {
@@ -631,7 +633,7 @@ namespace TownOfHost
                             TargetMark += "<color=#ff0000>†</color>";
                         //タスク完了直前のSnitchにマークを表示
                         canFindSnitchRole = seer.GetCustomRole().IsImpostor() || //Seerがインポスター
-                            (Options.SnitchCanFindNeutralKiller.GetBool() && seer.Is(CustomRoles.Egoist));//or エゴイスト
+                            (Options.SnitchCanFindNeutralKiller.GetBool() && seer.IsNeutralKiller());//or エゴイスト
 
                         if (target.Is(CustomRoles.Snitch) && canFindSnitchRole)
                         {
@@ -681,7 +683,7 @@ namespace TownOfHost
                         {
                             //スニッチはオプション有効なら第三陣営のキル可能役職も見れる
                             var snitchOption = seer.Is(CustomRoles.Snitch) && Options.SnitchCanFindNeutralKiller.GetBool();
-                            var foundCheck = target.GetCustomRole().IsImpostor() || (snitchOption && target.Is(CustomRoles.Egoist));
+                            var foundCheck = target.GetCustomRole().IsImpostor() || (snitchOption && target.IsNeutralKiller());
                             if (foundCheck)
                                 TargetPlayerName = Helpers.ColorString(target.GetRoleColor(), TargetPlayerName);
                         }
@@ -689,7 +691,7 @@ namespace TownOfHost
                             TargetPlayerName = Helpers.ColorString(GetRoleColor(CustomRoles.Egoist), TargetPlayerName);
                         else if (seer.Is(CustomRoles.EgoSchrodingerCat) && target.Is(CustomRoles.Egoist))
                             TargetPlayerName = Helpers.ColorString(GetRoleColor(CustomRoles.Egoist), TargetPlayerName);
-                        else if (Utils.IsActive(SystemTypes.Electrical) && target.Is(CustomRoles.Mare) && !isMeeting)
+                        else if (IsActive(SystemTypes.Electrical) && target.Is(CustomRoles.Mare) && !isMeeting)
                             TargetPlayerName = Helpers.ColorString(GetRoleColor(CustomRoles.Impostor), TargetPlayerName); //targetの赤色で表示
                         else
                         {

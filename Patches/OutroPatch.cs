@@ -129,9 +129,9 @@ namespace TownOfHost
                 }
             }
             ///以降追加勝利陣営 (winnerリセット無し)
-            //Opportunist
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
+                //Opportunist
                 if (pc.Is(CustomRoles.Opportunist) && !pc.Data.IsDead && Main.currentWinner != CustomWinner.Draw && Main.currentWinner != CustomWinner.Terrorist)
                 {
                     winner.Add(pc);
@@ -144,6 +144,7 @@ namespace TownOfHost
                         winner.Add(pc);
                         Main.additionalwinners.Add(AdditionalWinners.SchrodingerCat);
                     }
+                //Executioner
                 if (Main.currentWinner == CustomWinner.Jester)
                     foreach (var ExecutionerTarget in Main.ExecutionerTarget)
                     {
@@ -153,6 +154,12 @@ namespace TownOfHost
                             Main.additionalwinners.Add(AdditionalWinners.Executioner);
                         }
                     }
+                //Alice
+            }
+            foreach (var id in Alice.playerIdList)
+            {
+                var alice = Utils.GetPlayerById(id);
+                if (alice == null) continue;
             }
 
             //HideAndSeek専用

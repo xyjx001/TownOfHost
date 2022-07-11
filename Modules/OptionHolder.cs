@@ -101,6 +101,7 @@ namespace TownOfHost
         public static CustomOption SheriffCanKillOpportunist;
         public static CustomOption SheriffCanKillEgoist;
         public static CustomOption SheriffCanKillEgoShrodingerCat;
+        public static CustomOption SheriffCanKillAlice;
         public static CustomOption SheriffCanKillExecutioner;
         public static CustomOption SheriffCanKillCrewmatesAsIt;
         public static CustomOption SheriffShotLimit;
@@ -332,6 +333,7 @@ namespace TownOfHost
             SheriffCanKillOpportunist = CustomOption.Create(20414, Color.white, "SheriffCanKillOpportunist", true, CustomRoleSpawnChances[CustomRoles.Sheriff]);
             SheriffCanKillEgoist = CustomOption.Create(20418, Color.white, "SheriffCanKillEgoist", true, CustomRoleSpawnChances[CustomRoles.Sheriff]);
             SheriffCanKillEgoShrodingerCat = CustomOption.Create(20419, Color.white, "SheriffCanKillEgoShrodingerCat", true, CustomRoleSpawnChances[CustomRoles.Sheriff]);
+            SheriffCanKillAlice = CustomOption.Create(20422, Color.white, "SheriffCanKillAlice", true, CustomRoleSpawnChances[CustomRoles.Sheriff]);
             SheriffCanKillExecutioner = CustomOption.Create(20419, Color.white, "SheriffCanKillExecutioner", true, CustomRoleSpawnChances[CustomRoles.Sheriff]);
             SheriffCanKillCrewmatesAsIt = CustomOption.Create(20415, Color.white, "SheriffCanKillCrewmatesAsIt", false, CustomRoleSpawnChances[CustomRoles.Sheriff]);
             SheriffShotLimit = CustomOption.Create(20416, Color.white, "SheriffShotLimit", 15, 1, 15, 1, CustomRoleSpawnChances[CustomRoles.Sheriff]);
@@ -368,6 +370,7 @@ namespace TownOfHost
             SetupRoleOptions(50700, CustomRoles.Executioner);
             ExecutionerCanTargetImpostor = CustomOption.Create(50710, Color.white, "ExecutionerCanTargetImpostor", false, CustomRoleSpawnChances[CustomRoles.Executioner]);
             ExecutionerChangeRolesAfterTargetKilled = CustomOption.Create(50711, Color.white, "ExecutionerChangeRolesAfterTargetKilled", ExecutionerChangeRoles, ExecutionerChangeRoles[1], CustomRoleSpawnChances[CustomRoles.Executioner]);
+            Alice.SetupCustomOption();
 
             // Attribute
             EnableLastImpostor = CustomOption.Create(80000, Utils.GetRoleColor(CustomRoles.Impostor), "LastImpostor", false, null, true)

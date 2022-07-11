@@ -866,11 +866,11 @@ namespace TownOfHost
                         RealName = Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), RealName); //targetの名前を赤色で表示
                     }
                     //タスクを終わらせたSnitchがインポスターを確認できる
-                    else if (PlayerControl.LocalPlayer.Is(CustomRoles.Snitch) && //LocalPlayerがSnitch
-                        PlayerControl.LocalPlayer.GetPlayerTaskState().IsTaskFinished) //LocalPlayerのタスクが終わっている
+                    else if (seer.Is(CustomRoles.Snitch) && //seerがSnitch
+                        seer.GetPlayerTaskState().IsTaskFinished) //seerのタスクが終わっている
                     {
-                        var targetCheck = __instance.GetCustomRole().IsImpostor() || (Options.SnitchCanFindNeutralKiller.GetBool() && __instance.Is(CustomRoles.Egoist));
-                        if (targetCheck)//__instanceがターゲット
+                        var targetCheck = target.GetCustomRole().IsImpostor() || (Options.SnitchCanFindNeutralKiller.GetBool() && target.IsNeutralKiller());
+                        if (targetCheck)//targetがターゲット
                         {
                             RealName = Helpers.ColorString(target.GetRoleColor(), RealName); //targetの名前を役職色で表示
                         }
@@ -892,8 +892,8 @@ namespace TownOfHost
                     }
 
                     //インポスター/キル可能な第三陣営がタスクが終わりそうなSnitchを確認できる
-                    var canFindSnitchRole = seer.GetCustomRole().IsImpostor() || //LocalPlayerがインポスター
-                        (Options.SnitchCanFindNeutralKiller.GetBool() && seer.Is(CustomRoles.Egoist));//or エゴイスト
+                    var canFindSnitchRole = seer.GetCustomRole().IsImpostor() || //seerがインポスター
+                        (Options.SnitchCanFindNeutralKiller.GetBool() && seer.IsNeutralKiller());//or エゴイスト
 
                     if (canFindSnitchRole && target.Is(CustomRoles.Snitch) && target.GetPlayerTaskState().DoExpose //targetがタスクが終わりそうなSnitch
                     )
@@ -935,7 +935,7 @@ namespace TownOfHost
                     }
                     //タスクが終わりそうなSnitchがいるとき、インポスター/キル可能な第三陣営に警告が表示される
                     if ((!GameStates.IsMeeting && target.GetCustomRole().IsImpostor())
-                        || (Options.SnitchCanFindNeutralKiller.GetBool() && target.Is(CustomRoles.Egoist)))
+                        || (Options.SnitchCanFindNeutralKiller.GetBool() && target.IsNeutralKiller()))
                     { //targetがインポスターかつ自分自身
                         var found = false;
                         var update = false;
@@ -983,7 +983,7 @@ namespace TownOfHost
                             {
                                 var foundCheck =
                                     pc.GetCustomRole().IsImpostor() ||
-                                    (Options.SnitchCanFindNeutralKiller.GetBool() && pc.Is(CustomRoles.Egoist));
+                                    (Options.SnitchCanFindNeutralKiller.GetBool() && pc.IsNeutralKiller());
 
                                 //発見対象じゃ無ければ次
                                 if (!foundCheck) continue;
