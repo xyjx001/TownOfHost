@@ -323,14 +323,7 @@ namespace TownOfHost
                     opt.SetVision(player, false);
                     break;
                 case CustomRoles.Alice:
-                    opt.ImpostorLightMod = opt.CrewLightMod = Alice.PlayerVision.GetFloat();
-                    if (Utils.IsActive(SystemTypes.Electrical))
-                    {
-                        if (Alice.AffectedByLightsOut.GetBool())
-                            opt.ImpostorLightMod /= 5;
-                        else
-                            opt.CrewLightMod *= 5;
-                    }
+                    Alice.ApplyGameOptions(opt);
                     break;
                 case CustomRoles.Lighter:
                     if (player.GetPlayerTaskState().IsTaskFinished)

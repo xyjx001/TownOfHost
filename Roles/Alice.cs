@@ -58,6 +58,17 @@ namespace TownOfHost
                 }
             }
         }
+        public static void ApplyGameOptions(GameOptionsData opt)
+        {
+            opt.ImpostorLightMod = opt.CrewLightMod = PlayerVision.GetFloat();
+            if (Utils.IsActive(SystemTypes.Electrical))
+            {
+                if (AffectedByLightsOut.GetBool())
+                    opt.ImpostorLightMod /= 5;
+                else
+                    opt.CrewLightMod *= 5;
+            }
+        }
         public static void Killed(PlayerControl target)
         {
             if (!CompleteWinCondition.Contains(target.PlayerId))
