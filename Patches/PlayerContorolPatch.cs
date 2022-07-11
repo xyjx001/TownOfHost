@@ -341,8 +341,8 @@ namespace TownOfHost
 
             PlayerControl killer = __instance; //読み替え変数
 
-            if (__instance.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Alice) && !Alice.CompleteWinCondition.Contains(target.PlayerId))
-                Alice.CompleteWinCondition.Add(target.PlayerId); //インポスター陣営にキルされたアリスを追加
+            if (killer.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Alice))
+                Alice.Killed(target);
 
             if (!AmongUsClient.Instance.AmHost) return;//以下、ホストのみ実行
 

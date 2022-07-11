@@ -26,6 +26,16 @@ namespace TownOfHost
         {
             return playerIdList.Count > 0;
         }
+        public static void SendRPC(byte id)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AliceList, SendOption.Reliable, -1);
+            writer.Write(id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void ReceiveRPC(MessageReader reader)
+        {
+            CompleteWinCondition.Add(reader.ReadByte());
+        }
         public static bool CanWin(byte id) => CompleteWinCondition.Contains(id);
         public static void AddWinners(List<PlayerControl> winner)
         {
@@ -41,15 +51,14 @@ namespace TownOfHost
                 }
             }
         }
-        public static void SendRPC(byte id)
+        public static void Killed(PlayerControl target)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AliceList, SendOption.Reliable, -1);
-            writer.Write(id);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-        public static void ReceiveRPC(MessageReader reader)
-        {
-            CompleteWinCondition.Add(reader.ReadByte());
+            if (!CompleteWinCondition.Contains(target.PlayerId))
+            {
+                Logger.Info(target.Data.PlayerName + "をリストに追加", "Alice");
+                CompleteWinCondition.Add(target.PlayerId); //インポスター陣営にキルされたアリスを追加
+            }
+
         }
     }
 }
