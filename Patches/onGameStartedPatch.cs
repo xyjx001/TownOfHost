@@ -395,7 +395,7 @@ namespace TownOfHost
             Utils.CustomSyncAllSettings();
             SetColorPatch.IsAntiGlitchDisabled = false;
         }
-        private static void AssignDesyncRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole)
+        private static void AssignDesyncRole(CustomRoles role, List<PlayerControl> AllPlayers, CustomRpcSender sender, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
         {
             if (!role.IsEnable()) return;
 
@@ -429,8 +429,8 @@ namespace TownOfHost
                 else
                 {
                     //ホストは代わりに普通のクルーにする
-                    player.SetRole(RoleTypes.Crewmate); //ホスト視点用
-                    sender.RpcSetRole(player, RoleTypes.Crewmate);
+                    player.SetRole(hostBaseRole); //ホスト視点用
+                    sender.RpcSetRole(player, hostBaseRole);
                 }
                 player.Data.IsDead = true;
             }

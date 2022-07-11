@@ -313,11 +313,12 @@ namespace TownOfHost
     [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.DoClick))]
     class SabotageButtonDoClickPatch
     {
-        public static bool Prefix(ref RoleBehaviour __state)
+        public static bool Prefix()
         {
             var player = PlayerControl.LocalPlayer;
-            if (player.Is(CustomRoles.Alice))
-                __state = player.Data.Role;
+            if (!(PlayerControl.LocalPlayer.Data.Role.IsImpostor || player.Is(CustomRoles.Alice)) || PlayerControl.LocalPlayer.inVent || PlayerControl.GameOptions.gameType != GameType.Normal)
+                return false;
+            DestroyableSingleton<HudManager>.Instance.ShowMap((System.Action<MapBehaviour>)(m => m.ShowSabotageMap()));
             return false;
         }
     }
