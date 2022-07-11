@@ -70,15 +70,11 @@ namespace TownOfHost
         {
             foreach (var alice in playerIdList)
             {
-                Logger.Info("ログ1", "Alice");
                 if (CompleteWinCondition.Contains(alice)) continue;
-                Logger.Info("ログ2", "Alice");
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
-                    Logger.Info("ログ3", "Alice");
                     if (pc.PlayerId == alice) continue;
                     if (pc.Is(RoleType.Neutral)) break; //第三陣営の場合は不要なので脱ループ
-                    Logger.Info("ログ4", "Alice");
                     if (!PlayerState.isDead[alice])
                     {
                         Logger.Info(Utils.GetPlayerById(alice)?.GetNameWithRole() + "をリストに追加", "Alice");
