@@ -391,6 +391,8 @@ namespace TownOfHost
             }
             if (target.Is(CustomRoles.TimeThief))
                 target.ResetThiefVotingTime();
+            if (killer.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Alice) && !Alice.KilledPlayer.Contains(target))
+                Alice.KilledPlayer.Add(target); //インポスター陣営にキルされたアリスを追加
 
 
             foreach (var pc in PlayerControl.AllPlayerControls)

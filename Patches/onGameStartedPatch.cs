@@ -410,21 +410,18 @@ namespace TownOfHost
                     int playerCID = player.GetClientId();
                     //ただしホスト、お前はDesyncするな。
                     sender.RpcSetRole(player, BaseRole, playerCID);
-                    //arsonist.RpcSetRoleDesync(RoleTypes.Impostor);
-                    //アーソニスト視点で他プレイヤーを科学者にするループ
+                    //Desyncする人視点で他プレイヤーを科学者にするループ
                     foreach (var pc in PlayerControl.AllPlayerControls)
                     {
                         if (pc == player) continue;
                         sender.RpcSetRole(pc, RoleTypes.Scientist, playerCID);
-                        //pc.RpcSetRoleDesync(RoleTypes.Scientist, sheriff);
                     }
-                    //他視点でアーソニストを科学者にするループ
+                    //他視点でDesyncする人の役職を科学者にするループ
                     foreach (var pc in PlayerControl.AllPlayerControls)
                     {
                         if (pc == player) continue;
                         if (pc.PlayerId == 0) player.SetRole(RoleTypes.Scientist); //ホスト視点用
                         else sender.RpcSetRole(player, RoleTypes.Scientist, pc.GetClientId());
-                        //sheriff.RpcSetRoleDesync(RoleTypes.Scientist, pc);
                     }
                 }
                 else
