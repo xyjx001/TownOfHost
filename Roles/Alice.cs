@@ -66,6 +66,7 @@ namespace TownOfHost
         }
         public static void ApplyGameOptions(GameOptionsData opt)
         {
+            opt.KillCooldown = KillCooldown.GetFloat();
             opt.ImpostorLightMod = opt.CrewLightMod = PlayerVision.GetFloat();
             if (Utils.IsActive(SystemTypes.Electrical))
             {
