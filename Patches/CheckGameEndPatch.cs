@@ -184,13 +184,10 @@ namespace TownOfHost
         }
         public static bool CheckAndEndGameForAlice(ShipStatus __instance, PlayerStatistics statistics)
         {
-            if (statistics.TotalAlive < 2) return false;
-            Logger.Warn($"ログ1 {Main.currentWinner}", "Alice");
+            if (statistics.TotalAlive > 2) return false;
             Alice.CheckAndEndGame();
-            Logger.Warn($"ログ2 {Main.currentWinner}", "Alice");
             if (Main.currentWinner == CustomWinner.Alice && Main.CustomWinTrigger)
             {
-                Logger.Warn($"ログ3", "Alice");
                 __instance.enabled = false;
                 ResetRoleAndEndGame(GameOverReason.ImpostorByKill, false);
                 return true;
