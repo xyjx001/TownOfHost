@@ -102,8 +102,8 @@ namespace TownOfHost
                     if (pc.Is(RoleType.Neutral)) break; //第三陣営の場合は不要なので脱ループ
                     if (!PlayerState.isDead[alice])
                     {
-                        Logger.Info(Utils.GetPlayerById(alice)?.GetNameWithRole() + "をリストに追加", "Alice");
-                        CompleteWinCondition.Add(alice);
+                        /*Logger.Info(Utils.GetPlayerById(alice)?.GetNameWithRole() + "をリストに追加", "Alice");
+                        CompleteWinCondition.Add(alice);*/
                         SendRPC(alice, CustomRPC.EndGame);
                         break;
                     }
