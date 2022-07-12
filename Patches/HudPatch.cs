@@ -252,7 +252,7 @@ namespace TownOfHost
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team)
         {
             var player = PlayerControl.LocalPlayer;
-            if (!player.Data.IsDead)
+            if (GameStates.IsInTask && !player.Data.IsDead)
             {
                 if (player.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.Arsonist or CustomRoles.Alice)
                     ((Renderer)__instance.cosmetics.currentBodySprite.BodySprite).material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
