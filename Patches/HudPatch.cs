@@ -204,9 +204,7 @@ namespace TownOfHost
 
                     DesyncImpostor:
                         if (player.Data.Role.Role != RoleTypes.GuardianAngel)
-                        {
                             player.Data.Role.CanUseKillButton = true;
-                        }
                         break;
                 }
 

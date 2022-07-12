@@ -42,6 +42,8 @@ namespace TownOfHost
         public static void SendRPC(byte id, bool IsGameEnd = false)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, IsGameEnd ? (byte)CustomRPC.EndGame : (byte)CustomRPC.AliceList, SendOption.Reliable, -1);
+            if (IsGameEnd)
+                writer.Write((int)CustomWinner.Alice);
             writer.Write(id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
