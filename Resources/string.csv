@@ -311,6 +311,7 @@ TimeThiefReturnStolenTimeUponDeath,Return Stolen Time Upon Death,死亡後に盗
 AliceKillCooldown,Alice KillCooldown,アリスのキルクールダウン
 AlicePlayerVision,Alice Vision,アリスの視界
 AliceAffectedByLightsOut,Alice affected by lights out,アリスが停電の影響を受ける
+AliceRequireKillToWin,Alice require kill to win,アリスが勝利するのに必要なキル数
 
 ## かくれんぼ設定
 HideAndSeekOptions,HideAndSeek Options,かくれんぼの設定

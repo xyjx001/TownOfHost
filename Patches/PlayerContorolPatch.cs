@@ -343,6 +343,8 @@ namespace TownOfHost
 
             if (killer.GetCustomRole().IsImpostor() && target.Is(CustomRoles.Alice))
                 Alice.Killed(target);
+            if (killer.Is(CustomRoles.Alice))
+                Alice.OnPlayerKill(killer);
 
             if (!AmongUsClient.Instance.AmHost) return;//以下、ホストのみ実行
 
