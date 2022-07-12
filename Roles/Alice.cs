@@ -53,15 +53,19 @@ namespace TownOfHost
         }
         public static bool CanSoloWin(byte id) => RequireKill.TryGetValue(id, out var count) && count <= 0 && Main.currentWinner == CustomWinner.Alice;
         public static bool CanAdditionalWin(byte id) => RequireKill.TryGetValue(id, out var count) && count <= 0 && CompleteWinCondition.Contains(id);
-        public static PlayerControl SoloWin()
+        public static void SoloWin(List<PlayerControl> winner)
         {
-            foreach (var id in playerIdList)
+            if (Main.currentWinner == CustomWinner.Alice && CustomRoles.Alice.IsEnable())
             {
-                var alice = Utils.GetPlayerById(id);
-                if (alice.Data.IsDead && CanSoloWin(id))
-                    return alice;
+                winner = new();
+                foreach (var id in playerIdList)
+                {
+                    var alice = Utils.GetPlayerById(id);
+                    if (alice == null) continue;
+                    if (!alice.Data.IsDead && CanSoloWin(id))
+                        winner.Add(alice);
+                }
             }
-            return null;
         }
         public static void AddWinners(List<PlayerControl> winner)
         {

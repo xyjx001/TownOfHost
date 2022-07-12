@@ -129,8 +129,7 @@ namespace TownOfHost
                 }
             }
             //Alice
-            if (Main.currentWinner == CustomWinner.Alice && CustomRoles.Alice.IsEnable())
-                winner = new() { Alice.SoloWin() };
+            Alice.SoloWin(winner);
             ///以降追加勝利陣営 (winnerリセット無し)
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
