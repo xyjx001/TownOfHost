@@ -39,10 +39,11 @@ namespace TownOfHost
         {
             return playerIdList.Count > 0;
         }
-        public static void SendRPC(byte id)
+        public static void SendRPC(byte id, CustomRPC rpc)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AliceList, SendOption.Reliable, -1);
-            writer.Write(id);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)rpc, SendOption.Reliable, -1);
+            if (rpc is CustomRPC.EndGame or CustomRPC.AliceList)
+                writer.Write(id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void ReceiveRPC(MessageReader reader)
@@ -90,7 +91,7 @@ namespace TownOfHost
                 CompleteWinCondition.Add(target.PlayerId); //インポスター陣営にキルされたアリスを追加
             }
         }
-        public static void CheckAdditionalWin()
+        public static void CheckGameEnd()
         {
             foreach (var alice in playerIdList)
             {
@@ -103,7 +104,7 @@ namespace TownOfHost
                     {
                         Logger.Info(Utils.GetPlayerById(alice)?.GetNameWithRole() + "をリストに追加", "Alice");
                         CompleteWinCondition.Add(alice);
-                        SendRPC(alice);
+                        SendRPC(alice, CustomRPC.EndGame);
                         break;
                     }
                 }

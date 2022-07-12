@@ -336,6 +336,7 @@ namespace TownOfHost
         Executioner = CustomRoles.Executioner,
         Arsonist = CustomRoles.Arsonist,
         Egoist = CustomRoles.Egoist,
+        Alice = CustomRoles.Alice,
         HASTroll = CustomRoles.HASTroll,
     }
     public enum AdditionalWinners

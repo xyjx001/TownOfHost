@@ -7,7 +7,7 @@ using Hazel;
 
 namespace TownOfHost
 {
-    enum CustomRPC
+    public enum CustomRPC
     {
         VersionCheck = 60,
         SyncCustomSettings = 80,
@@ -287,6 +287,9 @@ namespace TownOfHost
                     case CustomWinner.Arsonist:
                         ArsonistWin(winner[0]);
                         break;
+                    case CustomWinner.Alice:
+                        AliceWin(winner[0]);
+                        break;
                     case CustomWinner.HASTroll:
                         TrollWin(winner[0]);
                         break;
@@ -330,6 +333,12 @@ namespace TownOfHost
             Main.WonArsonistID = arsonistID;
             Main.currentWinner = CustomWinner.Arsonist;
             CustomWinTrigger(arsonistID);
+        }
+        public static void AliceWin(byte aliceID)
+        {
+            Main.WonArsonistID = aliceID;
+            Main.currentWinner = CustomWinner.Alice;
+            CustomWinTrigger(aliceID);
         }
         public static void ForceEndGame()
         {
