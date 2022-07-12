@@ -252,10 +252,22 @@ namespace TownOfHost
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] bool active, [HarmonyArgument(1)] RoleTeamTypes team)
         {
             var player = PlayerControl.LocalPlayer;
-            if ((player.GetCustomRole() == CustomRoles.Sheriff || player.GetCustomRole() == CustomRoles.Arsonist) && !player.Data.IsDead)
+            if (!player.Data.IsDead)
             {
-                ((Renderer)__instance.cosmetics.currentBodySprite.BodySprite).material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
+                if (player.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.Arsonist or CustomRoles.Alice)
+                    ((Renderer)__instance.cosmetics.currentBodySprite.BodySprite).material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
             }
+        }
+    }
+    [HarmonyPatch(typeof(Vent), nameof(Vent.SetOutline))]
+    class SetVentOutlinePatch
+    {
+        public static void Postfix(Vent __instance, [HarmonyArgument(1)] ref bool mainTarget)
+        {
+            var player = PlayerControl.LocalPlayer;
+            Color color = PlayerControl.LocalPlayer.GetRoleColor();
+            ((Renderer)__instance.myRend).material.SetColor("_OutlineColor", color);
+            ((Renderer)__instance.myRend).material.SetColor("_AddColor", mainTarget ? color : Color.clear);
         }
     }
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
