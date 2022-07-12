@@ -14,12 +14,11 @@ namespace TownOfHost
             var statistics = new PlayerStatistics(__instance);
             if (Options.NoGameEnd.GetBool()) return false;
 
-            CheckAdditionalWinForAlice(statistics);
-
             if (CheckAndEndGameForJester(__instance)) return false;
             if (CheckAndEndGameForTerrorist(__instance)) return false;
             if (CheckAndEndGameForExecutioner(__instance)) return false;
             if (CheckAndEndGameForArsonist(__instance)) return false;
+            if (CheckAndEndGameForAlice(__instance, statistics)) return false;
             if (Main.currentWinner == CustomWinner.Default)
             {
                 if (Options.CurrentGameMode == CustomGameMode.HideAndSeek)
@@ -183,10 +182,17 @@ namespace TownOfHost
             }
             return false;
         }
-        public static void CheckAdditionalWinForAlice(PlayerStatistics statistics)
+        public static bool CheckAndEndGameForAlice(ShipStatus __instance, PlayerStatistics statistics)
         {
-            if (statistics.TotalAlive < 2) return;
+            if (statistics.TotalAlive < 2) return false;
             Alice.CheckAndEndGame();
+            if (Main.currentWinner == CustomWinner.Alice && Main.CustomWinTrigger)
+            {
+                __instance.enabled = false;
+                ResetRoleAndEndGame(GameOverReason.ImpostorByKill, false);
+                return true;
+            }
+            return false;
         }
 
 
