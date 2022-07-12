@@ -7,7 +7,7 @@ using Hazel;
 
 namespace TownOfHost
 {
-    public enum CustomRPC
+    enum CustomRPC
     {
         VersionCheck = 60,
         SyncCustomSettings = 80,
