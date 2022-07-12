@@ -185,9 +185,12 @@ namespace TownOfHost
         public static bool CheckAndEndGameForAlice(ShipStatus __instance, PlayerStatistics statistics)
         {
             if (statistics.TotalAlive < 2) return false;
+            Logger.Warn($"ログ1 {Main.currentWinner}", "Alice");
             Alice.CheckAndEndGame();
+            Logger.Warn($"ログ2 {Main.currentWinner}", "Alice");
             if (Main.currentWinner == CustomWinner.Alice && Main.CustomWinTrigger)
             {
+                Logger.Warn($"ログ3", "Alice");
                 __instance.enabled = false;
                 ResetRoleAndEndGame(GameOverReason.ImpostorByKill, false);
                 return true;
@@ -209,7 +212,7 @@ namespace TownOfHost
                 var LoseImpostorRole = Main.AliveImpostorCount == 0 ? pc.Is(RoleType.Impostor) : pc.Is(CustomRoles.Egoist);
                 if (pc.Is(CustomRoles.Sheriff) ||
                 (!(Main.currentWinner == CustomWinner.Arsonist) && pc.Is(CustomRoles.Arsonist)) ||
-                (!Alice.CanWin(pc.PlayerId) && pc.Is(CustomRoles.Alice)) ||
+                (!(Alice.CanSoloWin(pc.PlayerId) || Alice.CanAdditionalWin(pc.PlayerId)) && pc.Is(CustomRoles.Alice)) ||
                 LoseImpostorRole)
                 {
                     pc.RpcSetRole(RoleTypes.GuardianAngel);
