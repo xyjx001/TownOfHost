@@ -50,7 +50,7 @@ namespace TownOfHost
         {
             CompleteWinCondition.Add(reader.ReadByte());
         }
-        public static bool CanWin(byte id) => RequireKill.TryGetValue(id, out var count) && count <= 0 && (Main.currentWinner == CustomWinner.Alice || CompleteWinCondition.Contains(id));
+        public static bool CanWin(byte id) => RequireKill.TryGetValue(id, out var count) && count <= 0 && (Main.currentWinner == CustomWinner.Alice || (Main.currentWinner != CustomWinner.Alice && CompleteWinCondition.Contains(id)));
         public static void AddWinners(List<PlayerControl> winner)
         {
             foreach (var id in playerIdList)
