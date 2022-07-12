@@ -217,7 +217,7 @@ namespace TownOfHost
                     ProgressText += $" {Sniper.GetBulletCount(playerId)}";
                     break;
                 case CustomRoles.Alice:
-                    ProgressText += Helpers.ColorString(GetRoleColor(CustomRoles.Alice), Alice.RequireKill.TryGetValue(playerId, out var count) ? $" {count}" : "Invalid");
+                    ProgressText += Helpers.ColorString(GetRoleColor(CustomRoles.Alice), Alice.RequireKill.TryGetValue(playerId, out var count) ? $" ({count})" : "Invalid");
                     break;
                 default:
                     //タスクテキスト
