@@ -39,11 +39,10 @@ namespace TownOfHost
         {
             return playerIdList.Count > 0;
         }
-        public static void SendRPC(byte id, string RPCName)
+        public static void SendRPC(byte id, bool IsGameEnd = false)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (RPCName == "EndGame") ? (byte)CustomRPC.EndGame : (byte)CustomRPC.AliceList, SendOption.Reliable, -1);
-            if (RPCName is "EndGame" or "AliceList")
-                writer.Write(id);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, IsGameEnd ? (byte)CustomRPC.EndGame : (byte)CustomRPC.AliceList, SendOption.Reliable, -1);
+            writer.Write(id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void ReceiveRPC(MessageReader reader)
@@ -106,7 +105,7 @@ namespace TownOfHost
                     {
                         /*Logger.Info(Utils.GetPlayerById(alice)?.GetNameWithRole() + "をリストに追加", "Alice");
                         CompleteWinCondition.Add(alice);*/
-                        SendRPC(alice, "EndGame");
+                        SendRPC(alice, IsGameEnd: true);
                         break;
                     }
                 }
