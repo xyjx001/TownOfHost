@@ -185,8 +185,8 @@ namespace TownOfHost
         }
         public static void CheckAdditionalWinForAlice(PlayerStatistics statistics)
         {
-            if (statistics.TotalAlive != 2) return;
-            Alice.CheckAdditionalWin();
+            if (statistics.TotalAlive < 2) return;
+            Alice.CheckAndEndGame();
         }
 
 

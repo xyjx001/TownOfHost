@@ -91,7 +91,7 @@ namespace TownOfHost
                 CompleteWinCondition.Add(target.PlayerId); //インポスター陣営にキルされたアリスを追加
             }
         }
-        public static void CheckGameEnd()
+        public static void CheckAndEndGame()
         {
             foreach (var alice in playerIdList)
             {
