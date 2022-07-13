@@ -80,9 +80,9 @@ namespace TownOfHost
                 }
             }
         }
-        public static void ApplyGameOptions(GameOptionsData opt)
+        public static void ApplyGameOptions(GameOptionsData opt, PlayerControl player)
         {
-            opt.KillCooldown = KillCooldown.GetFloat();
+            Main.AllPlayerKillCooldown[player.PlayerId] = KillCooldown.GetFloat();
             opt.ImpostorLightMod = opt.CrewLightMod = PlayerVision.GetFloat();
             if (Utils.IsActive(SystemTypes.Electrical))
             {

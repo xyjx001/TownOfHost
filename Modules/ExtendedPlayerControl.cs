@@ -323,7 +323,7 @@ namespace TownOfHost
                     opt.SetVision(player, false);
                     break;
                 case CustomRoles.Alice:
-                    Alice.ApplyGameOptions(opt);
+                    Alice.ApplyGameOptions(opt, player);
                     break;
                 case CustomRoles.Lighter:
                     if (player.GetPlayerTaskState().IsTaskFinished)
