@@ -323,7 +323,7 @@ namespace TownOfHost
                     opt.SetVision(player, false);
                     break;
                 case CustomRoles.Alice:
-                    Alice.ApplyGameOptions(opt, player);
+                    Alice.ApplyGameOptions(opt);
                     break;
                 case CustomRoles.Lighter:
                     if (player.GetPlayerTaskState().IsTaskFinished)
@@ -657,6 +657,9 @@ namespace TownOfHost
                     break;
                 case CustomRoles.Sheriff:
                     Main.AllPlayerKillCooldown[player.PlayerId] = Options.SheriffKillCooldown.GetFloat(); //シェリフはシェリフのキルクールに。
+                    break;
+                case CustomRoles.Alice:
+                    Alice.ApplyKillCooldown(player.PlayerId); //アリスはアリスのキルクールに。
                     break;
             }
             if (player.IsLastImpostor())
