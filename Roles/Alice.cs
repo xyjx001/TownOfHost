@@ -7,15 +7,16 @@ namespace TownOfHost
 {
     public static class Alice
     {
-        static readonly int Id = 50800;
+        private static readonly int Id = 50800;
         public static List<byte> playerIdList = new();
-        public static CustomOption KillCooldown;
-        public static CustomOption PlayerVision;
-        public static CustomOption AffectedByLightsOut;
-        public static CustomOption RequireKillToWin;
+
+        private static CustomOption KillCooldown;
+        private static CustomOption PlayerVision;
+        private static CustomOption AffectedByLightsOut;
+        private static CustomOption RequireKillToWin;
 
         public static Dictionary<byte, int> RequireKill = new();
-        public static HashSet<byte> CompleteWinCondition = new();
+        private static HashSet<byte> CompleteWinCondition = new();
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, CustomRoles.Alice);
