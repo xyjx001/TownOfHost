@@ -411,7 +411,6 @@ namespace TownOfHost
                 if (player.PlayerId != 0)
                 {
                     int playerCID = player.GetClientId();
-                    //ただしホスト、お前はDesyncするな。
                     sender.RpcSetRole(player, BaseRole, playerCID);
                     //Desyncする人視点で他プレイヤーを科学者にするループ
                     foreach (var pc in PlayerControl.AllPlayerControls)
@@ -429,7 +428,7 @@ namespace TownOfHost
                 }
                 else
                 {
-                    //ホストは代わりに普通のクルーにする
+                    //ホストは別の役職にする
                     player.SetRole(hostBaseRole); //ホスト視点用
                     sender.RpcSetRole(player, hostBaseRole);
                 }
