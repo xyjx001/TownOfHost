@@ -567,6 +567,7 @@ It is assigned separately from Impostor.<br>
 If the Impostor is killed, the team wins an additional victory with the winning team, and if there are two players remaining and the role is Alice with a non-neutral role, the team wins alone.<br>
 They can use kill, vent, and sabotage.<br>
 At a minimum, they must have a set number of kills to win.<br>
+Killing Schrödinger's cat does not change the team and can still kill it.<br>
 
 #### Settings
 
