@@ -35,10 +35,25 @@ namespace TownOfHost
             Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown * 2;
             killer.CustomSyncSettings(); //負荷軽減のため、killerだけがCustomSyncSettingsを実行
             killer.RpcGuardAndKill(target);
-            target.RpcExileV2();
+            if (!target.protectedByGuardian)
+                target.RpcExileV2();
             PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Kill);
             PlayerState.SetDead(target.PlayerId);
             killer.RpcShapeshift(target,false);
+            if (target.Is(CustomRoles.Bait))
+            {
+                Logger.Info(target?.Data?.PlayerName + "はBaitだった", "MimicMurderPlayer");
+                new LateTask(() => killer.CmdReportDeadBody(target.Data), 0.15f, "Bait Self Report");//ベイトのレポート処理
+            }
+            if (target.Is(CustomRoles.Terrorist))//CheckTerroristWinにタスク完了の条件があるためその条件は必要なし
+            {
+                Logger.Info(target?.Data?.PlayerName + "はTerroristだった", "MimicMurderPlayer");
+                Utils.CheckTerroristWin(target.Data);
+            }
+            if (target.Is(CustomRoles.Trapper))
+            {
+                killer.TrapperKilled(target);
+            }
         }
     }
     public static class MimicA
