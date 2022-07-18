@@ -35,6 +35,8 @@ namespace TownOfHost
             Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown * 2;
             killer.RpcGuardAndKill(target);
             target.RpcExileV2();
+            PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Kill);
+            PlayerState.SetDead(target.PlayerId);
             killer.RpcShapeshift(target,false);
             killer.CustomSyncSettings();
         }
