@@ -33,12 +33,12 @@ namespace TownOfHost
         public static void KillCheck(this PlayerControl killer, PlayerControl target)
         {
             Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown * 2;
+            killer.CustomSyncSettings(); //負荷軽減のため、killerだけがCustomSyncSettingsを実行
             killer.RpcGuardAndKill(target);
             target.RpcExileV2();
             PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Kill);
             PlayerState.SetDead(target.PlayerId);
             killer.RpcShapeshift(target,false);
-            killer.CustomSyncSettings();
         }
     }
     public static class MimicA
