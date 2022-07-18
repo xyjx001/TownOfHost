@@ -191,6 +191,9 @@ namespace TownOfHost
                     }
                     player.CanUseImpostorVent();
                     goto DesyncImpostor;
+                case CustomRoles.MimicA:
+                    __instance.KillButton.SetDisabled();
+                    __instance.KillButton.ToggleVisible(false);
 
                 DesyncImpostor:
                     if (player.Data.Role.Role != RoleTypes.GuardianAngel)
