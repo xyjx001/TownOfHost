@@ -4,7 +4,6 @@ namespace TownOfHost
 {
     public static class Mimic
     {
-        static readonly int Id = 2900;
         public static void Init()
         {
             MimicK.Init();
