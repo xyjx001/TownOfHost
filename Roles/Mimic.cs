@@ -5,10 +5,6 @@ namespace TownOfHost
     public static class Mimic
     {
         static readonly int Id = 2900;
-        public static void SetupCustomOption()
-        {
-            Options.SetupRoleOptions(Id, CustomRoles.Mimic);
-        }
         public static void Init()
         {
             MimicK.Init();
