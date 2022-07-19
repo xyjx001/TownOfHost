@@ -20,6 +20,7 @@ namespace TownOfHost
                 CustomRoles.Mafia or
                 CustomRoles.FireWorks or
                 CustomRoles.Sniper or
+                CustomRoles.Mimic or
                 CustomRoles.MimicK or
                 CustomRoles.MimicA or
                 CustomRoles.LastImpostor;
