@@ -370,7 +370,8 @@ namespace TownOfHost
                 killer.TrapperKilled(target);
             if (Main.ExecutionerTarget.ContainsValue(target.PlayerId))
             {
-                List<byte> RemoveExecutionerKey = new();
+                target.ExecutionerTargetSetCustomRole();
+                /*List<byte> RemoveExecutionerKey = new();
                 foreach (var ExecutionerTarget in Main.ExecutionerTarget)
                 {
                     var executioner = Utils.GetPlayerById(ExecutionerTarget.Key);
@@ -385,7 +386,7 @@ namespace TownOfHost
                 {
                     Main.ExecutionerTarget.Remove(RemoveKey);
                     RPC.RemoveExecutionerKey(RemoveKey);
-                }
+                }*/
             }
             if (target.Is(CustomRoles.Executioner) && Main.ExecutionerTarget.ContainsKey(target.PlayerId))
             {

@@ -35,8 +35,10 @@ namespace TownOfHost
             Main.AllPlayerKillCooldown[killer.PlayerId] = Options.DefaultKillCooldown * 2;
             killer.CustomSyncSettings(); //負荷軽減のため、killerだけがCustomSyncSettingsを実行
             killer.RpcGuardAndKill(target);
-            if (!target.protectedByGuardian)
+            if (!target.protectedByGuardian && !target.Is(CustomRoles.Bait))
                 target.RpcExileV2();
+            if (target.Is(CustomRoles.Bait))
+                killer.RpcMurderPlayer(target);
             PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Kill);
             PlayerState.SetDead(target.PlayerId);
             killer.RpcShapeshift(target,false);
@@ -53,6 +55,10 @@ namespace TownOfHost
             if (target.Is(CustomRoles.Trapper))
             {
                 killer.TrapperKilled(target);
+            }
+            if (Main.ExecutionerTarget.ContainsValue(target.PlayerId))
+            {
+                target.ExecutionerTargetSetCustomRole();
             }
         }
     }
