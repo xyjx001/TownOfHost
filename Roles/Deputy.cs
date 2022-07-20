@@ -17,6 +17,7 @@ namespace TownOfHost
         private static CustomOption ChangeOption;
         private static CustomOption DecreaseKillCooldown;
         private static CustomOption IncreaseShotLimit;
+        private static CustomOption ChangeNumOfTasks;
 
         private static Dictionary<byte, byte> ParentSheriff = new();
 
@@ -32,6 +33,7 @@ namespace TownOfHost
             ChangeOption = CustomOption.Create(Id + 10, Color.white, "DeputyChangeOption", SettingSelection, SettingSelection[0], CustomRoleSpawnChances[CustomRoles.Deputy]);
             DecreaseKillCooldown = CustomOption.Create(Id + 11, Color.white, "DeputyDecreaseKillCooldown", 2f, 1f, 5f, 1f, CustomRoleSpawnChances[CustomRoles.Deputy]);
             IncreaseShotLimit = CustomOption.Create(Id + 12, Color.white, "DeputyIncreaseShotLimit", 1f, 1f, 2f, 1f, CustomRoleSpawnChances[CustomRoles.Deputy]);
+            ChangeNumOfTasks = CustomOption.Create(Id + 13, Color.white, "DeputyChangeNumOfTasks", 3f, 1f, float.MaxValue, 1f, CustomRoleSpawnChances[CustomRoles.Deputy]);
         }
         public static void Init()
         {
