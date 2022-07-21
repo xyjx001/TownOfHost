@@ -298,7 +298,6 @@ namespace TownOfHost
                 Main.BountyTimer = new Dictionary<byte, float>();
                 foreach (var pc in PlayerControl.AllPlayerControls)
                 {
-                    pc.ResetKillCooldown();
                     if (pc.Is(CustomRoles.Sheriff)) Sheriff.Add(pc.PlayerId);
                     if (pc.Is(CustomRoles.BountyHunter))
                     {
@@ -356,6 +355,8 @@ namespace TownOfHost
                     if (pc.Is(CustomRoles.Mayor))
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                     if (pc.Is(CustomRoles.Deputy)) Deputy.Add(pc.PlayerId);
+
+                    pc.ResetKillCooldown();
                 }
 
                 //役職の人数を戻す
