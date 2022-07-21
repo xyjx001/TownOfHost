@@ -611,17 +611,17 @@ namespace TownOfHost
                 if (seer.Data.IsDead //seerが死んでいる
                     || SeerKnowsImpostors //seerがインポスターを知っている状態
                     || seer.GetCustomRole().IsImpostor() //seerがインポスター
-                    || seer.Is(CustomRoles.EgoSchrodingerCat) //seerがエゴイストのシュレディンガーの猫
                     || NameColorManager.Instance.GetDataBySeer(seer.PlayerId).Count > 0 //seer視点用の名前色データが一つ以上ある
-                    || seer.Is(CustomRoles.Arsonist)
-                    || seer.Is(CustomRoles.Lovers)
                     || Main.SpelledPlayer.Count > 0
-                    || seer.Is(CustomRoles.Executioner)
-                    || seer.Is(CustomRoles.Doctor) //seerがドクター
-                    || seer.Is(CustomRoles.Puppeteer)
-                    || IsActive(SystemTypes.Electrical)
                     || NoCache
                     || ForceLoop
+                    || seer.GetCustomRole() is CustomRoles.EgoSchrodingerCat or
+                        CustomRoles.Arsonist or
+                        CustomRoles.Lovers or
+                        CustomRoles.Executioner or
+                        CustomRoles.Doctor or
+                        CustomRoles.Puppeteer or
+                        CustomRoles.Deputy
                 )
                 {
                     foreach (var target in PlayerControl.AllPlayerControls)
@@ -706,6 +706,8 @@ namespace TownOfHost
                             var ncd = NameColorManager.Instance.GetData(seer.PlayerId, target.PlayerId);
                             TargetPlayerName = ncd.OpenTag + TargetPlayerName + ncd.CloseTag;
                         }
+                        TargetPlayerName = Deputy.VisibleParent(seer, target, TargetPlayerName);
+
                         foreach (var ExecutionerTarget in Main.ExecutionerTarget)
                         {
                             if ((seer.PlayerId == ExecutionerTarget.Key || seer.Data.IsDead) && //seerがKey or Dead
@@ -725,10 +727,10 @@ namespace TownOfHost
                         //適用
                         target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
 
-                        TownOfHost.Logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END", "NotifyRoles");
+                        Logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END", "NotifyRoles");
                     }
                 }
-                TownOfHost.Logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END", "NotifyRoles");
+                Logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END", "NotifyRoles");
             }
             Main.witchMeeting = false;
         }

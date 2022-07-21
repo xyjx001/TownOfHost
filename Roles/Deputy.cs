@@ -33,7 +33,7 @@ namespace TownOfHost
             ChangeOption = CustomOption.Create(Id + 10, Color.white, "DeputyChangeOption", SettingSelection, SettingSelection[0], CustomRoleSpawnChances[CustomRoles.Deputy]);
             DecreaseKillCooldown = CustomOption.Create(Id + 11, Color.white, "DeputyDecreaseKillCooldown", 2f, 1f, 5f, 1f, CustomRoleSpawnChances[CustomRoles.Deputy]);
             IncreaseShotLimit = CustomOption.Create(Id + 12, Color.white, "DeputyIncreaseShotLimit", 1f, 1f, 2f, 1f, CustomRoleSpawnChances[CustomRoles.Deputy]);
-            ChangeNumOfTasks = CustomOption.Create(Id + 13, Color.white, "DeputyChangeNumOfTasks", 3f, 1f, float.MaxValue, 1f, CustomRoleSpawnChances[CustomRoles.Deputy]);
+            ChangeNumOfTasks = CustomOption.Create(Id + 13, Color.white, "DeputyChangeNumOfTasks", 3f, 1f, 10f, 1f, CustomRoleSpawnChances[CustomRoles.Deputy]);
         }
         public static void Init()
         {
@@ -52,14 +52,27 @@ namespace TownOfHost
             var parent = SheriffList[rand.Next(0, SheriffList.Count)];
             SheriffList.Remove(parent);
             ParentSheriff.Add(playerId, parent.PlayerId);
+            Logger.Info(Utils.GetPlayerById(playerId)?.Data.PlayerName + " => " + parent.Data.PlayerName, "Deputy");
+            SendRPC(playerId, parent.PlayerId);
         }
         public static bool IsEnable => playerIdList.Count > 0;
-        public static void SendRPC()
+        private static void SendRPC(byte deputy, byte parent)
         {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncParentSheriff, SendOption.Reliable);
+            writer.Write(deputy);
+            writer.Write(parent);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-
         public static void ReceiveRPC(MessageReader reader)
         {
+            byte deputy = reader.ReadByte();
+            byte parent = reader.ReadByte();
+            ParentSheriff[deputy] = parent;
+        }
+        public static string VisibleParent(PlayerControl seer, PlayerControl target, string targetName)
+        {
+            var Condition = seer.Is(CustomRoles.Deputy) && target.Is(CustomRoles.Sheriff) && target.PlayerId == ParentSheriff.GetValueOrDefault(seer.PlayerId);
+            return Condition ? Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), targetName) : targetName;
         }
     }
 }

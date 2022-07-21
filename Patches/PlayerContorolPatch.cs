@@ -1003,6 +1003,7 @@ namespace TownOfHost
                     /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                         Mark = isBlocked ? "(true)" : "(false)";
                     }*/
+                    RealName = Deputy.VisibleParent(seer, target, RealName);
 
                     //Mark・Suffixの適用
                     target.cosmetics.nameText.text = $"{RealName}{Mark}";
