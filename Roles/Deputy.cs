@@ -81,13 +81,27 @@ namespace TownOfHost
         {
             if (!player.Is(CustomRoles.Deputy)) return; //デピュティ以外処理しない
 
+            CountTasksBeforeAbility[player.PlayerId]++;
             if (CountTasksBeforeAbility[player.PlayerId] == ChangeNumOfTasks.GetInt())
             {
-                var parentId = ParentSheriff.GetValueOrDefault(player.PlayerId);
-                if (ChangeOption.GetSelection() == 0) //キルクールを減らすなら
-                    Sheriff.CurrentKillCooldown[parentId] -= DecreaseKillCooldown.GetFloat();
-                else
-                    Sheriff.ShotLimit[parentId] += IncreaseShotLimit.GetFloat();
+                Logger.SendInGame("能力発動！");
+                if (ParentSheriff.TryGetValue(player.PlayerId, out var parentId))
+                {
+                    Logger.SendInGame("Value取り出せた！");
+                    var parent = Utils.GetPlayerById(parentId);
+                    if (ChangeOption.GetSelection() == 0) //キルクールを減らすなら
+                    {
+                        Logger.SendInGame("キルクール減らしたよぉぉぉ？");
+                        Sheriff.CurrentKillCooldown[parentId] -= DecreaseKillCooldown.GetFloat();
+                        parent?.CustomSyncSettings();
+                    }
+                    else
+                    {
+                        Logger.SendInGame("キル回数増やしたよぉぉぉ？");
+                        Sheriff.ShotLimit[parentId] += IncreaseShotLimit.GetFloat();
+                        Utils.NotifyRoles();
+                    }
+                }
                 CountTasksBeforeAbility[parentId] = 0;
             }
         }
