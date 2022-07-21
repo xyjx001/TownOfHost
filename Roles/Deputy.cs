@@ -74,5 +74,14 @@ namespace TownOfHost
             var Condition = seer.Is(CustomRoles.Deputy) && target.Is(CustomRoles.Sheriff) && target.PlayerId == ParentSheriff.GetValueOrDefault(seer.PlayerId);
             return Condition ? Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), targetName) : targetName;
         }
+        public static void OnCompleteTask(PlayerControl player)
+        {
+            if (!player.Is(CustomRoles.Deputy)) return; //デピュティ以外処理しない
+
+            if (ChangeOption.GetSelection() == 0) //キルクールを減らすなら
+            {
+                var parentId = ParentSheriff.GetValueOrDefault(player.PlayerId);
+            }
+        }
     }
 }
