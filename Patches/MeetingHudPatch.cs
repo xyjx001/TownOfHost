@@ -135,8 +135,7 @@ namespace TownOfHost
 
                 if (Utils.GetPlayerById(exileId).GetCustomRole() == CustomRoles.EvilGuesser)
                 {
-                    MeetingHud.Instance.RpcClose();
-                    Main.isEvilGuesserMeeting = true;
+                    Guesser.CheckForStartEvilGuesserMeeting(exileId);
                     return false;
                 }
                 Logger.Info($"追放者決定: {exileId}({Utils.GetVoteName(exileId)})", "Vote");

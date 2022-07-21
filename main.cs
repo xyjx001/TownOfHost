@@ -50,7 +50,6 @@ namespace TownOfHost
         public static Dictionary<byte, bool> SelfGuard;
         public static Dictionary<byte, bool> BlockKilling;
         public static Dictionary<byte, float> SheriffShotLimit;
-        public static Dictionary<byte, float> GuesserShootLimit;
         public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = new();
         public static Dictionary<CustomRoles, String> roleColors;
         //これ変えたらmod名とかの色が変わる
@@ -67,7 +66,6 @@ namespace TownOfHost
         public static float TextCursorTimer;
         public static List<PlayerControl> LoversPlayers = new();
         public static bool isLoversDead = true;
-        public static bool isEvilGuesserMeeting;
         public static Dictionary<byte, float> AllPlayerKillCooldown = new();
         public static Dictionary<byte, float> AllPlayerSpeed = new();
         public static Dictionary<byte, (byte, float)> BitPlayers = new();

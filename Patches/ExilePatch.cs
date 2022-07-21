@@ -93,11 +93,6 @@ namespace TownOfHost
                 if (player.Is(CustomRoles.TimeThief) && x.Value == PlayerState.DeathReason.LoversSuicide)
                     player?.ResetThiefVotingTime();
             });
-            if (Main.isEvilGuesserMeeting)
-            {
-                PlayerControl.LocalPlayer.CmdReportDeadBody(null);
-                Main.isEvilGuesserMeeting = false;
-            }
             Main.AfterMeetingDeathPlayers.Clear();
             LadderDeathPatch.Reset();
             Utils.CountAliveImpostors();

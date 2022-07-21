@@ -34,14 +34,12 @@ namespace TownOfHost
             Main.ExecutionerTarget = new Dictionary<byte, byte>();
             Main.SKMadmateNowCount = 0;
             Main.isCursed = false;
-            Main.isEvilGuesserMeeting = false;
             Main.PuppeteerList = new Dictionary<byte, byte>();
 
             Main.AfterMeetingDeathPlayers = new();
             Main.ResetCamPlayerList = new();
 
             Main.SheriffShotLimit = new Dictionary<byte, float>();
-            Main.GuesserShootLimit = new Dictionary<byte, float>();
             Main.TimeThiefKillCount = new Dictionary<byte, int>();
 
             Main.SpelledPlayer = new List<PlayerControl>();
@@ -105,6 +103,7 @@ namespace TownOfHost
             LadderDeathPatch.Reset();
             FireWorks.Init();
             Sniper.Init();
+            Guesser.Init();
         }
     }
     [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
@@ -119,7 +118,6 @@ namespace TownOfHost
 
             //ウォッチャーの陣営抽選
             Options.SetWatcherTeam(Options.EvilWatcherChance.GetFloat());
-            Options.SetGuesserTeam(Options.EvilGuesserChance.GetFloat());
 
             var rand = new System.Random();
             if (Options.CurrentGameMode != CustomGameMode.HideAndSeek)
@@ -356,7 +354,7 @@ namespace TownOfHost
                 AssignCustomRolesFromList(CustomRoles.SchrodingerCat, Crewmates);
                 if (Options.IsEvilWatcher) AssignCustomRolesFromList(CustomRoles.Watcher, Impostors);
                 else AssignCustomRolesFromList(CustomRoles.Watcher, Crewmates);
-                if (Options.IsEvilGuesser) AssignCustomRolesFromList(CustomRoles.Guesser, Impostors);
+                if (Guesser.SetGuesserTeam()) AssignCustomRolesFromList(CustomRoles.EvilGuesser, Impostors);
                 else AssignCustomRolesFromList(CustomRoles.Guesser, Crewmates);
                 if (Main.RealOptionsData.NumImpostors > 1)
                     AssignCustomRolesFromList(CustomRoles.Egoist, Shapeshifters);
@@ -372,10 +370,7 @@ namespace TownOfHost
                         Main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.EvilWatcher;
                     if (pc.Is(CustomRoles.Watcher) && !Options.IsEvilWatcher)
                         Main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.NiceWatcher;
-                    if (pc.Is(CustomRoles.Guesser) && Options.IsEvilGuesser)
-                        Main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.EvilGuesser;
-                    if (pc.Is(CustomRoles.Guesser) && !Options.IsEvilGuesser)
-                        Main.AllPlayerCustomRoles[pc.PlayerId] = CustomRoles.NiceGuesser;
+                    Guesser.SetRoleToGuesser(pc);
                 }
                 foreach (var pair in Main.AllPlayerCustomRoles)
                 {
@@ -455,7 +450,11 @@ namespace TownOfHost
                     }
                     if (pc.Is(CustomRoles.Mayor))
                         Main.MayorUsedButtonCount[pc.PlayerId] = 0;
-                    if (pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.EvilGuesser)) Main.GuesserShootLimit[pc.PlayerId] = Options.GuesserShootLimit.GetFloat();
+                    if (pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.EvilGuesser))
+                    {
+                        Guesser.Add(pc.PlayerId);
+                        Logger.Info($"{pc.name}=pc", "guesser");
+                    }
                 }
 
                 //役職の人数を戻す
