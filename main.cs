@@ -84,7 +84,7 @@ namespace TownOfHost
         public static Dictionary<byte, float> AirshipMeetingTimer = new();
         public static Dictionary<byte, byte> ExecutionerTarget = new(); //Key : Executioner, Value : target
         public static Dictionary<byte, byte> PuppeteerList = new(); // Key: targetId, Value: PuppeteerId
-        public static Dictionary<byte, byte> SpeedBoostTarget = new();
+        public static Dictionary<byte, byte> SpeedBoostTarget = new(); // Key: SpeedBoosterPlayerId Value: SpeedUpTargetPlayersId
         public static Dictionary<byte, int> MayorUsedButtonCount = new();
         public static Dictionary<byte, int> TimeThiefKillCount = new();
         public static int AliveImpostorCount;

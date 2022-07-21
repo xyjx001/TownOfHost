@@ -368,8 +368,8 @@ namespace TownOfHost
                                     Logger.Warn("スピードブースト先がnullです。", "SpeedBooster");
                                 }
                             }
-                            if (Main.SpeedBoostTarget.ContainsValue(player.PlayerId))
-                                Main.AllPlayerSpeed[player.PlayerId] = Options.SpeedBoosterUpSpeed.GetFloat();
+                            if (Main.SpeedBoostTarget.ContainsKey(player.PlayerId))
+                                Main.AllPlayerSpeed[Main.SpeedBoostTarget[player.PlayerId]] = Options.SpeedBoosterUpSpeed.GetFloat();
                         }
                     }
                     break;
@@ -403,13 +403,10 @@ namespace TownOfHost
                         opt.KillCooldown = kc.Value > 0 ? kc.Value : 0.01f;
                 }
             }
-            if (Main.AllPlayerSpeed.ContainsKey(player.PlayerId))
+            if (Main.AllPlayerSpeed.ContainsValue(player.PlayerId))
             {
-                foreach (var speed in Main.AllPlayerSpeed)
-                {
-                    if (speed.Key == player.PlayerId)
-                        opt.PlayerSpeedMod = Mathf.Clamp(speed.Value, 0.0001f, 3f);
-                }
+                opt.PlayerSpeedMod = Mathf.Clamp(player.PlayerId, 0.0001f, 3f);
+                Logger.Info("スピード:" + player.name + " 速度:" + opt.PlayerSpeedMod, "Speed");
             }
             if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead && opt.AnonymousVotes)
                 opt.AnonymousVotes = false;
