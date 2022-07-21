@@ -21,7 +21,8 @@ namespace TownOfHost
 
         private static Dictionary<byte, byte> ParentSheriff = new();
 
-        private static List<PlayerControl> SheriffList = new();
+        private static readonly List<PlayerControl> SheriffList = new();
+        private static Dictionary<byte, int> CountTasksBeforeAbility = new();
         public static void SetupCustomOption()
         {
             var spawnOption = CustomOption.Create(Id, Utils.GetRoleColor(CustomRoles.Deputy), CustomRoles.Deputy.ToString(), rates, rates[0], CustomRoleSpawnChances[CustomRoles.Sheriff])
@@ -39,12 +40,14 @@ namespace TownOfHost
         {
             playerIdList = new();
             ParentSheriff = new();
+            CountTasksBeforeAbility = new();
             foreach (var pc in PlayerControl.AllPlayerControls)
                 SheriffList.Add(pc);
         }
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
+            CountTasksBeforeAbility.Add(playerId, 0);
 
             SheriffList.RemoveAll(x => !x.Is(CustomRoles.Sheriff));
             var rand = new System.Random();
@@ -78,9 +81,14 @@ namespace TownOfHost
         {
             if (!player.Is(CustomRoles.Deputy)) return; //デピュティ以外処理しない
 
-            if (ChangeOption.GetSelection() == 0) //キルクールを減らすなら
+            if (CountTasksBeforeAbility[player.PlayerId] == ChangeNumOfTasks.GetInt())
             {
                 var parentId = ParentSheriff.GetValueOrDefault(player.PlayerId);
+                if (ChangeOption.GetSelection() == 0) //キルクールを減らすなら
+                    Sheriff.CurrentKillCooldown[parentId] -= DecreaseKillCooldown.GetFloat();
+                else
+                    Sheriff.ShotLimit[parentId] += IncreaseShotLimit.GetFloat();
+                CountTasksBeforeAbility[parentId] = 0;
             }
         }
     }
