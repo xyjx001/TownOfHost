@@ -126,6 +126,7 @@ namespace TownOfHost
             {
                 if (!roles.Contains(pc.GetCustomRole())) roles.Add(pc.GetCustomRole());
             }
+            if (Options.CanMakeMadmateCount.GetInt() != 0) roles.Add(CustomRoles.SKMadmate);
             roles = roles.OrderBy(a => Guid.NewGuid()).ToList();
             foreach (var ro in roles)
             {
