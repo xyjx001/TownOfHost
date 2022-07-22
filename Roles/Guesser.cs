@@ -78,7 +78,7 @@ namespace TownOfHost
                     RoleAndNumber.TryGetValue(int.Parse(subArgs2), out var r);
                     if (target.GetCustomRole() == r)
                     {
-                        if (target.GetCustomRole() == CustomRoles.Crewmate && !CanShootAsNomalCrewmate.GetBool()) return;
+                        if ((target.GetCustomRole() == CustomRoles.Crewmate && !CanShootAsNomalCrewmate.GetBool()) || (target.GetCustomRole() == CustomRoles.Egoist && killer.Is(CustomRoles.EvilGuesser))) return;
                         GuesserShootLimit[killer.PlayerId]--;
                         target.RpcGuesserMurderPlayer(0f, true);
                         target.Data.IsDead = true;
