@@ -535,6 +535,9 @@ namespace TownOfHost
                 //ハートマークを付ける(自分に)
                 if (seer.Is(CustomRoles.Lovers)) SelfMark += $"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>";
 
+                if (seer.Is(CustomRoles.MimicA)) SelfMark += $"<color={GetRoleColorCode(CustomRoles.Impostor)}>(A)</color>";
+                if (seer.Is(CustomRoles.MimicK)) SelfMark += $"<color={GetRoleColorCode(CustomRoles.Impostor)}>(K)</color>";
+
                 //呪われている場合
                 if (Main.SpelledPlayer.Find(x => x.PlayerId == seer.PlayerId) != null && isMeeting)
                     SelfMark += "<color=#ff0000>†</color>";
@@ -619,6 +622,8 @@ namespace TownOfHost
                     || seer.Is(CustomRoles.Executioner)
                     || seer.Is(CustomRoles.Doctor) //seerがドクター
                     || seer.Is(CustomRoles.Puppeteer)
+                    || seer.Is(CustomRoles.MimicA)
+                    || seer.Is(CustomRoles.MimicK)
                     || IsActive(SystemTypes.Electrical)
                     || NoCache
                     || ForceLoop
@@ -678,6 +683,24 @@ namespace TownOfHost
                         Main.PuppeteerList.ContainsValue(seer.PlayerId) &&
                         Main.PuppeteerList.ContainsKey(target.PlayerId))
                             TargetMark += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>◆</color>";
+
+                        if (seer.Is(CustomRoles.MimicK) && target.Is(CustomRoles.MimicA))
+                        {
+                            TargetMark += $"<color={GetRoleColorCode(CustomRoles.Impostor)}>(A)</color>";
+                        }
+                        else if (seer.Data.IsDead && !seer.Is(CustomRoles.MimicA) && target.Is(CustomRoles.MimicA))
+                        {
+                            TargetMark += $"<color={GetRoleColorCode(CustomRoles.Impostor)}>(A)</color>";
+                        }
+
+                        if (seer.Is(CustomRoles.MimicA) && target.Is(CustomRoles.MimicK))
+                        {
+                            TargetMark += $"<color={GetRoleColorCode(CustomRoles.Impostor)}>(K)</color>";
+                        }
+                        else if (seer.Data.IsDead && !seer.Is(CustomRoles.MimicK) && target.Is(CustomRoles.MimicK))
+                        {
+                            TargetMark += $"<color={GetRoleColorCode(CustomRoles.Impostor)}>(K)</color>";
+                        }
 
                         //他人の役職とタスクは幽霊が他人の役職を見れるようになっていてかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
                         string TargetRoleText = seer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool() ? $"<size={fontSize}>{Helpers.ColorString(target.GetRoleColor(), target.GetRoleName())}{TargetTaskText}</size>\r\n" : "";

@@ -976,6 +976,24 @@ namespace TownOfHost
                         Mark += $"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>";
                     }
 
+                    if (__instance.Is(CustomRoles.MimicA) && PlayerControl.LocalPlayer.Is(CustomRoles.MimicA))
+                    {
+                        Mark += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(A)</color>";
+                    }
+                    else if (__instance.Is(CustomRoles.MimicA) && PlayerControl.LocalPlayer.Data.IsDead)
+                    {
+                        Mark += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(A)</color>";
+                    }
+
+                    if (__instance.Is(CustomRoles.MimicK) && PlayerControl.LocalPlayer.Is(CustomRoles.MimicK))
+                    {
+                        Mark += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(K)</color>";
+                    }
+                    else if (__instance.Is(CustomRoles.MimicK) && PlayerControl.LocalPlayer.Data.IsDead)
+                    {
+                        Mark += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(K)</color>";
+                    }
+
                     //矢印オプションありならタスクが終わったスニッチはインポスター/キル可能な第三陣営の方角がわかる
                     if (GameStates.IsInTask && Options.SnitchEnableTargetArrow.GetBool() && target.Is(CustomRoles.Snitch))
                     {

@@ -288,6 +288,24 @@ namespace TownOfHost
                 {
                     pva.NameText.text += $"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>";
                 }
+
+                if (PlayerControl.LocalPlayer.Is(CustomRoles.MimicK) && target.Is(CustomRoles.MimicA))
+                {
+                    pva.NameText.text += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(A)</color>";
+                }
+                else if (PlayerControl.LocalPlayer.Data.IsDead && target.Is(CustomRoles.MimicA))
+                {
+                    pva.NameText.text += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(A)</color>";
+                }
+                if (PlayerControl.LocalPlayer.Is(CustomRoles.MimicA) && target.Is(CustomRoles.MimicK))
+                {
+                    pva.NameText.text += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(K)</color>";
+                }
+                else if (PlayerControl.LocalPlayer.Data.IsDead && target.Is(CustomRoles.MimicK))
+                {
+                    pva.NameText.text += $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>(K)</color>";
+                }
+
                 if (seer.GetCustomRole().IsImpostor() && //LocalPlayerがImpostor
                     target.Is(CustomRoles.Egoist) //変更対象がEgoist
                 )
