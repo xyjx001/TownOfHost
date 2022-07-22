@@ -482,6 +482,24 @@ They do not have tasks.<br>
 | Sheriff Can Kill Crewmates As It             |
 | Sheriff Shot Limit                           |
 
+### Deputy
+
+Team : Crewmates<br>
+Decision : Crewmate<br>
+
+Assistants to the Sheriff.<br>
+Completing a certain number of tasks can reduce the number of parent sheriff killcooldown or increase the number of kill count.<br>
+It isn't assigned without a sheriff.<br>
+
+#### Settings
+
+| Settings Name                           |
+| --------------------------------------- |
+| Deputy change option                    |
+| Deputy decrease killcooldown            |
+| Deputy increase shot limit              |
+| Deputy require use ability num of tasks |
+
 ### Snitch
 
 Team : Crewmates<br>
