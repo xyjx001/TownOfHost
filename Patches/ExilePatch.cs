@@ -100,6 +100,7 @@ namespace TownOfHost
             Utils.CustomSyncAllSettings();
             Utils.NotifyRoles();
             Logger.Info("タスクフェイズ開始", "Phase");
+            Guesser.OpenGuesserMeeting();
         }
     }
 }

@@ -367,9 +367,6 @@ namespace TownOfHost
                 case "/shoot":
                     subArgs = args.Length < 2 ? "" : args[1];
                     string subArgs1 = args.Length < 3 ? "" : args[2];
-                    Logger.Info($"{args}=args", "Guesser");
-                    Logger.Info($"{subArgs}=subArgs", "Guesser");
-                    Logger.Info($"{subArgs1}=subArgs1", "Guesser");
                     Guesser.GuesserShoot(player, subArgs, subArgs1);
                     break;
 

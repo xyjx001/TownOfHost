@@ -354,8 +354,9 @@ namespace TownOfHost
                 AssignCustomRolesFromList(CustomRoles.SchrodingerCat, Crewmates);
                 if (Options.IsEvilWatcher) AssignCustomRolesFromList(CustomRoles.Watcher, Impostors);
                 else AssignCustomRolesFromList(CustomRoles.Watcher, Crewmates);
-                if (Guesser.SetGuesserTeam()) AssignCustomRolesFromList(CustomRoles.EvilGuesser, Impostors);
+                if (Guesser.SetGuesserTeam()) AssignCustomRolesFromList(CustomRoles.Guesser, Impostors);
                 else AssignCustomRolesFromList(CustomRoles.Guesser, Crewmates);
+                AssignCustomRolesFromList(CustomRoles.EvilGuesser, Impostors);
                 if (Main.RealOptionsData.NumImpostors > 1)
                     AssignCustomRolesFromList(CustomRoles.Egoist, Shapeshifters);
                 AssignCustomRolesFromList(CustomRoles.Mare, Impostors);
@@ -453,7 +454,6 @@ namespace TownOfHost
                     if (pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.EvilGuesser))
                     {
                         Guesser.Add(pc.PlayerId);
-                        Logger.Info($"{pc.name}=pc", "guesser");
                     }
                 }
 
