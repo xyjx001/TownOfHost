@@ -164,7 +164,7 @@ SKMadmateInfoLong,(Impostors):\nThe role that can be held by the person\nwho was
 
 # 両陣営可能役職
 WatcherInfoLong,(Impostors or Crewmates):\nYou can see where everyone is voting.,(インポスターorクルーメイト陣営):\n全員の投票先を見ることができる。
-GuesserInfoLong,(Impostors or Crewmates):\nYou can shoot players in meetings by sending chatcommand.Furst,send the command "/shoot show".\nYou can see active roles and number.Then,think about What target role is.\nAt last,send the command "/shoot {target 's name} {rolenumber}.If your thinking is correct, you will kill the target.\nIf it is not correct,you will die.",(インポスターorクルーメイト陣営):\nこの役職はコマンドによって会議中にキルできる役職です。まず、「/shoot show」というコマンドを打ちましょう。\n役職に対応する番号が出てきます。そしてターゲットの役職を考え、次のコマンドでキルしましょう。\n「/shoot {ターゲットの名前}　{役職の番号}」役職が当たっていればキルが入り、外れていれば自分が死んでしまいます。
+GuesserInfoLong,(Impostors or Crewmates):\nYou can shoot players in meetings by sending chatcommand.Furst send the command "/shoot show".\nYou can see active roles and number.Then think about What target role is.\nAt last send the command "/shoot (target 's name) (rolenumber).If your thinking is correct you will kill the target.\nIf it is not correct you will die.",(インポスターorクルーメイト陣営):\nこの役職はコマンドによって会議中にキルできる役職です。まず、「/shoot show」というコマンドを打ちましょう。\n役職に対応する番号が出てきます。そしてターゲットの役職を考え、次のコマンドでキルしましょう。\n「/shoot (ターゲットの名前)　(役職の番号)」役職が当たっていればキルが入り、外れていれば自分が死んでしまいます。
 
 # 特殊クルー役職
 BaitInfoLong,"(Crewmates):\nWhen killed,Force the murder who killed it to self-report.",(クルーメイト陣営):\nキルされた時に、自身をキルした人に\n強制的にセルフレポートさせる事ができる。
