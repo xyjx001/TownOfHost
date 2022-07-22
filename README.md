@@ -116,12 +116,14 @@ AmongUsバージョン : **2022.7.12**
 | [TimeThief/タイムシーフ](#TimeThiefタイムシーフ)                                     | [Snitch/スニッチ](#Snitchスニッチ)                                         |                                                                            |
 | [Vampire/ヴァンパイア](#Vampireヴァンパイア)                                         | [SpeedBooster/スピードブースター](#SpeedBoosterスピードブースター)         |                                                                            |
 | [Warlock/ウォーロック](#Warlockウォーロック)                                         | [Trapper/トラッパー](#Trapperトラッパー)                                   |                                                                            |
-| [Witch/魔女](#Witch魔女)                                                             |                                                                            |                                                                            |
+| [Witch/魔女](#Witch魔女)                                                             |        [NiceGuesser/ナイスゲッサー](#guesserゲッサー)                                               |                                                                            |
+| [EvilGuesser/イビルゲッサー](#guesserゲッサー) |                                                           |                              |
 | [Mafia/マフィア](#Mafiaマフィア)                                                     |                                                                            |                                                                            |
 | [Madmate/マッドメイト](#Madmateマッドメイト)                                         |                                                                            |                                                                            |
 | [MadGuardian/マッドガーディアン](#MadGuardianマッドガーディアン)                     |                                                                            |                                                                            |
 | [MadSnitch/マッドスニッチ](#MadSnitchマッドスニッチ)                                 |                                                                            |                                                                            |
 | [SidekickMadmate/サイドキックマッドメイト](#SidekickMadmateサイドキックマッドメイト) |                                                                            |                                                                            |
+
 
 ### BountyHunter/バウンティハンター
 
@@ -379,6 +381,21 @@ AmongUsバージョン : **2022.7.12**
 | 設定名                          |
 | ------------------------------- |
 | イビルウォッチャーになる確率(%) |
+
+### Guesser/ゲッサー
+陣営 : インポスター or クルーメイト<br>
+判定 : インポスター or クルーメイト<br>
+
+会議中に役職を当てればキルができます。<br>
+また、EvilGuesserは追放されたあとにもキルするチャンスがあります。<br>
+
+#### 設定
+| 設定名                          |
+| ------------------------------- |
+| イビルゲッサーになる確率(%) |
+| 確定イビルゲッサーの人数 |
+| クルー打ちを許可 |
+| ゲッサーが打てる回数 |
 
 ### Bait/ベイト
 
