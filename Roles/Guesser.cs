@@ -49,7 +49,6 @@ namespace TownOfHost
             playerIdList.Add(PlayerId);
             GuesserShootLimit[PlayerId] = GuesserCanKillCount.GetInt();
             isEvilGuesserExiled[PlayerId] = false;
-            SetRoleAndNunber();
             IsEvilGuesserMeeting = false;
         }
         public static bool IsEnable()
@@ -80,13 +79,15 @@ namespace TownOfHost
                     {
                         if ((target.GetCustomRole() == CustomRoles.Crewmate && !CanShootAsNomalCrewmate.GetBool()) || (target.GetCustomRole() == CustomRoles.Egoist && killer.Is(CustomRoles.EvilGuesser))) return;
                         GuesserShootLimit[killer.PlayerId]--;
-                        target.RpcGuesserMurderPlayer(0f, true);
+                        PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Kill);
+                        target.RpcGuesserMurderPlayer(0f);
                         target.Data.IsDead = true;
                         return;
                     }
                     if (target.GetCustomRole() != r)
                     {
-                        killer.RpcGuesserMurderPlayer(0f, false);
+                        PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Misfire);
+                        killer.RpcGuesserMurderPlayer(0f);
                         killer.Data.IsDead = true;
                         return;
                     }
@@ -103,20 +104,18 @@ namespace TownOfHost
             }
             Utils.SendMessage(text, byte.MaxValue);
         }
-        public static void RpcGuesserMurderPlayer(this PlayerControl pc, float delay = 0f, bool sucsess = true)
+        public static void RpcGuesserMurderPlayer(this PlayerControl pc, float delay = 0f)
         {
             string text = "";
-            if ((Main.AliveImpostorCount == 1 && pc.GetCustomRole().IsImpostor()) || (Main.AliveImpostorCount == 1 && IsEvilGuesserMeeting)) pc.RpcMurderPlayer(pc);
             new LateTask(() =>
             {
                 MessageWriter MurderWriter = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, pc.GetClientId());
                 MessageExtensions.WriteNetObject(MurderWriter, pc);
                 AmongUsClient.Instance.FinishRpcImmediately(MurderWriter);
             }, 0.2f + delay, "Guesser Murder");
-            text += string.Format("{0}is killed by Guesser.", pc.name);
+            text += string.Format("{0} is killed by Guesser.", pc.name);
             Utils.SendMessage(text, byte.MaxValue);
-            if (sucsess) Main.AfterMeetingDeathPlayers.TryAdd(pc.PlayerId, PlayerState.DeathReason.Kill);
-            if (!sucsess) Main.AfterMeetingDeathPlayers.TryAdd(pc.PlayerId, PlayerState.DeathReason.Misfire);
+
         }
         public static void SetRoleAndNunber()
         {
