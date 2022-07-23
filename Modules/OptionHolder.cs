@@ -264,7 +264,7 @@ namespace TownOfHost
             Sniper.SetupCustomOption();
             SetupRoleOptions(2000, CustomRoles.Puppeteer);
             SetupRoleOptions(2300, CustomRoles.Mare);
-            BlackOutMareSpeed = CustomOption.Create(2310, Color.white, "BlackOutMareSpeed", 2f, 0.25f, 3f, 0.25f, CustomRoleSpawnChances[CustomRoles.Mare]);
+            BlackOutMareSpeed = CustomOption.Create(2310, Color.white, "BlackOutMareSpeed", 0.1f, 0.1f, 0.5f, 0.1f, CustomRoleSpawnChances[CustomRoles.Mare]);
             SetupRoleOptions(2400, CustomRoles.TimeThief);
             TimeThiefDecreaseMeetingTime = CustomOption.Create(2410, Color.white, "TimeThiefDecreaseMeetingTime", 20, 0, 100, 1, CustomRoleSpawnChances[CustomRoles.TimeThief]);
             TimeThiefLowerLimitVotingTime = CustomOption.Create(2411, Color.white, "TimeThiefLowerLimitVotingTime", 10, 1, 300, 1, CustomRoleSpawnChances[CustomRoles.TimeThief]);
