@@ -294,11 +294,11 @@ namespace TownOfHost
         NiceWatcher,
         SabotageMaster,
         Sheriff,
+        Deputy,
         Snitch,
         SpeedBooster,
         Trapper,
         Dictator,
-        Deputy,
         Doctor,
         CSchrodingerCat,//クルー陣営のシュレディンガーの猫
         //Neutral
