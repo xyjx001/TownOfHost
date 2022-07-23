@@ -352,7 +352,7 @@ namespace TownOfHost
                     Main.AllPlayerSpeed[player.PlayerId] = Main.RealOptionsData.PlayerSpeedMod;
                     if (Utils.IsActive(SystemTypes.Electrical))//もし停電発生した場合
                     {
-                        Main.AllPlayerSpeed[player.PlayerId] = Options.BlackOutMareSpeed.GetFloat();//Mareの速度を設定した値にする
+                        Main.AllPlayerSpeed[player.PlayerId] += Options.BlackOutMareSpeed.GetFloat();//Mareの速度を設定した加速値を足す
                         Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown / 2;//Mareのキルクールを÷2する
                     }
                     break;
