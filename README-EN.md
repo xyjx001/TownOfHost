@@ -176,6 +176,12 @@ No kills can be made except in the event of a power outage.<br>
 However, if the kill is successful, the KillCooldown is halved.<br>
 And the movement speed will also increase. And name is displayed in red<br>
 
+#### Settings
+
+| Settings Name                       |
+| ----------------------------------- |
+| Acceleration value of power failure |
+
 ### Puppeteer
 
 Team : Impostors<br>
@@ -422,6 +428,12 @@ Decision : Crewmate<br>
 
 Upon completion of the task, one's field of vision expands and is no longer affected by the power outage's reduction in visibility.<br>
 
+#### Settings
+
+| Settings Name   |
+| --------------- |
+| Task achievement|
+
 ### Mayor
 
 Team : Crewmates<br>
@@ -510,7 +522,7 @@ Completing the task will make a random surviving player speed up.<br>
 
 | Settings Name     |
 | ----------------- |
-| Speed at speed up |
+| Acceleration Value|
 
 ### Trapper
 
