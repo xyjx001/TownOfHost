@@ -72,11 +72,9 @@ namespace TownOfHost
             byte parent = reader.ReadByte();
             ParentSheriff[deputy] = parent;
         }
-        public static string VisibleParent(PlayerControl seer, PlayerControl target, string targetName)
-        {
-            var Condition = seer.Is(CustomRoles.Deputy) && target.Is(CustomRoles.Sheriff) && target.PlayerId == ParentSheriff.GetValueOrDefault(seer.PlayerId);
-            return Condition ? Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), targetName) : targetName;
-        }
+        private static bool ChangeNameColorCondition(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Deputy) && target.Is(CustomRoles.Sheriff) && target.PlayerId == ParentSheriff.GetValueOrDefault(seer.PlayerId);
+        public static string VisibleParent(PlayerControl seer, PlayerControl target, string targetName) => ChangeNameColorCondition(seer, target) ? Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), targetName) : targetName;
+        public static Color VisibleParent(PlayerControl seer, PlayerControl target) => ChangeNameColorCondition(seer, target) ? target.GetRoleColor() : Color.white;
         public static void OnCompleteTask(PlayerControl player)
         {
             if (!player.Is(CustomRoles.Deputy)) return; //デピュティ以外処理しない
