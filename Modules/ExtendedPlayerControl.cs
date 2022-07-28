@@ -294,7 +294,7 @@ namespace TownOfHost
                     opt.SetVision(player, false);
                     break;
                 case CustomRoles.Lighter:
-                    if (player.GetPlayerTaskState().IsTaskFinished)
+                    if (player.GetPlayerTaskState().IsTaskFinished)//TODO:取得したタスク進捗度 || Flag
                     {
                         opt.CrewLightMod = Options.LighterTaskCompletedVision.GetFloat();
                         if (Utils.IsActive(SystemTypes.Electrical) && Options.LighterTaskCompletedDisableLightOut.GetBool())
@@ -311,10 +311,12 @@ namespace TownOfHost
                 case CustomRoles.SpeedBooster:
                     if (!player.Data.IsDead)
                     {
-                        if (player.GetPlayerTaskState().IsTaskFinished)
+                        if (player.GetPlayerTaskState().IsTaskFinished)//TODO:取得したタスク進捗度 || ブースト済みかどうかFlag
                         {
+                            Logger.Info("A1", "SpeedBooster");
                             if (!Main.SpeedBoostTarget.ContainsKey(player.PlayerId))
                             {
+                                Logger.Info("A2", "SpeedBooster");
                                 var rand = new System.Random();
                                 List<PlayerControl> targetplayers = new();
                                 //切断者と死亡者を除外
@@ -327,7 +329,7 @@ namespace TownOfHost
                                 {
                                     PlayerControl target = targetplayers[rand.Next(0, targetplayers.Count)];
                                     Logger.Info("スピードブースト先:" + target.cosmetics.nameText.text, "SpeedBooster");
-                                    Main.SpeedBoostTarget.Add(player.PlayerId, target.PlayerId);
+                                    Main.SpeedBoostTarget.Add(player.PlayerId, target.PlayerId);//Key:SpeedBoosterPlayer Value:TargetPlayer
                                 }
                                 else
                                 {
@@ -337,7 +339,12 @@ namespace TownOfHost
                                 }
                             }
                             if (Main.SpeedBoostTarget.ContainsKey(player.PlayerId))
-                                Main.AllPlayerSpeed[Main.SpeedBoostTarget[player.PlayerId]] = Options.SpeedBoosterUpSpeed.GetFloat();
+                            {
+                                Logger.Info("A3", "SpeedBooster");
+                                var targetPlayer = Main.SpeedBoostTarget[player.PlayerId];
+                                Logger.Info("A4", "SpeedBooster");
+                                Main.speed.TmpAllPlayerSpeed[targetPlayer] += Options.SpeedBoosterUpSpeed.GetFloat();//TargetPlayerに加速値を加算
+                            }
                         }
                     }
                     break;
@@ -349,10 +356,10 @@ namespace TownOfHost
                     opt.RoleOptions.EngineerInVentMaxTime = 1;
                     break;
                 case CustomRoles.Mare:
-                    Main.AllPlayerSpeed[player.PlayerId] = Main.RealOptionsData.PlayerSpeedMod;
                     if (Utils.IsActive(SystemTypes.Electrical))//もし停電発生した場合
                     {
-                        Main.AllPlayerSpeed[player.PlayerId] += Options.BlackOutMareSpeed.GetFloat();//Mareの速度を設定した加速値を足す
+
+                        Main.speed.TmpAllPlayerSpeed[player.PlayerId] += Options.BlackOutMareSpeed.GetFloat();//Mareの速度を設定した加速値を足す
                         Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown / 2;//Mareのキルクールを÷2する
                     }
                     break;
@@ -371,11 +378,16 @@ namespace TownOfHost
                         opt.KillCooldown = kc.Value > 0 ? kc.Value : 0.01f;
                 }
             }
-            if (Main.AllPlayerSpeed.ContainsValue(player.PlayerId))
+            Logger.Info("A5", "AllSpeed");
+            Main.speed.AllPlayerSpeed = Main.speed.TmpAllPlayerSpeed;//一時的に保持していた加速度を設定。
+            Logger.Info("A6", "AllSpeed");
+
+            if (Main.speed.AllPlayerSpeed.ContainsValue(player.PlayerId))
             {
-                opt.PlayerSpeedMod = Mathf.Clamp(player.PlayerId, 0.0001f, 3f);
-                Logger.Info("スピード:" + player.name + " 速度:" + opt.PlayerSpeedMod, "Speed");
+                Logger.Info("A7", "AllSpeed");
+                opt.PlayerSpeedMod = Mathf.Clamp(Main.speed.AllPlayerSpeed[player.PlayerId], Speed.SpeedMin, Speed.SpeedMin);
             }
+            Logger.Info("END", "AllSpeed");
             if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead && opt.AnonymousVotes)
                 opt.AnonymousVotes = false;
             if (Options.SyncButtonMode.GetBool() && Options.SyncedButtonCount.GetSelection() <= Options.UsedButtonCount)
@@ -383,17 +395,39 @@ namespace TownOfHost
             if ((Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) && Options.HideAndSeekKillDelayTimer > 0)
             {
                 opt.ImpostorLightMod = 0f;
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Egoist)) opt.PlayerSpeedMod = 0.0001f;
+                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Egoist)) opt.PlayerSpeedMod = Speed.SpeedMin;
             }
             opt.DiscussionTime = Mathf.Clamp(Main.DiscussionTime, 0, 300);
             opt.VotingTime = Mathf.Clamp(Main.VotingTime, Options.TimeThiefLowerLimitVotingTime.GetInt(), 300);
 
             opt.RoleOptions.ShapeshifterCooldown = Mathf.Max(1f, opt.RoleOptions.ShapeshifterCooldown);
 
+            // Logger.Info("2.0", "syncSpeed");
+            // opt.PlayerSpeedMod = 2.0f;
             if (player.AmOwner) PlayerControl.GameOptions = opt;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SyncSettings, SendOption.Reliable, clientId);
             writer.WriteBytesAndSize(opt.ToBytes(5));
             AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        public static void SetPlayerSpeed(this PlayerControl player, float speed)
+        {
+
+            Logger.Info("対象者:" + player.name + " 速度:" + Mathf.Clamp(speed, Speed.SpeedMin, Speed.SpeedMax), "SetPlayerSpeed");
+
+            // if (player.AmOwner) PlayerControl.GameOptions.PlayerSpeedMod = Main.speed.AllPlayerSpeed[player.PlayerId];
+            var opt = PlayerControl.GameOptions.DeepCopy();
+            if (player.AmOwner)
+            {
+                opt.PlayerSpeedMod = Mathf.Clamp(5.5f, Speed.SpeedMin, Speed.SpeedMin);//Main.speed.AllPlayerSpeed[player.PlayerId//Main.speed.AllPlayerSpeed[player.PlayerId]
+                PlayerControl.GameOptions = opt;
+
+                Logger.Info("write", "SetPlayerSpeed");
+                var clientId = player.GetClientId();
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SyncSettings, SendOption.Reliable, clientId);
+                writer.WriteBytesAndSize(opt.ToBytes(5));
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+            Logger.Info("end", "SetPlayerSpeed");
         }
         public static TaskState GetPlayerTaskState(this PlayerControl player)
         {
@@ -628,11 +662,11 @@ namespace TownOfHost
         public static void TrapperKilled(this PlayerControl killer, PlayerControl target)
         {
             Logger.Info($"{target?.Data?.PlayerName}はTrapperだった", "Trapper");
-            Main.AllPlayerSpeed[killer.PlayerId] = 0.00001f;
+            Main.speed.AllPlayerSpeed[killer.PlayerId] = Speed.SpeedMin;
             killer.CustomSyncSettings();
             new LateTask(() =>
             {
-                Main.AllPlayerSpeed[killer.PlayerId] = Main.RealOptionsData.PlayerSpeedMod;
+                Main.speed.AllPlayerSpeed[killer.PlayerId] = Main.RealOptionsData.PlayerSpeedMod;
                 killer.CustomSyncSettings();
                 RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
             }, Options.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
