@@ -84,7 +84,6 @@ namespace TownOfHost
         public static Dictionary<byte, byte> PuppeteerList = new(); // Key: targetId, Value: PuppeteerId
         public static Dictionary<byte, byte> SpeedBoostTarget = new();
         public static Dictionary<byte, int> MayorUsedButtonCount = new();
-        public static Dictionary<byte, int> TimeThiefKillCount = new();
         public static int AliveImpostorCount;
         public static int SKMadmateNowCount;
         public static bool witchMeeting;
@@ -202,6 +201,8 @@ namespace TownOfHost
                     {CustomRoles.SchrodingerCat, "#696969"},
                     {CustomRoles.Egoist, "#5600ff"},
                     {CustomRoles.EgoSchrodingerCat, "#5600ff"},
+                    {CustomRoles.Jackal, "#00b4eb"},
+                    {CustomRoles.JSchrodingerCat, "#00b4eb"},
                     //HideAndSeek
                     {CustomRoles.HASFox, "#e478ff"},
                     {CustomRoles.HASTroll, "#00ff00"},
@@ -310,6 +311,8 @@ namespace TownOfHost
         SchrodingerCat,//第三陣営のシュレディンガーの猫
         Terrorist,
         Executioner,
+        Jackal,
+        JSchrodingerCat,//ジャッカル陣営のシュレディンガーの猫
         //HideAndSeek
         HASFox,
         HASTroll,
@@ -330,6 +333,7 @@ namespace TownOfHost
         Executioner = CustomRoles.Executioner,
         Arsonist = CustomRoles.Arsonist,
         Egoist = CustomRoles.Egoist,
+        Jackal = CustomRoles.Jackal,
         HASTroll = CustomRoles.HASTroll,
     }
     public enum AdditionalWinners
