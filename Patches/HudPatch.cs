@@ -192,6 +192,9 @@ namespace TownOfHost
                         }
                         player.CanUseImpostorVent();
                         goto DesyncImpostor;
+                    case CustomRoles.Jackal:
+                        player.CanUseImpostorVent();
+                        goto DesyncImpostor;
                     case CustomRoles.Alice:
                         __instance.KillButton.ToggleVisible(true);
                         __instance.SabotageButton.SetEnabled();
@@ -248,10 +251,12 @@ namespace TownOfHost
         {
             var player = PlayerControl.LocalPlayer;
             if (GameStates.IsInTask && !player.Data.IsDead)
-            {
-                if (player.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.Arsonist or CustomRoles.Alice)
-                    ((Renderer)__instance.cosmetics.currentBodySprite.BodySprite).material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
-            }
+                if ((player.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.Sheriff or CustomRoles.Jackal or CustomRoles.Alice)
+                && !player.Data.IsDead)
+                {
+                    if (player.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.Arsonist or CustomRoles.Alice)
+                        ((Renderer)__instance.cosmetics.currentBodySprite.BodySprite).material.SetColor("_OutlineColor", Utils.GetRoleColor(player.GetCustomRole()));
+                }
         }
     }
     [HarmonyPatch(typeof(Vent), nameof(Vent.SetOutline))]
@@ -279,6 +284,13 @@ namespace TownOfHost
                         __instance.KillButton.ToggleVisible(isActive && !player.Data.IsDead);
                     __instance.SabotageButton.ToggleVisible(false);
                     __instance.ImpostorVentButton.ToggleVisible(false);
+                    __instance.AbilityButton.ToggleVisible(false);
+                    break;
+                case CustomRoles.Jackal:
+                    if (player.Data.Role.Role != RoleTypes.GuardianAngel)
+                        __instance.KillButton.ToggleVisible(isActive && !player.Data.IsDead);
+                    __instance.SabotageButton.ToggleVisible(isActive && Options.JackalCanUseSabotage.GetBool());
+                    __instance.ImpostorVentButton.ToggleVisible(isActive && Options.JackalCanVent.GetBool());
                     __instance.AbilityButton.ToggleVisible(false);
                     break;
                 case CustomRoles.Alice:
