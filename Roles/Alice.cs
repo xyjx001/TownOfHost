@@ -34,6 +34,7 @@ namespace TownOfHost
         public static void Add(byte playerId)
         {
             playerIdList.Add(playerId);
+            Main.ResetCamPlayerList.Add(playerId);
             RequireKill.TryAdd(playerId, RequireKillToWin.GetInt());
         }
         public static bool IsEnable => playerIdList.Count > 0;
