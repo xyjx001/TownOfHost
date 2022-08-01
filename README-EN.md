@@ -113,12 +113,11 @@ For example: `welcome:This room is using TownOfHost.`
 | [Mare](#Mare)                       | [Lighter](#Lighter)               | [Jester](#Jester)                 |
 | [Puppeteer](#Puppeteer)             | [Mayor](#Mayor)                   | [Lovers](#Lovers)                 |
 | [SerialKiller](#SerialKiller)       | [Nice Watcher](#Watcher)          | [Opportunist](#Opportunist)       |
-| [ShapeMaster](#ShapeMaster)         | [SabotageMaster](#SabotageMaster) | [Terrorist](#Terrorist)           |
-| [Sniper](#Sniper)                   | [Sheriff](#Sheriff)               | [SchrodingerCat](#SchrodingerCat) |
-| [TimeThief](#TimeThief)             | [Snitch](#Snitch)                 |                                   |
-| [Vampire](#Vampire)                 | [SpeedBooster](#SpeedBooster)     |                                   |
-| [Warlock](#Warlock)                 | [Trapper](#Trapper)               |                                   |
-| [Witch](#Witch)                     |                                   |                                   |
+| [Sniper](#Sniper)                   | [SabotageMaster](#SabotageMaster) | [Terrorist](#Terrorist)           |
+| [TimeThief](#TimeThief)             | [Sheriff](#Sheriff)               | [SchrodingerCat](#SchrodingerCat) |
+| [Vampire](#Vampire)                 | [Snitch](#Snitch)                 |                                   |
+| [Warlock](#Warlock)                 | [SpeedBooster](#SpeedBooster)     |                                   |
+| [Witch](#Witch)                     | [Trapper](#Trapper)               |                                   |
 | [Mafia](#Mafia)                     |                                   |                                   |
 | [Madmate](#Madmate)                 |                                   |                                   |
 | [MadGuardian](#MadGuardian)         |                                   |                                   |
@@ -894,6 +893,7 @@ More tips to modding and [BountyHunter](#BountyHunter),[Mafia](#Mafia),[Vampire]
 [Jester](#Jester) and [Madmate](#Madmate) original idea by [au.libhalt.net](https://au.libhalt.net)<br>
 [Terrorist](#Terrorist)(Trickstar + Joker) : [Foolers Mod](https://github.com/MengTube/Foolers-Mod)<br>
 [Lovers](#lovers) : [Town-Of-Us-R](https://github.com/eDonnes124/Town-Of-Us-R)<br>
+Translate-Chinese : fivefirex, ZeMingOH233<br>
 
 Twitter : https://twitter.com/XenonBottle<br>
 
