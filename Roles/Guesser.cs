@@ -97,6 +97,12 @@ namespace TownOfHost
                     {
                         PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Misfire);
                         killer.RpcGuesserMurderPlayer(0f);
+                        if (IsEvilGuesserMeeting)
+                        {
+                            IsEvilGuesserMeeting = false;
+                            isEvilGuesserExiled[killer.PlayerId] = false;
+                            MeetingHud.Instance.RpcClose();
+                        }
                         return;
                     }
                 }
