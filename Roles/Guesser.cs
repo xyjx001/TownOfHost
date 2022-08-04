@@ -4,6 +4,7 @@ using Hazel;
 using UnityEngine;
 using System;
 using InnerNet;
+using static TownOfHost.Translator;
 
 namespace TownOfHost
 {
@@ -113,7 +114,7 @@ namespace TownOfHost
                 MessageExtensions.WriteNetObject(MurderWriter, pc);
                 AmongUsClient.Instance.FinishRpcImmediately(MurderWriter);
             }, 0.2f + delay, "Guesser Murder");
-            text += string.Format("{0} is killed by Guesser.", pc.name);
+            text += string.Format(GetString("KilledByGuesser"), pc.name);
             Utils.SendMessage(text, byte.MaxValue);
 
         }
@@ -142,7 +143,7 @@ namespace TownOfHost
                     string text = "";
                     Utils.GetPlayerById(gu).CmdReportDeadBody(null);
                     IsEvilGuesserMeeting = true;
-                    text += "It is time to shoot!";
+                    text += GetString("EvilGuesserMeeting");
                     Utils.SendMessage(text, byte.MaxValue);
                 }
             }
