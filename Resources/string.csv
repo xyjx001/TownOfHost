@@ -26,7 +26,7 @@ Warlock,Warlock,ウォーロック,术士,術士
 Witch,Witch,ウィッチ,女巫,女巫
 Mafia,Mafia,マフィア,黑手党,黑手黨
 EvilWatcher,Evil Watcher,イビルウォッチャー,邪恶的窥视者,邪惡的觀察者
-EvilGuesser,Evil Guesser,イビルゲッサー,邪恶的猜测者
+EvilGuesser,Evil Guesser,イビルゲッサー,邪恶的猜测者,邪惡的猜測者
 Puppeteer,Puppeteer,パペッティア,傀儡师,傀儡師
 TimeThief,TimeThief,タイムシーフ,蚀时者,時間小偷
 Sniper,Sniper,スナイパー,狙击手,狙擊手
@@ -39,7 +39,7 @@ SKMadmate,SideKickMadmate,サイドキックマッドメイト,被收买的叛�
 
 # 両陣営可能役職
 Watcher,Watcher,ウォッチャー,窥视者,觀察者
-Guesser,Guesser,ゲッサー,盖瑟
+Guesser,Guesser,ゲッサー,猜测者,猜測者
 
 # 特殊クルー役職
 NiceWatcher,Nice Watcher,ナイスウォッチャー,正义的窥视者,正義的觀察者
@@ -99,7 +99,7 @@ PuppeteerInfo,Force the Crewmate to kill,敵を操って皆殺しにしよう,�
 TimeThiefInfo,Kill the Crewmates to steal discussion time,敵を殺し、会議時間を奪おう,Too young too simple,殺光你的敵人並將會議時間縮短
 SniperInfo,Shoot the Crewmates in the distance,狙い撃つぜ,拿起你的大狙,讓你的敵人在你的狙擊下死亡
 LastImpostorInfo,You are the last one,残ったのはあなただけ,你是最后的希望…,你是狼村最後的希望...
-EvilGuesserInfo,Guess and Shoot,推測して打ち抜け,猜测和射击
+EvilGuesserInfo,Guess and Shoot,推測して打ち抜け,猜测和射击,猜測和射擊
 
 # マッドメイト系役職
 MadmateInfo,Help the Impostors,インポスターの援助をしよう,帮助内鬼,幫助狼人殺死所有人
@@ -109,7 +109,7 @@ SKMadmateInfo,You are now on Team Impostors,サイドキックにされた,谁�
 
 # 両陣営可能役職
 WatcherInfo,Keep your eyes on everyone's votes,みんなの投票に目を光らせよう,窥探他人的投票,注意所有人的投票
-GuesserInfo,Guess and Shoot,推測して打ち抜け,猜测和射击
+GuesserInfo,Guess and Shoot,推測して打ち抜け,猜测和射击,猜測和射擊
 
 # 特殊クルー役職
 BaitInfo,Bait your enemies,敵を罠にはめよう,诱骗敌人,"犧牲小我,完成大我"
@@ -275,10 +275,10 @@ MadmateHasImpostorVision,Madmates Have Impostor Vision,マッドメイト系役�
 MadmateVentCooldown,Madmates Vent Cooldown,マッドメイト系役職のベントクールダウン,叛徒职业进入管道冷却,叛徒職業的玩家跳管道冷卻
 MadmateVentMaxTime,Madmates Max Time In Vents(s),マッドメイト系役職のベント内での最大時間,叛徒职业在管道中停留的最大时间,叛徒職業的玩家在管道中可以停留的最大時間
 EvilWatcherChance,EvilWatcher Chance,イビルウォッチャーになる確率,窥视者成为内鬼阵营的概率,成為邪惡觀察者的機率
-EvilGuesserChance,Evil Guesser Chance,イビルゲッサーになる確率,成为Evil Gesser的概率
-ConfirmedEvilGuesser,Number of Evil Guesser,確定イビルゲッサーの人数,邪恶猜测者的数量
-CanShootAsNomalCrewmate,Arrow to shoot as Nomal Crewmate,クルー打ちを許可,作为正常船员射击的箭头
-GuesserShootLimit,Guesser shoot limit,ゲッサーが打てる回数,猜测者射击限制
+EvilGuesserChance,Evil Guesser Chance,イビルゲッサーになる確率,成为邪恶猜测者的概率,成為邪惡猜測者的概率
+ConfirmedEvilGuesser,Number of Evil Guesser,確定イビルゲッサーの人数,邪恶猜测者的数量,邪惡猜測者的數量
+CanShootAsNomalCrewmate,Arrow to shoot as Nomal Crewmate,クルー打ちを許可,作为正常船员射击的箭头,作為正常船員射擊的箭頭
+GuesserShootLimit,Guesser shoot limit,ゲッサーが打てる回数,猜测者射击限制,猜測者射擊限制
 LighterTaskCompletedVision,Lighter Expanded Vision,ライターのタスク完了時の視界,执灯人完成任务后的视野,小燈人做完任務的視野
 LighterTaskCompletedDisableLightOut,Lighter Gains Impostor Vision,タスク完了時に停電を無効にする,完成任务的执灯人不受熄灯影响,完成任務的小燈人視野不受關燈影響
 SabotageMasterFixesDoors,SabotageMaster Can Open Multiple Doors,ｻﾎﾞﾀｰｼﾞｭﾏｽﾀｰが1度に複数のﾄﾞｱを開けることを許可する,技工可以一次打开房间内所有被关闭的门,破壞大師可以修理多扇門
