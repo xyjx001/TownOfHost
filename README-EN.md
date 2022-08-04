@@ -118,12 +118,12 @@ For example: `welcome:This room is using TownOfHost.`
 | [Vampire](#Vampire)                 | [Snitch](#Snitch)                 |                                   |
 | [Warlock](#Warlock)                 | [SpeedBooster](#SpeedBooster)     |                                   |
 | [Witch](#Witch)                     | [Trapper](#Trapper)               |                                   |
-| [Mafia](#Mafia)                     |                                   |                                   |
+| [Mafia](#Mafia)                     | [Nice Guesser](#Guesser)          |                                   |
 | [Madmate](#Madmate)                 |                                   |                                   |
 | [MadGuardian](#MadGuardian)         |                                   |                                   |
 | [MadSnitch](#MadSnitch)             |                                   |                                   |
 | [SidekickMadmate](#SidekickMadmate) |                                   |                                   |
-
+| [Evil Guesser](#Guesser)            |                                   |                                   |
 
 ## Impostor
 
@@ -393,6 +393,26 @@ The watcher can see who each player has voted during every meeting. <br>
 | ------------------ |
 | EvilWatcher Chance |
 
+
+### Guesser
+
+Create by たんぽぽ<br>
+
+Team : Impostors or Crewmates<br>
+Basis : Impostor or Crewmates<br>
+
+If you can guess target's role during meeting, you can kill the target.<br>
+In addition, Evil Guesser has a chance to kill even after being exiled.<br>
+
+#### Game Options
+
+| Name                                   |
+| -------------------------------------- |
+|           EvilGuesser Chance           |
+|         Number of Evil Guesser         |
+|    Arrow to shoot as Normal Crewmate   |
+|           Guesser shoot limit          |
+| Can kill multiple times during meeting |
 
 ## Crewmate
 
