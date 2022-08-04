@@ -13,7 +13,7 @@ namespace TownOfHost
         static readonly int Id = 30100;
         static CustomOption EvilGuesserChance;
         static CustomOption ConfirmedEvilGuesser;
-        static CustomOption CanShootAsNomalCrewmate;
+        static CustomOption CanShootAsNormalCrewmate;
         static CustomOption GuesserCanKillCount;
         static List<byte> playerIdList = new();
         static Dictionary<byte, int> GuesserShootLimit;
@@ -28,7 +28,7 @@ namespace TownOfHost
             ConfirmedEvilGuesser = CustomOption.Create(30120, Color.white, "ConfirmedEvilGuesser", 0, 0, 3, 1, Options.CustomRoleSpawnChances[CustomRoles.Guesser]);
             Options.CustomRoleCounts.Add(CustomRoles.EvilGuesser, ConfirmedEvilGuesser);
             Options.CustomRoleSpawnChances.Add(CustomRoles.EvilGuesser, ConfirmedEvilGuesser);
-            CanShootAsNomalCrewmate = CustomOption.Create(30130, Color.white, "CanShootAsNomalCrewmate", true, Options.CustomRoleSpawnChances[CustomRoles.Guesser]);
+            CanShootAsNormalCrewmate = CustomOption.Create(30130, Color.white, "CanShootAsNormalCrewmate", true, Options.CustomRoleSpawnChances[CustomRoles.Guesser]);
             GuesserCanKillCount = CustomOption.Create(30140, Color.white, "GuesserShootLimit", 1, 1, 15, 1, Options.CustomRoleSpawnChances[CustomRoles.Guesser]);
         }
         public static bool SetGuesserTeam()
@@ -78,7 +78,7 @@ namespace TownOfHost
                     RoleAndNumber.TryGetValue(int.Parse(subArgs2), out var r);
                     if (target.GetCustomRole() == r)
                     {
-                        if ((target.GetCustomRole() == CustomRoles.Crewmate && !CanShootAsNomalCrewmate.GetBool()) || (target.GetCustomRole() == CustomRoles.Egoist && killer.Is(CustomRoles.EvilGuesser))) return;
+                        if ((target.GetCustomRole() == CustomRoles.Crewmate && !CanShootAsNormalCrewmate.GetBool()) || (target.GetCustomRole() == CustomRoles.Egoist && killer.Is(CustomRoles.EvilGuesser))) return;
                         GuesserShootLimit[killer.PlayerId]--;
                         PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Kill);
                         target.RpcGuesserMurderPlayer(0f);
@@ -118,7 +118,7 @@ namespace TownOfHost
             Utils.SendMessage(text, byte.MaxValue);
 
         }
-        public static void SetRoleAndNunber()
+        public static void SetRoleAndNumber()
         {
             List<CustomRoles> roles = new();
             var i = 1;
@@ -127,6 +127,13 @@ namespace TownOfHost
                 if (!roles.Contains(pc.GetCustomRole())) roles.Add(pc.GetCustomRole());
             }
             if (Options.CanMakeMadmateCount.GetInt() != 0) roles.Add(CustomRoles.SKMadmate);
+            if (CustomRoles.SchrodingerCat.IsEnable())
+            {
+                roles.Add(CustomRoles.MSchrodingerCat);
+                if (Sheriff.IsEnable) roles.Add(CustomRoles.CSchrodingerCat);
+                if (CustomRoles.Egoist.IsEnable()) roles.Add(CustomRoles.EgoSchrodingerCat);
+                if (CustomRoles.Jackal.IsEnable()) roles.Add(CustomRoles.JSchrodingerCat);
+            }
             roles = roles.OrderBy(a => Guid.NewGuid()).ToList();
             foreach (var ro in roles)
             {

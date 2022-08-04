@@ -367,7 +367,7 @@ namespace TownOfHost
 
                     pc.ResetKillCooldown();
                 }
-                if (Guesser.IsEnable()) Guesser.SetRoleAndNunber();
+                if (Guesser.IsEnable()) Guesser.SetRoleAndNumber();
 
                 //役職の人数を戻す
                 RoleOptionsData roleOpt = PlayerControl.GameOptions.RoleOptions;
