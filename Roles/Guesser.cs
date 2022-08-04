@@ -15,10 +15,12 @@ namespace TownOfHost
         static CustomOption ConfirmedEvilGuesser;
         static CustomOption CanShootAsNormalCrewmate;
         static CustomOption GuesserCanKillCount;
+        static CustomOption CanKillMultipleTimes;
         static List<byte> playerIdList = new();
         static Dictionary<byte, int> GuesserShootLimit;
         public static Dictionary<byte, bool> isEvilGuesserExiled;
         static Dictionary<int, CustomRoles> RoleAndNumber;
+        public static Dictionary<byte, bool> IsSkillUsed;
         static bool IsEvilGuesser;
         public static bool IsEvilGuesserMeeting;
         public static void SetupCustomOption()
@@ -30,6 +32,7 @@ namespace TownOfHost
             Options.CustomRoleSpawnChances.Add(CustomRoles.EvilGuesser, ConfirmedEvilGuesser);
             CanShootAsNormalCrewmate = CustomOption.Create(30130, Color.white, "CanShootAsNormalCrewmate", true, Options.CustomRoleSpawnChances[CustomRoles.Guesser]);
             GuesserCanKillCount = CustomOption.Create(30140, Color.white, "GuesserShootLimit", 1, 1, 15, 1, Options.CustomRoleSpawnChances[CustomRoles.Guesser]);
+            CanKillMultipleTimes = CustomOption.Create(30150, Color.white, "CanKillMultipleTimes", false, Options.CustomRoleSpawnChances[CustomRoles.Guesser]);
         }
         public static bool SetGuesserTeam()//確定イビルゲッサーの人数とは別でイビルゲッサーかナイスゲッサーのどちらかに決める。
         {
@@ -43,6 +46,7 @@ namespace TownOfHost
             GuesserShootLimit = new();
             isEvilGuesserExiled = new();
             RoleAndNumber = new();
+            IsSkillUsed = new();
             IsEvilGuesserMeeting = false;
         }
         public static void Add(byte PlayerId)
@@ -50,6 +54,7 @@ namespace TownOfHost
             playerIdList.Add(PlayerId);
             GuesserShootLimit[PlayerId] = GuesserCanKillCount.GetInt();
             isEvilGuesserExiled[PlayerId] = false;
+            IsSkillUsed[PlayerId] = false;
             IsEvilGuesserMeeting = false;
         }
         public static bool IsEnable()
@@ -67,6 +72,7 @@ namespace TownOfHost
             if ((!killer.Is(CustomRoles.NiceGuesser) && !killer.Is(CustomRoles.EvilGuesser)) || killer.Data.IsDead || !AmongUsClient.Instance.IsGameStarted) return;
             //死んでるやつとゲッサーじゃないやつ、ゲームが始まってない場合は引き返す
             if (killer.Is(CustomRoles.NiceGuesser) && IsEvilGuesserMeeting) return;//イビルゲッサー会議の最中はナイスゲッサーは打つな
+            if (!CanKillMultipleTimes.GetBool() && IsSkillUsed[killer.PlayerId]) return;
             if (targetname == "show")
             {
                 SendShootChoices();
@@ -82,6 +88,7 @@ namespace TownOfHost
                         if ((target.GetCustomRole() == CustomRoles.Crewmate && !CanShootAsNormalCrewmate.GetBool()) || (target.GetCustomRole() == CustomRoles.Egoist && killer.Is(CustomRoles.EvilGuesser))) return;
                         //クルー打ちが許可されていない場合とイビルゲッサーがエゴイストを打とうとしている場合はここで帰る
                         GuesserShootLimit[killer.PlayerId]--;
+                        IsSkillUsed[killer.PlayerId] = true;
                         PlayerState.SetDeathReason(target.PlayerId, PlayerState.DeathReason.Kill);
                         target.RpcGuesserMurderPlayer(0f);//専用の殺し方
                         return;

@@ -43,6 +43,7 @@ Guesser,Guesser,ゲッサー,猜测者,猜測者
 
 # 特殊クルー役職
 NiceWatcher,Nice Watcher,ナイスウォッチャー,正义的窥视者,正義的觀察者
+NiceGuesser,NiceGuesser,ナイスゲッサー,正义的猜测者,正義的猜測者
 Bait,Bait,ベイト,诱饵,誘餌
 Lighter,Lighter,ライター,执灯人,小燈人
 Mayor,Mayor,メイヤー,市长,市長
@@ -279,6 +280,7 @@ EvilGuesserChance,Evil Guesser Chance,イビルゲッサーになる確率,成�
 ConfirmedEvilGuesser,Number of Evil Guesser,確定イビルゲッサーの人数,邪恶猜测者的数量,邪惡猜測者的數量
 CanShootAsNormalCrewmate,Arrow to shoot as Nomal Crewmate,クルー打ちを許可,作为正常船员射击的箭头,作為正常船員射擊的箭頭
 GuesserShootLimit,Guesser shoot limit,ゲッサーが打てる回数,猜测者射击限制,猜測者射擊限制
+CanKillMultipleTimes,Can kill multiple times during meeting,１会議中に複数回殺せる,可以在一次会议中被杀死多次,可以在一次會議中被殺死多次
 LighterTaskCompletedVision,Lighter Expanded Vision,ライターのタスク完了時の視界,执灯人完成任务后的视野,小燈人做完任務的視野
 LighterTaskCompletedDisableLightOut,Lighter Gains Impostor Vision,タスク完了時に停電を無効にする,完成任务的执灯人不受熄灯影响,完成任務的小燈人視野不受關燈影響
 SabotageMasterFixesDoors,SabotageMaster Can Open Multiple Doors,ｻﾎﾞﾀｰｼﾞｭﾏｽﾀｰが1度に複数のﾄﾞｱを開けることを許可する,技工可以一次打开房间内所有被关闭的门,破壞大師可以修理多扇門
@@ -423,7 +425,7 @@ StandardHASWaitingTime,Waiting Time,待機時間,躲猫猫等待时间,躲貓貓
 commandError,Error:%1$,エラー:%1$,错误:%1$,錯誤:%1$
 InvalidArgs,Invalid Args,無効な引数,无效参数,無效的參數
 KilledByGuesser,{0} is killed by Guesser.,{0}はゲッサーにキルされました。,{0} 被猜测者杀死。,{0}被猜測者殺死。
-EvilGuesserMeeting,It is time to shoot!,さあ、撃ち放題だ！,来吧，随心所欲地拍摄！,來吧，隨心所欲地拍攝！,
+EvilGuesserMeeting,It is time to shoot!,さあ、撃ち放題だ！,来吧，随心所欲地拍摄！,來吧，隨心所欲地拍攝！
 On,ON,オン,开启,開啟
 Off,OFF,オフ,关闭,關閉
 ColoredOn,<color=#00fefe>ON</color>,<color=#00fefe>オン</color>,<color=#00fefe>开启</color>,<color=#00fefe>開啟</color>

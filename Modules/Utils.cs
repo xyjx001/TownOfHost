@@ -763,6 +763,10 @@ namespace TownOfHost
                     pc.RpcResetAbilityCooldown();
                     Main.BountyTimer.TryAdd(pc.PlayerId, 0f);
                 }
+                if (pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.NiceGuesser))
+                {
+                    Guesser.IsSkillUsed[pc.PlayerId] = false;
+                }
             }
             SerialKiller.AfterMeetingTasks();
         }
