@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HarmonyLib;
 using Hazel;
+using static TownOfHost.Translator;
 
 namespace TownOfHost
 {
@@ -68,7 +69,7 @@ namespace TownOfHost
                 {
                     AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
                     Logger.Warn($"不正なRPCを受信したため{__instance?.Data?.PlayerName}をキックしました。", "Kick");
-                    Logger.SendInGame($"不正なRPCを受信したため{__instance?.Data?.PlayerName}をキックしました。\nTOH以外のMODが入っていないか確認してください。");
+                    Logger.SendInGame(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
                 }
                 return false;
             }
@@ -93,7 +94,7 @@ namespace TownOfHost
                         {
                             AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
                             Logger.Info($"不正なRPCを受信したため{__instance?.Data?.PlayerName}をキックしました。", "Kick");
-                            Logger.SendInGame($"不正なRPCを受信したため{__instance?.Data?.PlayerName}をキックしました。\nTOH以外のMODが入っていないか確認してください。");
+                            Logger.SendInGame(string.Format(GetString("Warning.InvalidRpc"), __instance?.Data?.PlayerName));
                         }
                     }
                     break;
@@ -121,10 +122,7 @@ namespace TownOfHost
                     RPC.SetCustomRole(CustomRoleTargetId, role);
                     break;
                 case CustomRPC.SetBountyTarget:
-                    byte HunterId = reader.ReadByte();
-                    byte TargetId = reader.ReadByte();
-                    var target = Utils.GetPlayerById(TargetId);
-                    if (target != null) Main.BountyTargets[HunterId] = target;
+                    BountyHunter.ReceiveRPC(reader);
                     break;
                 case CustomRPC.SetKillOrSpell:
                     byte playerId = reader.ReadByte();
@@ -132,20 +130,10 @@ namespace TownOfHost
                     Main.KillOrSpell[playerId] = KoS;
                     break;
                 case CustomRPC.SetSheriffShotLimit:
-                    byte SheriffId = reader.ReadByte();
-                    float Limit = reader.ReadSingle();
-                    if (Main.SheriffShotLimit.ContainsKey(SheriffId))
-                        Main.SheriffShotLimit[SheriffId] = Limit;
-                    else
-                        Main.SheriffShotLimit.Add(SheriffId, Options.SheriffShotLimit.GetFloat());
+                    Sheriff.ReceiveRPC(reader);
                     break;
                 case CustomRPC.SetTimeThiefKillCount:
-                    byte TimeThiefId = reader.ReadByte();
-                    int TimeThiefKillCount = reader.ReadInt32();
-                    if (Main.TimeThiefKillCount.ContainsKey(TimeThiefId))
-                        Main.TimeThiefKillCount[TimeThiefId] = TimeThiefKillCount;
-                    else
-                        Main.TimeThiefKillCount.Add(TimeThiefId, 0);
+                    TimeThief.ReceiveRPC(reader);
                     break;
                 case CustomRPC.SetDousedPlayer:
                     byte ArsonistId = reader.ReadByte();
@@ -264,7 +252,7 @@ namespace TownOfHost
             try
             {
                 List<byte> winner = new();
-                Main.currentWinner = (CustomWinner)reader.ReadByte();
+                Main.currentWinner = (CustomWinner)reader.ReadInt32();
                 while (reader.BytesRemaining > 0) winner.Add(reader.ReadByte());
                 switch (Main.currentWinner)
                 {
@@ -286,8 +274,13 @@ namespace TownOfHost
                     case CustomWinner.HASTroll:
                         TrollWin(winner[0]);
                         break;
+                    case CustomWinner.Jackal:
+                        JackalWin();
+                        break;
+
                     default:
-                        Logger.Warn($"{Main.currentWinner}は無効なCustomWinnerです", "EndGame");
+                        if (Main.currentWinner != CustomWinner.Default)
+                            Logger.Warn($"{Main.currentWinner}は無効なCustomWinnerです", "EndGame");
                         break;
                 }
             }
@@ -326,6 +319,11 @@ namespace TownOfHost
             Main.currentWinner = CustomWinner.Arsonist;
             CustomWinTrigger(arsonistID);
         }
+        public static void JackalWin()
+        {
+            Main.currentWinner = CustomWinner.Jackal;
+            CustomWinTrigger(0);
+        }
         public static void ForceEndGame()
         {
             if (ShipStatus.Instance == null) return;
@@ -361,9 +359,21 @@ namespace TownOfHost
             {
                 Main.AllPlayerCustomSubRoles[targetId] = role;
             }
-            if (role == CustomRoles.FireWorks) FireWorks.Add(targetId);
-            else if (role == CustomRoles.Sniper) Sniper.Add(targetId);
-            else if (role == CustomRoles.ReportManager) ReportManager.Add(targetId);
+            switch (role)
+            {
+                case CustomRoles.FireWorks:
+                    FireWorks.Add(targetId);
+                    break;
+                case CustomRoles.Sniper:
+                    Sniper.Add(targetId);
+                    break;
+                case CustomRoles.ReportManager:
+                    ReportManager.Add(targetId);
+                    break;
+                case CustomRoles.Sheriff:
+                    Sheriff.Add(targetId);
+                    break;
+            }
             HudManager.Instance.SetHudActive(true);
         }
         public static void AddNameColorData(byte seerId, byte targetId, string color)
