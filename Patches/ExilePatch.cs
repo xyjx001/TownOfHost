@@ -4,6 +4,35 @@ using Hazel;
 
 namespace TownOfHost
 {
+    //引用元:https://github.com/yukieiji/ExtremeRoles/blob/master/ExtremeRoles/Patches/Controller/ExileControllerPatch.cs
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+    class ExileControllerBeginPatch
+    {
+        public static void Postfix(ExileController __instance)
+        {
+            if (Assassin.FinishAssassinMeetingTrigger)
+            {
+
+                __instance.completeString = Assassin.ExileText;
+
+                if (!AmongUsClient.Instance.AmHost) return;
+
+                if (Assassin.TargetRole == CustomRoles.Marin)
+                {
+                    PlayerState.SetDeathReason(Assassin.AssassinTargetId, PlayerState.DeathReason.Assassinate);
+                    PlayerState.SetDead(Assassin.AssassinTargetId);
+                    foreach (var crew in PlayerControl.AllPlayerControls)
+                    {
+                        if (!PlayerState.isDead[crew.PlayerId] && crew.Is(RoleType.Crewmate) && crew.PlayerId != Assassin.AssassinTargetId)
+                        {
+                            PlayerState.SetDeathReason(crew.PlayerId, PlayerState.DeathReason.Surrender);
+                            PlayerState.SetDead(crew.PlayerId);
+                        }
+                    }
+                }
+            }
+        }
+    }
     class ExileControllerWrapUpPatch
     {
         public static GameData.PlayerInfo AntiBlackout_LastExiled;
@@ -47,6 +76,34 @@ namespace TownOfHost
 
             Main.witchMeeting = false;
             bool DecidedWinner = false;
+            if (Assassin.FinishAssassinMeetingTrigger)
+            {
+                Assassin.FinishAssassinMeetingTrigger = false;
+
+                if (!PlayerState.isDead[exiled.PlayerId])
+                {
+                    Utils.GetPlayerById(Assassin.TriggerPlayerId)?.RpcExileV2();
+                    PlayerState.SetDeathReason(Assassin.TriggerPlayerId, PlayerState.DeathReason.Vote);
+                    PlayerState.SetDead(Assassin.TriggerPlayerId);
+                }
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    Utils.GetPlayerById(Assassin.TriggerPlayerId)?.RpcSetNameEx(Assassin.TriggerPlayerName);
+                    foreach (var pc in PlayerControl.AllPlayerControls)
+                    {
+                        Utils.NotifyRoles(isMeeting: true, NoCache: true);
+                        Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.PlayerSpeedMod;
+                    }
+                    Utils.CustomSyncAllSettings();
+
+                    if (Assassin.TargetRole == CustomRoles.Marin)
+                    {
+                        AssassinAndMarin.MarinSelectedInAssassinMeeting();
+                        AssassinAndMarin.GameEndForAssassinMeeting();
+                        return; //インポスター勝利確定なのでこれ以降の処理は不要
+                    }
+                }
+            }
             if (!AmongUsClient.Instance.AmHost) return; //ホスト以外はこれ以降の処理を実行しません
             AntiBlackout.RestoreIsDead(doSend: false);
             if (exiled != null)
@@ -106,6 +163,8 @@ namespace TownOfHost
                     Main.isCurseAndKill[pc.PlayerId] = false;
                 }
             }
+            if (Assassin.IsAssassinMeeting)
+                Assassin.BootAssassinTrigger(Utils.GetPlayerById(Assassin.TriggerPlayerId));
             Main.AfterMeetingDeathPlayers.Do(x =>
             {
                 var player = Utils.GetPlayerById(x.Key);

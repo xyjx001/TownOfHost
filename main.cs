@@ -184,6 +184,7 @@ namespace TownOfHost
                     {CustomRoles.Trapper, "#5a8fd0"},
                     {CustomRoles.Dictator, "#df9b00"},
                     {CustomRoles.CSchrodingerCat, "#ffffff"}, //シュレディンガーの猫の派生
+                    {CustomRoles.Marin, "#00ffff"},
                     //第三陣営役職
                     {CustomRoles.Arsonist, "#ff6633"},
                     {CustomRoles.Jester, "#ec62a5"},
@@ -282,6 +283,7 @@ namespace TownOfHost
         Mare,
         Puppeteer,
         TimeThief,
+        Assassin,
         LastImpostor,
         //Madmate
         MadGuardian,
@@ -291,6 +293,8 @@ namespace TownOfHost
         MSchrodingerCat,//インポスター陣営のシュレディンガーの猫
         //両陣営
         Watcher,
+        //コンビネーション役職
+        AssassinAndMarin,
         //Crewmate(Vanilla)
         Engineer,
         GuardianAngel,
@@ -308,6 +312,7 @@ namespace TownOfHost
         Dictator,
         Doctor,
         CSchrodingerCat,//クルー陣営のシュレディンガーの猫
+        Marin,
         //Neutral
         Arsonist,
         Egoist,

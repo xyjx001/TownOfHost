@@ -134,13 +134,22 @@ namespace TownOfHost
 
 
             //キルされた時の特殊判定
+            var canDirectKill = !killer.Is(CustomRoles.Arsonist);
             switch (target.GetCustomRole())
             {
+                case CustomRoles.Assassin:
+                    if (canDirectKill)
+                    {
+                        if (killer.Is(CustomRoles.Sheriff) && Sheriff.CanKillAssassin.GetBool())
+                            return false;
+                        else if (!killer.Is(CustomRoles.Sheriff))
+                            return false;
+                    }
+                    break;
                 case CustomRoles.SchrodingerCat:
                     //シュレディンガーの猫が切られた場合の役職変化スタート
                     //直接キル出来る役職チェック
                     // Sniperなど自殺扱いのものもあるので追加するときは注意
-                    var canDirectKill = !killer.Is(CustomRoles.Arsonist);
                     if (canDirectKill)
                     {
                         killer.RpcGuardAndKill(target);
@@ -813,6 +822,8 @@ namespace TownOfHost
                         RealName = Helpers.ColorString(target.GetRoleColor(), RealName); //targetの名前をtargetの役職の色で表示
                     else if (target.Is(CustomRoles.Mare) && Utils.IsActive(SystemTypes.Electrical))
                         RealName = Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), RealName); //targetの赤色で表示
+                    else if (seer.Is(CustomRoles.Marin) && target.GetCustomRole().IsImpostor())
+                        RealName = Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), RealName); //targetの名前を赤色で表示
                     else if (seer != null)
                     {//NameColorManager準拠の処理
                         var ncd = NameColorManager.Instance.GetData(seer.PlayerId, target.PlayerId);

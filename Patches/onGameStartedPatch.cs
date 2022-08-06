@@ -97,6 +97,7 @@ namespace TownOfHost
             Sniper.Init();
             TimeThief.Init();
             Mare.Init();
+            AssassinAndMarin.Init();
             SabotageMaster.Init();
             Sheriff.Init();
         }
@@ -241,6 +242,8 @@ namespace TownOfHost
             }
             else
             {
+                //コンビネーション役職を優先して割り当てる
+                AssignCombinationRolesFromList(CustomRoles.AssassinAndMarin, CustomRoles.Assassin, CustomRoles.Marin, Impostors, Marin.CanUseVent.GetBool() ? Engineers : Crewmates);
 
                 AssignCustomRolesFromList(CustomRoles.FireWorks, Shapeshifters);
                 AssignCustomRolesFromList(CustomRoles.Sniper, Shapeshifters);
@@ -355,6 +358,9 @@ namespace TownOfHost
                             break;
                         case CustomRoles.SabotageMaster:
                             SabotageMaster.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.Marin:
+                            Marin.Add(pc.PlayerId);
                             break;
                     }
                     pc.ResetKillCooldown();
@@ -500,7 +506,30 @@ namespace TownOfHost
             }
             RPC.SyncLoversPlayers();
         }
+        private static void AssignCombinationRolesFromList(CustomRoles role, CustomRoles role1, CustomRoles role2, List<PlayerControl> role1L, List<PlayerControl> role2L)
+        {
+            var Combi1 = role1;
+            var Combi2 = role2;
+            var rand = new Random();
+            var count = role.GetCount();
+            if (role1L.Count <= 0 || role2L.Count <= 0) //role1のリストかrole2のリストが空なら
+                count = 0; //カウントを0に
+            if (count <= 0) return;
 
+            for (var i = 0; i < count; i++)
+            {
+                var combi1 = role1L[rand.Next(0, role1L.Count)];
+                role1L.Remove(combi1);
+                Main.AllPlayerCustomRoles[combi1.PlayerId] = Combi1;
+                Logger.Info("役職設定:" + combi1?.Data?.PlayerName + " = " + Combi1.ToString(), "Assign CombinationRole1");
+
+                if (role2L.Count <= 0) continue;
+                var combi2 = role2L[rand.Next(0, role2L.Count)];
+                role2L.Remove(combi2);
+                Main.AllPlayerCustomRoles[combi2.PlayerId] = Combi2;
+                Logger.Info("役職設定:" + combi2?.Data?.PlayerName + " = " + Combi2.ToString(), "Assign CombinationRole2");
+            }
+        }
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcSetRole))]
         class RpcSetRoleReplacer
         {

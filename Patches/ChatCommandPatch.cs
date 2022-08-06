@@ -254,8 +254,11 @@ namespace TownOfHost
                 //両陣営役職
                 { (CustomRoles)(-3), $"== {GetString("Impostor")} or {GetString("Crewmate")} ==" }, //区切り用
                 { CustomRoles.Watcher, "wat" },
+                //コンビネーション役職
+                { (CustomRoles)(-4), $"== {GetString("Combination")} ==" }, //区切り用
+                { CustomRoles.AssassinAndMarin,"aam" },
                 //Crewmate役職
-                { (CustomRoles)(-4), $"== {GetString("Crewmate")} ==" }, //区切り用
+                { (CustomRoles)(-5), $"== {GetString("Crewmate")} ==" }, //区切り用
                 { CustomRoles.Bait, "ba" },
                 { CustomRoles.Dictator, "dic" },
                 { CustomRoles.Doctor, "doc" },
@@ -267,7 +270,7 @@ namespace TownOfHost
                 { CustomRoles.SpeedBooster, "sb" },
                 { CustomRoles.Trapper, "tra" },
                 //Neutral役職
-                { (CustomRoles)(-5), $"== {GetString("Neutral")} ==" }, //区切り用
+                { (CustomRoles)(-6), $"== {GetString("Neutral")} ==" }, //区切り用
                 { CustomRoles.Arsonist, "ar" },
                 { CustomRoles.Egoist, "eg" },
                 { CustomRoles.Executioner, "exe" },
@@ -277,10 +280,10 @@ namespace TownOfHost
                 { CustomRoles.Terrorist, "te" },
                 { CustomRoles.Jackal, "jac" },
                 //Sub役職
-                { (CustomRoles)(-6), $"== {GetString("SubRole")} ==" }, //区切り用
+                { (CustomRoles)(-7), $"== {GetString("SubRole")} ==" }, //区切り用
                 {CustomRoles.Lovers, "lo" },
                 //HAS
-                { (CustomRoles)(-7), $"== {GetString("HideAndSeek")} ==" }, //区切り用
+                { (CustomRoles)(-8), $"== {GetString("HideAndSeek")} ==" }, //区切り用
                 { CustomRoles.HASFox, "hfo" },
                 { CustomRoles.HASTroll, "htr" },
 
@@ -294,7 +297,10 @@ namespace TownOfHost
 
                 if (String.Compare(role, roleName, true) == 0 || String.Compare(role, roleShort, true) == 0)
                 {
-                    Utils.SendMessage(GetString(roleName) + GetString($"{roleName}InfoLong"));
+                    string RoleName = GetString(roleName);
+                    if (r.Key is CustomRoles.AssassinAndMarin)
+                        RoleName = AssassinAndMarin.DisplayRole(disableColor: true);
+                    Utils.SendMessage(RoleName + GetString($"{roleName}InfoLong"));
                     return;
                 }
 
@@ -408,8 +414,24 @@ namespace TownOfHost
     [HarmonyPatch(typeof(ChatController), nameof(ChatController.AddChat))]
     class AddChatPatch
     {
-        public static void Postfix(string chatText)
+        public static void Postfix(ref PlayerControl sourcePlayer, ref string chatText)
         {
+            //Logger.Info($"送信者：{sourcePlayer.Data.PlayerName}, テキスト：{chatText.TrimEnd()}", "AddChat");
+            foreach (var target in PlayerControl.AllPlayerControls)
+            {
+                if (!Assassin.IsAssassinMeeting) continue;
+                //Logger.Info($"{Utils.GetPlayerById(Assassin.TriggerPlayerId).Data.PlayerName}({Assassin.TriggerPlayerId})と{sourcePlayer.Data.PlayerName}({sourcePlayer.PlayerId})が同じ : {Assassin.TriggerPlayerId == sourcePlayer.PlayerId}", "AssassinMeeting");
+                //Logger.Info($"{chatText.TrimEnd()}と{target.Data.PlayerName}が同じ : {chatText.TrimEnd() == target.Data.PlayerName}", "AssassinMeeting");
+                if (Assassin.TriggerPlayerId == sourcePlayer.PlayerId && chatText.TrimEnd() == target.Data.PlayerName)
+                {
+                    Assassin.AssassinTargetId = target.PlayerId;
+                    Assassin.TargetRole = target.GetCustomRole();
+                    Assassin.FinishAssassinMeetingTrigger = true;
+                    Logger.Info($"アサシン会議終了...対象の役職 : {Assassin.TargetRole}", "Assassin");
+                    break;
+                }
+            }
+
             switch (chatText)
             {
                 default:

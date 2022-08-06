@@ -355,6 +355,12 @@ namespace TownOfHost
                 case CustomRoles.JSchrodingerCat:
                     opt.SetVision(player, Options.JackalHasImpostorVision.GetBool());
                     break;
+                case CustomRoles.Assassin:
+                    opt.AnonymousVotes = !Assassin.HasWatcherAbility.GetBool();
+                    break;
+                case CustomRoles.Marin:
+                    opt.AnonymousVotes = !Marin.HasWatcherAbility.GetBool();
+                    break;
 
 
                 InfinityVent:

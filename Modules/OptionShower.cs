@@ -37,7 +37,12 @@ namespace TownOfHost
                     text += $"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {Options.EnableGM.GetString()}\n";
                     foreach (var kvp in Options.CustomRoleSpawnChances)
                         if (kvp.Value.GameMode is CustomGameMode.Standard or CustomGameMode.All) //スタンダードか全てのゲームモードで表示する役職
-                            text += $"{Helpers.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n";
+                        {
+                            if (kvp.Key == CustomRoles.AssassinAndMarin)
+                                text += $"{AssassinAndMarin.DisplayRole()}:</color> {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n";
+                            else
+                                text += $"{Helpers.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n";
+                        }
                     pages.Add(text + "\n\n");
                     text = "";
                 }
@@ -56,7 +61,10 @@ namespace TownOfHost
                 {
                     if (!kvp.Key.IsEnable()) continue;
                     if (!(kvp.Value.GameMode == Options.CurrentGameMode || kvp.Value.GameMode == CustomGameMode.All)) continue; //現在のゲームモードでも全てのゲームモードでも表示しない役職なら飛ばす
-                    text += $"{Helpers.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n";
+                    if (kvp.Key == CustomRoles.AssassinAndMarin)
+                        text += $"{AssassinAndMarin.DisplayRole()}:</color> {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n";
+                    else
+                        text += $"{Helpers.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {kvp.Value.GetString()}×{kvp.Key.GetCount()}\n";
                     foreach (var c in kvp.Value.Children) //詳細設定をループする
                     {
                         if (c.Name == "Maximum") continue; //Maximumの項目は飛ばす

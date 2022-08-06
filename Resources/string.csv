@@ -6,6 +6,7 @@ id,0,11,13,14
 ## 役職
 Neutral,Neutral,第三陣営,中立阵营,中立陣營
 SubRole,Sub Role,サブ役職,附加职业,附加職業
+Combination,Combination,コンビネーション
 
 # バニラ役職
 Crewmate,Crewmate,クルーメイト,船员,船員
@@ -29,6 +30,7 @@ EvilWatcher,Evil Watcher,イビルウォッチャー,邪恶的窥视者,邪惡�
 Puppeteer,Puppeteer,パペッティア,傀儡师,傀儡師
 TimeThief,TimeThief,タイムシーフ,蚀时者,時間小偷
 Sniper,Sniper,スナイパー,狙击手,狙擊手
+Assassin,Assassin,アサシン
 
 # マッドメイト系役職
 Madmate,Madmate,マッドメイト,叛徒,叛徒
@@ -38,6 +40,9 @@ SKMadmate,SideKickMadmate,サイドキックマッドメイト,叛徒小弟,叛�
 
 # 両陣営可能役職
 Watcher,Watcher,ウォッチャー,窥视者,觀察者
+
+# コンビネーション役職
+AssassinAndMarin,{0}And{1},{0}と{1}
 
 # 特殊クルー役職
 NiceWatcher,Nice Watcher,ナイスウォッチャー,正义的窥视者,正義的觀察者
@@ -52,6 +57,7 @@ SpeedBooster,SpeedBooster,スピードブースター,闪电侠,加速器
 Doctor,Doctor,ドクター,医生,醫生
 Trapper,Trapper,トラッパー,陷阱师,設陷者
 Dictator,Dictator,ディクテーター,独裁者,獨裁主義者
+Marin,Marin,マーリン
 
 # 第三陣営役職
 Jester,Jester,ジェスター,小丑,小丑
@@ -100,6 +106,7 @@ PuppeteerInfo,Force the Crewmate to kill,敵を操って皆殺しにしよう,�
 TimeThiefInfo,Kill the Crewmates to steal discussion time,敵を殺し、会議時間を奪おう,杀死所有船员并偷取时间,殺光你的敵人並將會議時間縮短
 SniperInfo,Shoot the Crewmates in the distance,狙い撃つぜ,瞄准敌人，射击！,讓你的敵人在你的狙擊下死亡
 LastImpostorInfo,You are the last one,残ったのはあなただけ,你是最后的希望…,你是狼村最後的希望...
+AssassinInfo,Find the one who knows everything and get rid of him,全てを知りし者を探し出し、始末するのだ
 
 # マッドメイト系役職
 MadmateInfo,Help the Impostors,インポスターの援助をしよう,帮助内鬼,幫助狼人殺死所有人
@@ -121,6 +128,7 @@ SpeedBoosterInfo,Boost the players,走らせろ,让其他人跑起来吧,讓其�
 DoctorInfo,Access vitals and cause of death,斯くして奴は死んだ,调查他人死因,看見他們的死因
 TrapperInfo,Trap your enemies,敵を罠にはめよう,引诱敌人落入你的陷阱当中,讓你的敵人受困於陷阱中
 DictatorInfo,Hang your enemy on your own judgement,独裁政治をしよう,让我统治世界，拥有无上的权利,船上最強大的政治體系存在
+MarinInfo,"Know it all, see it all, don't get assassinated, and lead your crew to victory",全てを知り、見通し、暗殺されず、クルーを勝利に導け
 
 # 第三陣営役職
 ArsonistInfo,Let them burn,燃やせ,火焰给我燃烧起来吧！,"燒吧,燒吧,燃燒吧"
@@ -159,6 +167,7 @@ MafiaInfoLong,"(Impostors):\nInitially, the Mafias cannot kill (still have a but
 PuppeteerInfoLong,"(Impostors):\nThey can perform secondhand kills but cannot kill like other Impostors.\nTheir direct kill is blocked, but instead, the protected player forcibly kills another player first getting in kill range.",(インポスター陣営):\nキルした対象に、対象が次に近づいたクルーをキルさせる事ができる。\n対象がキルした相手がキルされた瞬間に発動するものであった場合、対象にその効果が反映される。\n普通のキルを行うことはできない。,(内鬼阵营):\n傀儡师的击杀对象会击杀其遇到的下一个船员。\n若后者在接触的同时死亡，则前者死亡。\n傀儡师不可以执行正常击杀。,"(狼人陣營):\n當傀儡師嘗試殺人時,\n他會下咒離他最近的一個人,接著如果碰到非狼人陣營的人並且在殺人範圍內,\n被下咒對象將會砍死他且效果不再持續,\n傀儡師無法正常殺人。"
 TimeThiefInfoLong,"(Impostors):\nEvery kill cuts down discussion and voting time in meeting.\nDepending on option, the lost time is returned after they die.",(インポスター陣営):\nキルを行うと会議時間が減少する。\nタイムシーフが追放または殺害されると、失われた会議時間が返ってきます。,(内鬼阵营):\n蚀时者每击杀一个人，会议持续时间将减少一定时间。\n如果蚀时者死亡，被偷取的时间的会议时间会返还。,"(狼人陣營):\n時間小偷每次殺人將會減少會議時間\n如果時間小偷被丟出或被殺死,減少的會議時間將會回來"
 SniperInfoLong,(Impostors):\nSniper can shoot players so far away.\nthey kill a player on the extension line from Shapeshift point to release point.\nYou can perform normal kills after all bullets run out.,(インポスター陣営):\n遠くの敵を狙撃できるインポスター。\nシェイプシフトした地点から解除した地点の延長線上の敵を一人撃ち抜く。\n撃ちきるまで通常キル出来ない。,(内鬼阵营):\n狙击手拥有远距离击杀的能力。\n狙击手化形后，其击杀能够将其现在为止与化形时所处位置连线及其延长线上的一名玩家击杀。\n狙击手的子弹耗尽前，狙击手不可以进行通常击杀。",(狼人陣營):\n狙擊遠處的敵人\n子彈將從變形處延伸到取消變形處並往直線前進並殺死在這條線上非狼人陣營的人\n狙擊手無法正常殺人在狙擊手用光子彈前。"
+AssassinInfoLong,InfoLong,InfoLong
 
 # マッドメイト系役職
 MadmateInfoLong,"(Impostors):\nCrewmate, but they belong to team Impostors, but they don't know who are Impostors.\nImpostor and are unrecognizable to each other. Can use vent, no tasks.",(インポスター陣営):\nクルーだがインポスターの味方をする。\nインポスターと互いに認識できない。\nベントが使え、タスクはない。,(内鬼阵营):\n叛徒不可以击杀或者破坏，可以跳管道。,"(狼人陣營):\n船員,但是他們屬於狼人陣營.\n狼人無法知道叛徒是誰,\n他可以跳洞且沒有任務。"
@@ -168,6 +177,9 @@ SKMadmateInfoLong,(Impostors):\nThe SidekickMadmate is an acquired Madmate Role 
 
 # 両陣営可能役職
 WatcherInfoLong,(Impostors or Crewmates):\nThe Watchers can see colored votes regardless of anonymous votes.,(インポスターorクルーメイト陣営):\n全員の投票先を見ることができる。,(内鬼阵营或船员阵营):\n会议时窥视者可以看到所有人的投票。,(狼人或船員):\n會議時觀察者可以看到所有人的投票。
+
+# コンビネーション役職
+AssassinAndMarinInfoLong,"(Impostors, Crewmates):\nAssassin(Impostors):\nRole that is paired with Merine and adds a new victory condition to the Impostors.\nWhen an assassin is about to be killed or expelled, an 「Assassin Meeting」 is held. The Assassin Meeting does not end until the Assassin names a player.\nIf you can guess Merine at the Assassin Meeting, you win an unconditional Impostor victory. How to designate Marin is chat.\nAssassins are exiled at the Assassins Meeting. After the Assassins Meeting, the game continues as usual.\nMarin(Crewmates):\nIt is the counterpart to the Assassin, a position that all Impostors know from the beginning.\nUnconditional defeat if nominated by the Assassin Meeting to be an Assassin. they don't have tasks.","(インポスター, クルーメイト陣営):\nアサシン(インポスター陣営):\nマーリンと対であり、インポスター陣営に新しい勝利条件を追加する役職。\nアサシンがキル及び追放されかけると、「アサシン会議」が開かれる。アサシン会議は、アサシンがプレイヤーを一人指名するまで終わることはない。\nアサシン会議でマーリンを当てることができれば無条件インポスター勝利。マーリンの指定方法はチャット。\nアサシン会議でアサシンは吊られる。アサシン会議後は通常通り試合続行。\nマーリン(クルーメイト陣営):\nアサシンと対であり、インポスター全員が始めからわかる役職。\nアサシン会議でアサシンに指名されると無条件敗北。タスクはない。"
 
 # 特殊クルー役職
 BaitInfoLong,"(Crewmates):\nWhen killed, they force the killer to self report in no time.",(クルーメイト陣営):\nキルされた時に、自身をキルした人に\n強制的にセルフレポートさせる事ができる。,(船员阵营):\n诱饵被击杀时，击杀诱饵的凶手将被迫报告。,"(船員):\n當被殺時,兇手將強制自行舉報"
@@ -328,6 +340,10 @@ JackalKillCooldown,Jackal Kill Cooldown,ジャッカルのキルクール,豺狼
 JackalCanVent,Jackal Can Use Vents,ジャッカルがベントを使用できる,豺狼可以使用管道,豺狼可以跳管道
 JackalCanUseSabotage,Jackal Can Use Sabotage,ジャッカルがサボタージュを使用できる,豺狼可以破坏,豺狼可以破壞
 JackalHasImpostorVision,Jackal Has Impostor Vision,ジャッカルがインポスターと同じ視界を持つ,豺狼拥有内鬼视野,豺狼擁有狼人的視野
+AssassinHasWatcherAbility,Assassin has Watcher ability,アサシンがウォッチャーの能力を持っている
+MarinHasWatcherAbility,Marin has Watcher ability,マーリンがウォッチャーの能力を持っている
+MarinHasTasks,Marin has tasks,マーリンがタスクを持っている
+MarinCanUseVent,Marin can use Vent,マーリンがベントを使える
 
 ## かくれんぼ設定
 HideAndSeekOptions,HideAndSeek Options,かくれんぼの設定,躲猫猫设置,躲貓貓設定
@@ -350,6 +366,8 @@ DeathReason.Misfire,Misfire,誤爆,走火,走火
 DeathReason.Torched,Torched,焼殺,烧死,燒死
 DeathReason.Sniped,Sniped,狙撃,狙杀,被狙
 DeathReason.Execution,Executed,処刑,处刑,處刑
+DeathReason.Assassinate,Assassinated,暗殺
+DeathReason.Surrender,Surrendered,降伏
 DeathReason.Disconnected,Disconnected,回線切断,断连,斷線
 DeathReason.Fell,Fall,転落,摔死,摔死
 DeathReason.etc,etc,その他,其他,其他
@@ -473,6 +491,10 @@ ArsonistDouseButtonText,Douse,塗る,涂油,澆油
 PuppeteerOperateButtonText,Operate,操る,操控,操控
 BountyHunterChangeButtonText,Swap,変更,变更,變更
 DefaultShapeshiftText,SHIFT,変身,变身,變身
+WhoIsMarin,Who is the Marin?,マーリンは誰だ？
+WritePlayerName,Write player name,プレイヤー名を打て
+WasMarin,{0} was the {1},{0}は{1}だった
+WasNotMarin,{0} was not the {1},{0}は{1}ではなかった
 All,All,すべて,全部,全部
 Archive,Archive,アーカイブ,档案,檔案
 DisabledBySettings,Disabled by setting,設定で無効化されています,在设置中禁用,在設置中禁用

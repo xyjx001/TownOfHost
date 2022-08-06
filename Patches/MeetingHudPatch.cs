@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
 using UnityEngine;
+using Hazel;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -10,6 +11,8 @@ namespace TownOfHost
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CheckForEndVoting))]
     class CheckForEndVotingPatch
     {
+        public static bool ExiledAssassin = false;
+        public static bool AssassinFinish = false;
         public static bool Prefix(MeetingHud __instance)
         {
             if (!AmongUsClient.Instance.AmHost) return true;
@@ -41,8 +44,10 @@ namespace TownOfHost
                     if (!(ps.AmDead || ps.DidVote)) return false;
                 }
 
+                ExiledAssassin = false;
+
                 MeetingHud.VoterState[] states;
-                GameData.PlayerInfo exiledPlayer = PlayerControl.LocalPlayer.Data;
+                GameData.PlayerInfo exiledPlayerInfo = PlayerControl.LocalPlayer.Data;
                 bool tie = false;
 
                 List<MeetingHud.VoterState> statesList = new();
@@ -135,15 +140,24 @@ namespace TownOfHost
                 }
 
                 Logger.Info($"追放者決定: {exileId}({Utils.GetVoteName(exileId)})", "Vote");
-                exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+
+                var exiledPlayer = Utils.GetPlayerById(exileId);
+                if (!Assassin.IsAssassinMeeting && exiledPlayer.Is(CustomRoles.Assassin)) //アサシン会議外でアサシンが吊り先
+                {
+                    tie = true;
+                    Assassin.TriggerPlayerName = exiledPlayer.Data.PlayerName; //TriggerPlayer名保存
+                    Assassin.SendTriggerPlayerInfo(exileId); //非ホストMODにトリガープレイヤーを送信
+                    ExiledAssassin = true;
+                }
+                exiledPlayerInfo = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
 
                 //RPC
                 if (AntiBlackout.OverrideExiledPlayer)
                 {
                     __instance.RpcVotingComplete(states, null, true);
-                    ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
+                    ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayerInfo;
                 }
-                else __instance.RpcVotingComplete(states, exiledPlayer, tie); //通常処理
+                else __instance.RpcVotingComplete(states, exiledPlayerInfo, tie); //通常処理
                 if (!Utils.GetPlayerById(exileId).Is(CustomRoles.Witch))
                 {
                     foreach (var p in Main.SpelledPlayer)
@@ -154,12 +168,12 @@ namespace TownOfHost
 
                 if (CustomRoles.Lovers.IsEnable() && Main.isLoversDead == false && Main.LoversPlayers.Find(lp => lp.PlayerId == exileId) != null)
                 {
-                    FixedUpdatePatch.LoversSuicide(exiledPlayer.PlayerId, true);
+                    FixedUpdatePatch.LoversSuicide(exiledPlayerInfo.PlayerId, true);
                 }
 
                 //霊界用暗転バグ対処
-                if (!AntiBlackout.OverrideExiledPlayer && exiledPlayer != null && Main.ResetCamPlayerList.Contains(exiledPlayer.PlayerId))
-                    exiledPlayer.Object?.ResetPlayerCam(19f);
+                if (!AntiBlackout.OverrideExiledPlayer && exiledPlayerInfo != null && Main.ResetCamPlayerList.Contains(exiledPlayerInfo.PlayerId))
+                    exiledPlayer?.ResetPlayerCam(19f);
 
                 return false;
             }
@@ -207,6 +221,7 @@ namespace TownOfHost
             Main.witchMeeting = true;
             Utils.NotifyRoles(isMeeting: true, ForceLoop: true);
             Main.witchMeeting = false;
+            CheckForEndVotingPatch.AssassinFinish = false;
         }
         public static void Postfix(MeetingHud __instance)
         {
@@ -227,7 +242,8 @@ namespace TownOfHost
                 roleTextMeeting.enabled =
                     pva.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId ||
                     (Main.VisibleTasksCount && PlayerControl.LocalPlayer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool()) ||
-                    Options.EnableGM.GetBool();
+                    Options.EnableGM.GetBool() ||
+                    (Main.VisibleTasksCount && Assassin.IsAssassinMeeting && pc.PlayerId == Assassin.TriggerPlayerId);
             }
             if (Options.SyncButtonMode.GetBool())
             {
@@ -278,10 +294,20 @@ namespace TownOfHost
                 }
                 switch (seer.GetCustomRole())
                 {
+                    case CustomRoles.Assassin:
+                        if (Assassin.IsAssassinMeeting)
+                        {
+                            if (seer.PlayerId == Assassin.TriggerPlayerId && target.AmOwner)
+                                pva.NameText.text = $"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>{GetString("WritePlayerName")}</color>";
+                        }
+                        break;
                     case CustomRoles.MadSnitch:
                     case CustomRoles.Snitch:
                         if (seer.GetPlayerTaskState().IsTaskFinished) //seerがタスクを終えている
                             LocalPlayerKnowsImpostor = true;
+                        break;
+                    case CustomRoles.Marin:
+                        LocalPlayerKnowsImpostor = true;
                         break;
                     case CustomRoles.Doctor:
                         if (target.Data.IsDead) //変更対象が死人
@@ -299,6 +325,10 @@ namespace TownOfHost
 
                 switch (target.GetCustomRole())
                 {
+                    case CustomRoles.Assassin:
+                        if (target.PlayerId == Assassin.TriggerPlayerId)
+                            pva.NameText.color = Utils.GetRoleColor(CustomRoles.Marin);
+                        break;
                     case CustomRoles.Egoist:
                         if (seer.GetCustomRole().IsImpostor() || //seerがImpostor
                         seer.Is(CustomRoles.EgoSchrodingerCat)) //またはEgoSchrodingerCat
@@ -332,6 +362,8 @@ namespace TownOfHost
     {
         public static void Postfix(MeetingHud __instance)
         {
+            if (Assassin.IsAssassinMeeting) __instance.TitleText.text = GetString("WhoIsMarin");
+
             if (!AmongUsClient.Instance.AmHost) return;
             if (Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
             {
@@ -344,6 +376,34 @@ namespace TownOfHost
                     Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
                     Logger.Info($"{player.GetNameWithRole()}を処刑しました", "Execution");
                 });
+            }
+            foreach (var pva in __instance.playerStates)
+            {
+                if (pva == null) continue;
+                PlayerControl pc = Utils.GetPlayerById(pva.TargetPlayerId);
+                if (pc == null) continue;
+
+                if (Assassin.FinishAssassinMeetingTrigger && !CheckForEndVotingPatch.AssassinFinish && AmongUsClient.Instance.AmHost)
+                {
+                    var TriggerPlayer = Utils.GetPlayerById(Assassin.TriggerPlayerId);
+                    var TargetPlayer = Utils.GetPlayerById(Assassin.AssassinTargetId);
+
+                    Assassin.ExileText = string.Format(GetString(Assassin.TargetRole == CustomRoles.Marin ? "WasMarin" : "WasNotMarin"), TargetPlayer?.Data?.PlayerName, Utils.GetRoleName(CustomRoles.Marin));
+                    string ExileText = $"<size=300%>\n\n\n\n\n\n\n\n\n\n\n\n{Assassin.ExileText}\n\n\n\n\n\n\n\n\n\n\n\n</size>";
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendExilePLStringInAssassinMeeting, SendOption.Reliable, -1);
+                    writer.Write(Assassin.ExileText);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                    foreach (var p in PlayerControl.AllPlayerControls)
+                        TriggerPlayer.RpcSetNamePrivate(ExileText, true, p, force: true);
+                    __instance.RpcVotingComplete(new MeetingHud.VoterState[]{ new ()
+                        {
+                            VoterId = Assassin.TriggerPlayerId,
+                            VotedForId = Assassin.AssassinTargetId
+                        }}, TriggerPlayer?.Data, false);
+                    CheckForEndVotingPatch.ExiledAssassin = false;
+                    CheckForEndVotingPatch.AssassinFinish = true;
+                }
             }
         }
     }

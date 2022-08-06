@@ -14,6 +14,7 @@ namespace TownOfHost
             var statistics = new PlayerStatistics(__instance);
             if (Options.NoGameEnd.GetBool()) return false;
 
+            if (CheckAndEndGameForAssassinMeeting(__instance)) return false;
             if (CheckAndEndGameForJester(__instance)) return false;
             if (CheckAndEndGameForTerrorist(__instance)) return false;
             if (CheckAndEndGameForExecutioner(__instance)) return false;
@@ -166,7 +167,16 @@ namespace TownOfHost
             }
             return false;
         }
-
+        private static bool CheckAndEndGameForAssassinMeeting(ShipStatus __instance)
+        {
+            if (Main.currentWinner == CustomWinner.Impostor && Main.CustomWinTrigger)
+            {
+                __instance.enabled = false;
+                ResetRoleAndEndGame(GameOverReason.ImpostorByVote, false);
+                return true;
+            }
+            return false;
+        }
         private static bool CheckAndEndGameForJester(ShipStatus __instance)
         {
             if (Main.currentWinner == CustomWinner.Jester && Main.CustomWinTrigger)
@@ -219,6 +229,7 @@ namespace TownOfHost
         {
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
+                pc.RpcSetName(Main.AllPlayerNames[pc.PlayerId]);
                 var LoseImpostorRole = Main.AliveImpostorCount == 0 ? pc.Is(RoleType.Impostor) : pc.Is(CustomRoles.Egoist);
                 if (pc.Is(CustomRoles.Sheriff) ||
                     (!(Main.currentWinner == CustomWinner.Arsonist) && pc.Is(CustomRoles.Arsonist)) ||

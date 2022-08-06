@@ -163,6 +163,7 @@ namespace TownOfHost
                     if (cRole == CustomRoles.JSchrodingerCat) hasTasks = false;
                     if (cRole == CustomRoles.Egoist) hasTasks = false;
                     if (cRole == CustomRoles.Jackal) hasTasks = false;
+                    if (cRole == CustomRoles.Marin && !Marin.HasTasks.GetBool()) hasTasks = false;
                 }
                 var cSubRoleFound = Main.AllPlayerCustomSubRoles.TryGetValue(p.PlayerId, out var cSubRole);
                 if (cSubRoleFound)
@@ -250,7 +251,13 @@ namespace TownOfHost
                 foreach (var role in Enum.GetValues(typeof(CustomRoles)).Cast<CustomRoles>())
                 {
                     if (role is CustomRoles.HASFox or CustomRoles.HASTroll) continue;
-                    if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetString(Enum.GetName(typeof(CustomRoles), role) + "InfoLong"));
+                    if (role.IsEnable())
+                    {
+                        string RoleName = GetRoleName(role);
+                        if (role is CustomRoles.AssassinAndMarin)
+                            RoleName = AssassinAndMarin.DisplayRole(disableColor: true);
+                        SendMessage(RoleName + GetString(Enum.GetName(typeof(CustomRoles), role) + "InfoLong"));
+                    }
                 }
                 if (Options.EnableLastImpostor.GetBool()) { SendMessage(GetRoleName(CustomRoles.LastImpostor) + GetString("LastImpostorInfoLong")); }
             }
@@ -350,7 +357,13 @@ namespace TownOfHost
             foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
             {
                 if (role is CustomRoles.HASFox or CustomRoles.HASTroll) continue;
-                if (role.IsEnable()) text += string.Format("\n{0}:{1}x{2}", GetRoleName(role), $"{role.GetChance() * 100}%", role.GetCount());
+                if (role.IsEnable())
+                {
+                    if (role is CustomRoles.AssassinAndMarin)
+                        text += string.Format("\n{0}:{1}x{2}", AssassinAndMarin.DisplayRole(disableColor: true), $"{role.GetChance() * 100}%", role.GetCount());
+                    else
+                        text += string.Format("\n{0}:{1}x{2}", GetRoleName(role), $"{role.GetChance() * 100}%", role.GetCount());
+                }
             }
             SendMessage(text, PlayerId);
         }
@@ -607,6 +620,8 @@ namespace TownOfHost
                     if (TaskState.IsTaskFinished)
                         SeerKnowsImpostors = true;
                 }
+                if (seer.Is(CustomRoles.Marin))
+                    SeerKnowsImpostors = true;
 
                 //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                 string SeerRealName = seer.GetRealName(isMeeting);
@@ -616,6 +631,8 @@ namespace TownOfHost
                 string SelfName = $"{Helpers.ColorString(seer.GetRoleColor(), SeerRealName)}{SelfMark}";
                 if (seer.Is(CustomRoles.Arsonist) && seer.IsDouseDone())
                     SelfName = $"</size>\r\n{Helpers.ColorString(seer.GetRoleColor(), GetString("EnterVentToWin"))}";
+                if (Assassin.IsAssassinMeeting && seer.PlayerId == Assassin.TriggerPlayerId)
+                    SelfName = $"</size>{Helpers.ColorString(seer.GetRoleColor(), GetString("WritePlayerName"))}";
                 SelfName = SelfRoleName + "\r\n" + SelfName;
                 SelfName += SelfSuffix == "" ? "" : "\r\n " + SelfSuffix;
                 if (!isMeeting) SelfName += "\r\n";
@@ -701,6 +718,8 @@ namespace TownOfHost
 
                         if (target.Is(CustomRoles.GM))
                             TargetRoleText = $"<size={fontSize}>{Helpers.ColorString(target.GetRoleColor(), target.GetRoleName())}</size>\r\n";
+                        else if (Assassin.IsAssassinMeeting && target.PlayerId == Assassin.TriggerPlayerId)
+                            TargetRoleText = $"<size={fontSize}>{Helpers.ColorString(target.GetRoleColor(), target.GetRoleName())}</size>\r\n";
 
                         //RealNameを取得 なければ現在の名前をRealNamesに書き込む
                         string TargetPlayerName = target.GetRealName(isMeeting);
@@ -739,6 +758,14 @@ namespace TownOfHost
                         target.Data.IsDead //変更対象が死人
                         )
                             TargetDeathReason = $"({Helpers.ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
+
+                        if (Assassin.IsAssassinMeeting)
+                        {
+                            if (seer == GetPlayerById(Assassin.TriggerPlayerId))
+                                TargetPlayerName = target.Data.PlayerName;
+                            if (seer.PlayerId != Assassin.TriggerPlayerId && target.PlayerId == Assassin.TriggerPlayerId)
+                                TargetPlayerName = $"<color={GetRoleColorCode(CustomRoles.Marin)}>{GetString("WhoIsMarin")}</color>";
+                        }
 
                         //全てのテキストを合成します。
                         string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}";
