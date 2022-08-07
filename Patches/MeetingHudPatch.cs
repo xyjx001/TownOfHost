@@ -18,6 +18,7 @@ namespace TownOfHost
             if (!AmongUsClient.Instance.AmHost) return true;
             try
             {
+                if (Assassin.IsAssassinMeeting) return false;
                 foreach (var pva in __instance.playerStates)
                 {
                     if (pva == null) continue;
