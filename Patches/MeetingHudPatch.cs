@@ -396,11 +396,18 @@ namespace TownOfHost
 
                     foreach (var p in PlayerControl.AllPlayerControls)
                         TriggerPlayer.RpcSetNamePrivate(ExileText, true, p, force: true);
-                    __instance.RpcVotingComplete(new MeetingHud.VoterState[]{ new ()
+                    MeetingHud.VoterState[] states = new MeetingHud.VoterState[]{ new ()
                         {
                             VoterId = Assassin.TriggerPlayerId,
                             VotedForId = Assassin.AssassinTargetId
-                        }}, TriggerPlayer?.Data, false);
+                        }};
+                    if (AntiBlackout.OverrideExiledPlayer)
+                    {
+                        __instance.RpcVotingComplete(states, null, true);
+                        ExileControllerWrapUpPatch.AntiBlackout_LastExiled = TriggerPlayer?.Data;
+                    }
+                    else
+                        __instance.RpcVotingComplete(states, TriggerPlayer?.Data, false);
                     CheckForEndVotingPatch.ExiledAssassin = false;
                     CheckForEndVotingPatch.AssassinFinish = true;
                 }
@@ -424,8 +431,17 @@ namespace TownOfHost
         public static void Postfix()
         {
             Logger.Info("------------会議終了------------", "Phase");
-            if (AmongUsClient.Instance.AmHost && !AntiBlackout.IsCached)
+            if (!AmongUsClient.Instance.AmHost) return;
+
+            if (!AntiBlackout.IsCached)
                 AntiBlackout.SetIsDead();
+
+            if (AssassinAndMarin.IsEnable())
+            {
+                Assassin.IsAssassinMeeting = CheckForEndVotingPatch.ExiledAssassin;
+                AssassinAndMarin.IsAssassinMeetingToggle();
+                Logger.Info($"アサシン会議：{Utils.GetOnOff(Assassin.IsAssassinMeeting)}", "Assassin");
+            }
         }
     }
 }
