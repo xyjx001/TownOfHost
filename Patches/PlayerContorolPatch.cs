@@ -145,14 +145,9 @@ namespace TownOfHost
             switch (target.GetCustomRole())
             {
                 case CustomRoles.Assassin:
-                    if (canDirectKill)
-                    {
-                        if (killer.Is(CustomRoles.Sheriff) && Sheriff.CanKillAssassin.GetBool())
-                            return false;
-                        else if (!killer.Is(CustomRoles.Sheriff))
-                            return false;
-                    }
-                    break;
+                    if (canDirectKill && !killer.Is(CustomRoles.Sheriff))
+                        return false;
+                    else break;
                 case CustomRoles.SchrodingerCat:
                     //シュレディンガーの猫が切られた場合の役職変化スタート
                     //直接キル出来る役職チェック
