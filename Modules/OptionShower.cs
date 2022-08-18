@@ -120,6 +120,7 @@ namespace TownOfHost
                     nameAndValue(Options.IgnoreVent);
                 }
                 text += "\n";
+                listUp(Options.AllAliveMeeting);
                 listUp(Options.LadderDeath);
                 listUp(Options.DisableTasks);
                 listUp(Options.RandomMapsMode);
