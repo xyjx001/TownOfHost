@@ -273,6 +273,7 @@ namespace TownOfHost
                 { (CustomRoles)(-6), $"== {GetString("Neutral")} ==" }, //区切り用
                 { CustomRoles.Arsonist, "ar" },
                 { CustomRoles.Egoist, "eg" },
+                { CustomRoles.Alice, "ali" },
                 { CustomRoles.Executioner, "exe" },
                 { CustomRoles.Jester, "je" },
                 { CustomRoles.Opportunist, "op" },

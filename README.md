@@ -600,6 +600,29 @@ Polus や The Airship のドアを開けるとその部屋の全てのドアが�
 | -------------------- |
 | エゴイストのキルクール |
 
+### Alice/アリス
+
+制作・改案者 : そうくん<br>
+
+陣営 : 第三<br>
+判定 : インポスター<br>
+勝利条件 : インポスターにキルされる。または、残り人数が二人になったときにその役職が第三陣営以外とアリスである。<br>
+
+インポスターにキルされれば勝利陣営と一緒に追加勝利します。<br>
+残り人数が二人になったときにその役職が第三陣営以外とアリスであれば単独勝利します。<br>
+キル、ベント、サボタージュが使えます。<br>
+最低限、設定された数キルしないと勝利することはできません。<br>
+シュレーディンガーの猫をキルしても陣営が変化せず、そのままキルできます。<br>
+
+#### 設定
+
+| 設定名                        |
+| ----------------------------- |
+| キルクール                     |
+| アリスの視界                   |
+| アリスが停電の影響を受ける      |
+| アリスが勝利するのに必要なキル数 |
+
 ### Executioner/エクスキューショナー
 
 陣営 : 第三<br>
@@ -869,7 +892,7 @@ Polus や The Airship のドアを開けるとその部屋の全てのドアが�
 [オポチュニスト](#Opportunist/オポチュニスト)、[ウォッチャー](#Watcher/ウォッチャー) のアイデア元 : [The Other Roles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM)<br>
 [シュレディンガーの猫](#SchrodingerCat/シュレディンガーの猫) のアイデア元 : [The Other Roles: GM Haoming Edition](https://github.com/haoming37/TheOtherRoles-GM-Haoming)<br>
 [ドクター](#Doctor/ドクター) のアイデア元 : [Nebula on the Ship](https://github.com/Dolly1016/Nebula)<br>
-[アサシンとマーリン](#AssassinAndMarin/アサシンとマーリン) のアイデア元 : [Extreme Roles](https://github.com/yukieiji/ExtremeRoles)<br>
+[アサシンとマーリン](#AssassinAndMarin/アサシンとマーリン)、[アリス](#Alice/アリス) のアイデア元 : [Extreme Roles](https://github.com/yukieiji/ExtremeRoles)<br>
 [ジェスター](#Jester/ジェスター)(てるてる)と[マッドメイト](#Madmate/マッドメイト) のアイデア元 : [au.libhalt.net](https://au.libhalt.net)<br>
 [テロリスト](#Terrorist/テロリスト)(Trickstar + Joker) : [Foolers Mod](https://github.com/MengTube/Foolers-Mod)<br>
 [恋人](#lovers/恋人) : [Town-Of-Us-R](https://github.com/eDonnes124/Town-Of-Us-R)<br>

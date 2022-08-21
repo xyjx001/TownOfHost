@@ -26,6 +26,7 @@ namespace TownOfHost
         ResetNameColorData,
         DoSpell,
         SniperSync,
+        AliceList,
         SetLoversPlayers,
         SetExecutionerTarget,
         RemoveExecutionerTarget,
@@ -165,6 +166,9 @@ namespace TownOfHost
                 case CustomRPC.SniperSync:
                     Sniper.ReceiveRPC(reader);
                     break;
+                case CustomRPC.AliceList:
+                    Alice.ReceiveRPC(reader);
+                    break;
                 case CustomRPC.SetLoversPlayers:
                     Main.LoversPlayers.Clear();
                     int count = reader.ReadInt32();
@@ -293,6 +297,9 @@ namespace TownOfHost
                     case CustomWinner.Arsonist:
                         ArsonistWin(winner[0]);
                         break;
+                    case CustomWinner.Alice:
+                        AliceWin(winner[0]);
+                        break;
                     case CustomWinner.HASTroll:
                         TrollWin(winner[0]);
                         break;
@@ -351,6 +358,12 @@ namespace TownOfHost
             Main.currentWinner = CustomWinner.None;
             CustomWinTrigger(0);
         }
+        public static void AliceWin(byte aliceID)
+        {
+            Main.WonArsonistID = aliceID;
+            Main.currentWinner = CustomWinner.Alice;
+            CustomWinTrigger(aliceID);
+        }
         public static void ForceEndGame()
         {
             if (ShipStatus.Instance == null) return;
@@ -393,6 +406,9 @@ namespace TownOfHost
                     break;
                 case CustomRoles.Sniper:
                     Sniper.Add(targetId);
+                    break;
+                case CustomRoles.Alice:
+                    Alice.Add(targetId);
                     break;
                 case CustomRoles.Sheriff:
                     Sheriff.Add(targetId);

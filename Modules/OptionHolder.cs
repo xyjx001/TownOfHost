@@ -351,6 +351,7 @@ namespace TownOfHost
             JackalCanVent = CustomOption.Create(50911, Color.white, "JackalCanVent", true, CustomRoleSpawnChances[CustomRoles.Jackal]);
             JackalCanUseSabotage = CustomOption.Create(50912, Color.white, "JackalCanUseSabotage", false, CustomRoleSpawnChances[CustomRoles.Jackal]);
             JackalHasImpostorVision = CustomOption.Create(50913, Color.white, "JackalHasImpostorVision", true, CustomRoleSpawnChances[CustomRoles.Jackal]);
+            Alice.SetupCustomOption();
 
             // Attribute
             EnableLastImpostor = CustomOption.Create(80000, Utils.GetRoleColor(CustomRoles.Impostor), "LastImpostor", false, null, true)

@@ -219,7 +219,6 @@ namespace TownOfHost
 
             return dic[role];
         }
-
         public static void SendDM(this PlayerControl target, string text)
         {
             Utils.SendMessage(text, target.PlayerId);
@@ -293,6 +292,9 @@ namespace TownOfHost
                 case CustomRoles.Arsonist:
                     opt.SetVision(player, false);
                     break;
+                case CustomRoles.Alice:
+                    Alice.ApplyGameOptions(opt);
+                    break;
                 case CustomRoles.Lighter:
                     if (player.GetPlayerTaskState().IsTaskFinished)
                     {
@@ -358,7 +360,7 @@ namespace TownOfHost
             if ((Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) && Options.HideAndSeekKillDelayTimer > 0)
             {
                 opt.ImpostorLightMod = 0f;
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Egoist)) opt.PlayerSpeedMod = 0.0001f;
+                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Egoist) || player.Is(CustomRoles.Alice)) opt.PlayerSpeedMod = 0.0001f;
             }
             opt.DiscussionTime = Mathf.Clamp(Main.DiscussionTime, 0, 300);
             opt.VotingTime = Mathf.Clamp(Main.VotingTime, TimeThief.LowerLimitVotingTime.GetInt(), 300);
@@ -482,7 +484,7 @@ namespace TownOfHost
         {
             bool canUse =
                 pc.GetCustomRole().IsImpostor() ||
-                pc.Is(CustomRoles.Arsonist);
+                Main.ResetCamPlayerList.Contains(pc.PlayerId);
 
             return pc.GetCustomRole() switch
             {
@@ -548,6 +550,9 @@ namespace TownOfHost
                 case CustomRoles.SerialKiller:
                     SerialKiller.ApplyKillCooldown(player.PlayerId); //シリアルキラーはシリアルキラーのキルクールに。
                     break;
+                case CustomRoles.Alice:
+                    Alice.ApplyKillCooldown(player.PlayerId); //アリスはアリスのキルクールに。
+                    break;
                 case CustomRoles.TimeThief:
                     TimeThief.SetKillCooldown(player.PlayerId); //タイムシーフはタイムシーフのキルクールに。
                     break;
@@ -600,6 +605,10 @@ namespace TownOfHost
                     DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(jackal_canUse && !player.Data.IsDead);
                     player.Data.Role.CanVent = jackal_canUse;
                     return;
+                case CustomRoles.Alice:
+                    DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(true && !player.Data.IsDead);
+                    player.Data.Role.CanVent = true;
+                    break;
             }
         }
         public static bool IsDouseDone(this PlayerControl player)
@@ -669,7 +678,8 @@ namespace TownOfHost
             return
                 player.GetCustomRole() is
                 CustomRoles.Egoist or
-                CustomRoles.Jackal;
+                CustomRoles.Jackal or
+                CustomRoles.Alice;
         }
 
         //汎用

@@ -99,6 +99,7 @@ namespace TownOfHost
             Mare.Init();
             AssassinAndMarin.Init();
             Egoist.Init();
+            Alice.Init();
             Sheriff.Init();
             AntiBlackout.Reset();
         }
@@ -161,6 +162,7 @@ namespace TownOfHost
                 AssignDesyncRole(CustomRoles.Sheriff, AllPlayers, sender, BaseRole: RoleTypes.Impostor);
                 AssignDesyncRole(CustomRoles.Arsonist, AllPlayers, sender, BaseRole: RoleTypes.Impostor);
                 AssignDesyncRole(CustomRoles.Jackal, AllPlayers, sender, BaseRole: RoleTypes.Impostor);
+                AssignDesyncRole(CustomRoles.Alice, AllPlayers, sender, BaseRole: RoleTypes.Impostor);
             }
             if (sender.CurrentState == CustomRpcSender.State.InRootMessage) sender.EndMessage();
             //以下、バニラ側の役職割り当てが入る
@@ -353,9 +355,8 @@ namespace TownOfHost
                         case CustomRoles.Egoist:
                             Egoist.Add(pc.PlayerId);
                             break;
-
-                        case CustomRoles.Sheriff:
-                            Sheriff.Add(pc.PlayerId);
+                        case CustomRoles.Alice:
+                            Alice.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Mayor:
                             Main.MayorUsedButtonCount[pc.PlayerId] = 0;
@@ -368,6 +369,16 @@ namespace TownOfHost
                             break;
                     }
                     pc.ResetKillCooldown();
+                    //通常モードでかくれんぼをする人用
+                    if (Options.IsStandardHAS)
+                    {
+                        foreach (var seer in PlayerControl.AllPlayerControls)
+                        {
+                            if (seer == pc) continue;
+                            if (pc.GetCustomRole().IsImpostor() || pc.IsNeutralKiller()) //変更対象がインポスター陣営orキルできる第三陣営
+                                NameColorManager.Instance.RpcAdd(seer.PlayerId, pc.PlayerId, $"{pc.GetRoleColorCode()}");
+                        }
+                    }
                 }
 
                 //役職の人数を戻す

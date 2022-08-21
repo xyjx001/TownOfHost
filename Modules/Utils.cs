@@ -1,3 +1,4 @@
+using System.Security.AccessControl;
 using System.Text.RegularExpressions;
 using System;
 using System.Collections.Generic;
@@ -202,6 +203,7 @@ namespace TownOfHost
                     if (cRole == CustomRoles.Egoist) hasTasks = false;
                     if (cRole == CustomRoles.Jackal) hasTasks = false;
                     if (cRole == CustomRoles.Marin && !Marin.HasTasks.GetBool()) hasTasks = false;
+                    if (cRole == CustomRoles.Alice) hasTasks = false;
                 }
                 var cSubRoleFound = Main.AllPlayerCustomSubRoles.TryGetValue(p.PlayerId, out var cSubRole);
                 if (cSubRoleFound)
@@ -250,6 +252,9 @@ namespace TownOfHost
                     break;
                 case CustomRoles.Sniper:
                     ProgressText += $" {Sniper.GetBulletCount(playerId)}";
+                    break;
+                case CustomRoles.Alice:
+                    ProgressText += Helpers.ColorString(GetRoleColor(CustomRoles.Alice), Alice.RequireKill.TryGetValue(playerId, out var count) ? $" ({count})" : "Invalid");
                     break;
                 default:
                     //タスクテキスト
@@ -776,7 +781,7 @@ namespace TownOfHost
                         else if ((seer.Is(CustomRoles.EgoSchrodingerCat) && target.Is(CustomRoles.Egoist)) || //エゴ猫 --> エゴイスト
                                  (seer.Is(CustomRoles.JSchrodingerCat) && target.Is(CustomRoles.Jackal))) // J猫 --> ジャッカル
                             TargetPlayerName = Helpers.ColorString(target.GetRoleColor(), TargetPlayerName);
-                        else if (Utils.IsActive(SystemTypes.Electrical) && target.Is(CustomRoles.Mare) && !isMeeting)
+                        else if (IsActive(SystemTypes.Electrical) && target.Is(CustomRoles.Mare) && !isMeeting)
                             TargetPlayerName = Helpers.ColorString(GetRoleColor(CustomRoles.Impostor), TargetPlayerName); //targetの赤色で表示
                         else
                         {
