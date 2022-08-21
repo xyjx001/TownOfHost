@@ -358,6 +358,9 @@ namespace TownOfHost
                         case CustomRoles.Alice:
                             Alice.Add(pc.PlayerId);
                             break;
+                        case CustomRoles.Sheriff:
+                            Sheriff.Add(pc.PlayerId);
+                            break;
                         case CustomRoles.Mayor:
                             Main.MayorUsedButtonCount[pc.PlayerId] = 0;
                             break;
