@@ -132,6 +132,12 @@ namespace TownOfHost
                 }
             }
 
+            if (killer.Is(CustomRoles.Alice))
+            {
+                killer.RpcMurderPlayer(target);
+                return false;
+            }
+
 
             //キルされた時の特殊判定
             switch (target.GetCustomRole())
