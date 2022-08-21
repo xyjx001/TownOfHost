@@ -398,6 +398,33 @@ The watcher can see who each player has voted during every meeting. <br>
 | ------------------ |
 | EvilWatcher Chance |
 
+### AssassinAndMarin
+
+Team : Impostors, Crewmates<br>
+Basis : Impostor, Crewmate or Engineer<br>
+
+### Assassin
+
+Team : Impostors
+Basis : Impostor
+Additional win condition : Win a Marin at the "Assassin's Conference".
+
+This position adds a new victory condition to the Impostor team.
+It is the counterpart to Marin.
+When an Assassin is about to be killed or expelled, the "Assassin Meeting" is held.
+The Assassin Meeting is never over until the Assassin nominates a player.
+The way to nominate a player is via chat. You can select a player's name in Quick Chat.
+Assassins are hung at the Assassin Meeting.
+After the Assassin Meeting, the game continues as usual.
+### Marin
+
+Team : Crewmates
+Basis : Crewmate or Engineers
+
+This is a role that all Impostors know from the beginning.
+This role is the opposite of Assassin.
+If the Assassin is nominated by the Assassin Meeting, the game is unconditionally lost.
+There is no task.
 
 ## Crewmate
 
