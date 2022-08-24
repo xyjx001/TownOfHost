@@ -598,6 +598,7 @@ namespace TownOfHost
                     //銃声が聞こえるかチェック
                     SelfMark += Sniper.GetShotNotify(seer.PlayerId);
                 }
+                if (seer.Is(CustomRoles.ToughGuy)) SelfMark += ToughGuy.GetMark(seer, seer);
                 //Markとは違い、改行してから追記されます。
                 string SelfSuffix = "";
 

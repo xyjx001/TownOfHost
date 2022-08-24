@@ -27,29 +27,49 @@ namespace TownOfHost
             WillDieAfterMeeting.Remove(playerId);
         }
         public static bool IsEnable() => playerIdList.Count > 0;
+        public static bool CanGuardDeath(PlayerControl pc)
+        {
+            if (WillDieAfterMeeting.TryGetValue(pc.PlayerId, out var result))
+            {
+                WillDieAfterMeeting.Remove(pc.PlayerId);
+                return false;
+            }
+            return true;
+        }
         public static bool CheckAndGuardKill(PlayerControl killer, PlayerControl target)
         {
-            if (WillDieAfterMeeting.TryGetValue(target.PlayerId, out var result)) return false;
+            if (!CanGuardDeath(target)) return false;
             var deathReason = PlayerState.DeathReason.Kill;
-            switch (killer.GetCustomRole())
+            if (!Main.PuppeteerList.ContainsKey(killer.PlayerId))
             {
-                case CustomRoles.Puppeteer:
-                case CustomRoles.Arsonist:
-                    return false;
-                case CustomRoles.Vampire:
-                    deathReason = PlayerState.DeathReason.Bite;
-                    break;
-                case CustomRoles.Witch:
-                    if (killer.IsSpellMode()) return false;
-                    break;
-                case CustomRoles.Warlock:
-                    if (!Main.CheckShapeshift[killer.PlayerId]) return false;
-                    break;
-                case CustomRoles.Sheriff:
-                    if (!Sheriff.MisfireKillsTarget.GetBool()) return false;
-                    break;
-                default:
-                    break;
+                switch (killer.GetCustomRole())
+                {
+                    case CustomRoles.Puppeteer:
+                    case CustomRoles.Arsonist:
+                        return false;
+                    case CustomRoles.Vampire:
+                        deathReason = PlayerState.DeathReason.Bite;
+                        break;
+                    case CustomRoles.Witch:
+                        if (killer.IsSpellMode()) return false;
+                        break;
+                    case CustomRoles.Warlock:
+                        if (!Main.CheckShapeshift[killer.PlayerId]) return false;
+                        break;
+                    case CustomRoles.Sheriff:
+                        if (!Sheriff.MisfireKillsTarget.GetBool()) return false;
+                        break;
+                    default:
+                        if (killer == target)
+                        {
+                            if (PlayerState.GetDeathReason(target.PlayerId) == PlayerState.DeathReason.Sniped)
+                            {
+                                deathReason = PlayerState.DeathReason.Sniped;
+                                break;
+                            }
+                        }
+                        break;
+                }
             }
             killer.RpcGuardAndKill(target);
             WillDieAfterMeeting.Add(target.PlayerId, (killer, deathReason));
@@ -58,6 +78,16 @@ namespace TownOfHost
             Utils.CustomSyncAllSettings();
             return true;
         }
+        public static bool CheckAndGuardFallToDeath(PlayerControl pc)
+        {
+            if (!(pc.Is(CustomRoles.ToughGuy) && CanGuardDeath(pc))) return false;
+            WillDieAfterMeeting.Add(pc.PlayerId, (pc, PlayerState.DeathReason.Fell));
+            Logger.Info($"{Utils.GetNameWithRole(pc.PlayerId)}が転落して負傷", "WillDieAfterMeeting");
+            Utils.NotifyRoles(SpecifySeer: pc);
+            pc.CustomSyncSettings();
+            return true;
+        }
+
         public static void AfterMeetingDeath(byte playerId)
         {
             if (WillDieAfterMeeting.ContainsKey(playerId))
