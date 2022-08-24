@@ -207,6 +207,9 @@ namespace TownOfHost
                         return false;
                     }
                     break;
+                case CustomRoles.ToughGuy:
+                    if (ToughGuy.CheckAndGuardKill(killer, target)) return false;
+                    break;
             }
 
             //キル時の特殊判定
@@ -505,7 +508,7 @@ namespace TownOfHost
                 var vampireID = bp.Value.Item1;
                 var bitten = Utils.GetPlayerById(bp.Key);
 
-                if (bitten!=null && !bitten.Data.IsDead)
+                if (bitten != null && !bitten.Data.IsDead)
                 {
                     PlayerState.SetDeathReason(bitten.PlayerId, PlayerState.DeathReason.Bite);
                     //Protectは強制的にはがす
@@ -941,6 +944,7 @@ namespace TownOfHost
                             }
                         }
                     }
+                    if (target.Is(CustomRoles.ToughGuy)) Mark += ToughGuy.GetMark(seer, target);
                     /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                         Mark = isBlocked ? "(true)" : "(false)";
                     }*/

@@ -34,6 +34,7 @@ namespace TownOfHost
                         Logger.Info("ディクテーターによる強制会議終了", "Special Phase");
                         return true;
                     }
+                    if (pc.Is(CustomRoles.ToughGuy)) ToughGuy.AfterMeetingDeath(pc.PlayerId);
                 }
                 foreach (var ps in __instance.playerStates)
                 {
@@ -337,6 +338,7 @@ namespace TownOfHost
                 //呪われている場合
                 if (Main.SpelledPlayer.Find(x => x.PlayerId == target.PlayerId) != null)
                     pva.NameText.text += Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "†");
+                if (target.Is(CustomRoles.ToughGuy)) pva.NameText.text += ToughGuy.GetMark(seer, target);
 
                 //会議画面ではインポスター自身の名前にSnitchマークはつけません。
             }

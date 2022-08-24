@@ -20,7 +20,7 @@ namespace TownOfHost
         private static CustomOption CanKillExecutioner;
         private static CustomOption CanKillJackal;
         private static CustomOption CanKillJShrodingerCat;
-        private static CustomOption MisfireKillsTarget;
+        public static CustomOption MisfireKillsTarget;
         private static CustomOption ShotLimitOpt;
 
         public static Dictionary<byte, float> ShotLimit = new();
