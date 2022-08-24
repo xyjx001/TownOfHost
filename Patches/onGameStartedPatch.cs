@@ -277,6 +277,7 @@ namespace TownOfHost
                 AssignCustomRolesFromList(CustomRoles.Doctor, Scientists);
                 AssignCustomRolesFromList(CustomRoles.Puppeteer, Impostors);
                 AssignCustomRolesFromList(CustomRoles.TimeThief, Impostors);
+                AssignCustomRolesFromList(CustomRoles.ToughGuy, Crewmates);
 
                 //RPCによる同期
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -359,6 +360,9 @@ namespace TownOfHost
                             break;
                         case CustomRoles.SabotageMaster:
                             SabotageMaster.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.ToughGuy:
+                            ToughGuy.Add(pc.PlayerId);
                             break;
                     }
                     pc.ResetKillCooldown();
