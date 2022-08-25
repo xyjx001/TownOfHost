@@ -420,8 +420,11 @@ namespace TownOfHost
                         }
                         var min = cpdistance.OrderBy(c => c.Value).FirstOrDefault();//一番小さい値を取り出す
                         PlayerControl targetw = min.Key;
-                        Logger.Info($"{targetw.GetNameWithRole()}was killed", "Warlock");
-                        cp.RpcMurderPlayerV2(targetw);//殺す
+                        if (!ToughGuy.CheckAndGuardSpecificKill(shapeshifter, targetw, PlayerState.DeathReason.Kill))
+                        {
+                            Logger.Info($"{targetw.GetNameWithRole()}was killed", "Warlock");
+                            cp.RpcMurderPlayerV2(targetw);//殺す
+                        }
                         shapeshifter.RpcGuardAndKill(shapeshifter);
                         Main.isCurseAndKill[shapeshifter.PlayerId] = false;
                     }
@@ -711,8 +714,11 @@ namespace TownOfHost
                             var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
                             if (min.Value <= KillRange && player.CanMove && target.CanMove)
                             {
-                                RPC.PlaySoundRPC(Main.PuppeteerList[player.PlayerId], Sounds.KillSound);
-                                player.RpcMurderPlayer(target);
+                                if (!ToughGuy.CheckAndGuardSpecificKill(player, target, PlayerState.DeathReason.Kill))
+                                {
+                                    RPC.PlaySoundRPC(Main.PuppeteerList[player.PlayerId], Sounds.KillSound);
+                                    player.RpcMurderPlayer(target);
+                                }
                                 Utils.CustomSyncAllSettings();
                                 Main.PuppeteerList.Remove(player.PlayerId);
                                 Utils.NotifyRoles();
