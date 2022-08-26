@@ -272,6 +272,7 @@ namespace TownOfHost
         Impostor,
         Shapeshifter,
         //Impostor
+        SPImpostor,
         BountyHunter,
         EvilWatcher,
         FireWorks,

@@ -262,6 +262,7 @@ namespace TownOfHost
             EnableGM = CustomOption.Create(100, Utils.GetRoleColor(CustomRoles.GM), "GM", false, null, true)
                 .SetGameMode(CustomGameMode.Standard);
             // Impostor
+            SPImpostor.SetupCustomOption();
             BountyHunter.SetupCustomOption();
             SerialKiller.SetupCustomOption();
             // SetupRoleOptions(1200, CustomRoles.ShapeMaster);

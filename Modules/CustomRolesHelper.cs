@@ -7,6 +7,7 @@ namespace TownOfHost
             return
                 role is CustomRoles.Impostor or
                 CustomRoles.Shapeshifter or
+                CustomRoles.SPImpostor or
                 CustomRoles.BountyHunter or
                 CustomRoles.Vampire or
                 CustomRoles.Witch or

@@ -99,6 +99,7 @@ namespace TownOfHost
             Mare.Init();
             Egoist.Init();
             Sheriff.Init();
+            SPImpostor.Init();
             AntiBlackout.Reset();
         }
     }
@@ -277,6 +278,7 @@ namespace TownOfHost
                 AssignCustomRolesFromList(CustomRoles.Doctor, Scientists);
                 AssignCustomRolesFromList(CustomRoles.Puppeteer, Impostors);
                 AssignCustomRolesFromList(CustomRoles.TimeThief, Impostors);
+                AssignCustomRolesFromList(CustomRoles.SPImpostor, SPImpostor.RoleType.GetSelection() == 1 ? Shapeshifters : Impostors);
 
                 //RPCによる同期
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -359,6 +361,9 @@ namespace TownOfHost
                             break;
                         case CustomRoles.SabotageMaster:
                             SabotageMaster.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.SPImpostor:
+                            SPImpostor.Add(pc);
                             break;
                     }
                     pc.ResetKillCooldown();

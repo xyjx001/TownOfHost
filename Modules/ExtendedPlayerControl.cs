@@ -1,3 +1,4 @@
+using System.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -268,6 +269,9 @@ namespace TownOfHost
 
             switch (player.GetCustomRole())
             {
+                case CustomRoles.SPImpostor:
+                    SPImpostor.ApplyGameOptions(opt, player);
+                    break;
                 case CustomRoles.Terrorist:
                     goto InfinityVent;
                 // case CustomRoles.ShapeMaster:
@@ -559,6 +563,9 @@ namespace TownOfHost
                     break;
                 case CustomRoles.Sheriff:
                     Sheriff.SetKillCooldown(player.PlayerId); //シェリフはシェリフのキルクールに。
+                    break;
+                case CustomRoles.SPImpostor:
+                    SPImpostor.SetKillCooldown(player.PlayerId); //シェリフはシェリフのキルクールに。
                     break;
             }
             if (player.IsLastImpostor())
