@@ -473,6 +473,7 @@ namespace TownOfHost
             Logger.Info($"{__instance.GetNameWithRole()} => {target?.GetNameWithRole() ?? "null"}", "ReportDeadBody");
             if (Options.IsStandardHAS && target != null && __instance == target.Object) return true; //[StandardHAS] ボタンでなく、通報者と死体が同じなら許可
             if (Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) return false;
+            if (target == null && Main.AllPlayerNumEmergencyMeetings.TryGetValue(__instance.PlayerId, out var noleft) && noleft <= 0) return false;
             if (SPImpostor.DisableReportDeadBody(__instance, target)) return false;
             if (!AmongUsClient.Instance.AmHost) return true;
             BountyHunter.OnReportDeadBody();
@@ -534,7 +535,7 @@ namespace TownOfHost
                 Main.AllPlayerNumEmergencyMeetings[__instance.PlayerId] -= 1;
                 var afterLeft = Main.AllPlayerNumEmergencyMeetings[__instance.PlayerId];
                 Logger.Info($"残り{afterLeft}回", "AllPlayerNumEmergencyMeetings");
-                if (afterLeft > 0)
+                if (afterLeft >= Main.RealOptionsData.NumEmergencyMeetings)
                 {
                     ExtendedPlayerControl.NoCheckStartMeeting(__instance, __instance.Data);
                     return false;
