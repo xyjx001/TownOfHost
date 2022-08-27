@@ -280,6 +280,10 @@ namespace TownOfHost
                     __instance.ImpostorVentButton.ToggleVisible(isActive && Options.JackalCanVent.GetBool());
                     __instance.AbilityButton.ToggleVisible(false);
                     break;
+                case CustomRoles.SPImpostor:
+                    __instance.SabotageButton.ToggleVisible(isActive && !SPImpostor.DisableSabotage(player));
+                    __instance.ImpostorVentButton.ToggleVisible(isActive && SPImpostor.CanVent(player));
+                    break;
             }
         }
     }

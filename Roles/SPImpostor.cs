@@ -81,5 +81,8 @@ namespace TownOfHost
                 Main.AllPlayerKillDistance[player.PlayerId] = KillDistance.GetSelection();
             }
         }
+        public static bool DisableSabotage(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanSabotage.GetBool();
+        public static bool CanVent(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && (!AdvancedOptions.GetBool() || CanUseVent.GetBool());
+        public static bool DisableReportDeadBody(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanReportDeadBody.GetBool();
     }
 }
