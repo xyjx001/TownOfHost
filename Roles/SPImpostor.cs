@@ -61,7 +61,6 @@ namespace TownOfHost
         public static void Add(PlayerControl pc)
         {
             playerIdList.Add(pc.PlayerId);
-            pc.RpcSetKillCount();
         }
         public static bool IsEnable() => playerIdList.Count > 0;
         public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -79,6 +78,7 @@ namespace TownOfHost
                 opt.ImpostorLightMod = Vision.GetFloat();
                 opt.CrewLightMod = Vision.GetFloat();
                 opt.SetVision(player, HasImpostorVision.GetBool());
+                Main.AllPlayerKillDistance[player.PlayerId] = KillDistance.GetSelection();
             }
         }
     }

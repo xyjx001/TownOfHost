@@ -333,6 +333,7 @@ JackalCanUseSabotage,Jackal Can Use Sabotage,ジャッカルがサボタージ�
 JackalHasImpostorVision,Jackal Has Impostor Vision,ジャッカルがインポスターと同じ視界を持つ,豺狼拥有内鬼视野,豺狼擁有狼人的視野
 EgoistKillCooldown,Egoist KillCooldown,エゴイストのキルクール
 SPOverrideDefaultOptions,Override Default Options,基本設定を上書きする
+SPButtonCount,Emergency Meetings,緊急会議ボタン
 SPIgnoreAnonymousVotes,Ignore Anonymous Votes,投票先が見える
 SPVision,Vision,視界
 SPHasImpostorVision,Has Impostor Vision,インポスターと同じ視界を持つ

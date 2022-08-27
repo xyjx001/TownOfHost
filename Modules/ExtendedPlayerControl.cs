@@ -341,6 +341,14 @@ namespace TownOfHost
                         opt.KillCooldown = kc.Value > 0 ? kc.Value : 0.01f;
                 }
             }
+            if (Main.AllPlayerKillDistance.ContainsKey(player.PlayerId))
+            {
+                foreach (var kd in Main.AllPlayerKillDistance)
+                {
+                    if (kd.Key == player.PlayerId)
+                        opt.killDistance = Math.Clamp(kd.Value, 0, 2);
+                }
+            }
             if (Main.AllPlayerSpeed.ContainsKey(player.PlayerId))
             {
                 foreach (var speed in Main.AllPlayerSpeed)
