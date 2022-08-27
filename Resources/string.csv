@@ -332,8 +332,9 @@ JackalCanVent,Jackal Can Use Vents,ジャッカルがベントを使用できる
 JackalCanUseSabotage,Jackal Can Use Sabotage,ジャッカルがサボタージュを使用できる,豺狼可以破坏,豺狼可以破壞
 JackalHasImpostorVision,Jackal Has Impostor Vision,ジャッカルがインポスターと同じ視界を持つ,豺狼拥有内鬼视野,豺狼擁有狼人的視野
 EgoistKillCooldown,Egoist KillCooldown,エゴイストのキルクール
-SPOverrideDefaultOptions,Override Default Options,基本設定を上書きする
+SPOverrideDefaultOptions,Override Default Options,基本設定の変更
 SPButtonCount,Emergency Meetings,緊急会議ボタン
+SPEmergencyCooldown,Emergency CoolDown,緊急ボタンクールダウン
 SPIgnoreAnonymousVotes,Ignore Anonymous Votes,投票先が見える
 SPVision,Vision,視界
 SPHasImpostorVision,Has Impostor Vision,インポスターと同じ視界を持つ

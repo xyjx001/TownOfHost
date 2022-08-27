@@ -15,6 +15,7 @@ namespace TownOfHost
         private static CustomOption LeaveShapeShiftingEvidence;
         private static CustomOption OverrideDefaultOptions;
         private static CustomOption ButtonCount;
+        private static CustomOption EmergencyCooldown;
         private static CustomOption IgnoreAnonymousVotes;
         private static CustomOption Vision;
         private static CustomOption HasImpostorVision;
@@ -44,15 +45,16 @@ namespace TownOfHost
             LeaveShapeShiftingEvidence = CustomOption.Create(Id + 14, Color.white, "SPILeaveShapeShiftingEvidence", false, OverrideShapeShifterOptions);
             OverrideDefaultOptions = CustomOption.Create(Id + 15, Color.white, "SPOverrideDefaultOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPImpostor]);
             ButtonCount = CustomOption.Create(Id + 16, Color.white, "SPButtonCount", 1, 0, 9, 1, OverrideDefaultOptions);
-            IgnoreAnonymousVotes = CustomOption.Create(Id + 17, Color.white, "SPIgnoreAnonymousVotes", false, OverrideDefaultOptions);
-            Vision = CustomOption.Create(Id + 18, Color.white, "SPVision", 1.5f, 0f, 5f, 0.25f, OverrideDefaultOptions);
-            HasImpostorVision = CustomOption.Create(Id + 19, Color.white, "SPHasImpostorVision", true, OverrideDefaultOptions);
-            KillCooldown = CustomOption.Create(Id + 20, Color.white, "SPIKillCooldown", 30, 0, 180, 1, OverrideDefaultOptions);
-            KillDistance = CustomOption.Create(Id + 21, Color.white, "SPIKillDistance", KillDistances, KillDistances[1], OverrideDefaultOptions);
-            AdvancedOptions = CustomOption.Create(Id + 22, Color.white, "SPAdvancedOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPImpostor]);
-            CanSabotage = CustomOption.Create(Id + 23, Color.white, "SPICanSabotage", true, AdvancedOptions);
-            CanUseVent = CustomOption.Create(Id + 24, Color.white, "SPICanUseVent", true, AdvancedOptions);
-            CanReportDeadBody = CustomOption.Create(Id + 25, Color.white, "SPCanReportDeadBody", true, AdvancedOptions);
+            EmergencyCooldown = CustomOption.Create(Id + 17, Color.white, "SPEmergencyCooldown", 20, 0, 60, 1, OverrideDefaultOptions);
+            IgnoreAnonymousVotes = CustomOption.Create(Id + 18, Color.white, "SPIgnoreAnonymousVotes", false, OverrideDefaultOptions);
+            Vision = CustomOption.Create(Id + 19, Color.white, "SPVision", 1.5f, 0f, 5f, 0.25f, OverrideDefaultOptions);
+            HasImpostorVision = CustomOption.Create(Id + 20, Color.white, "SPHasImpostorVision", true, OverrideDefaultOptions);
+            KillCooldown = CustomOption.Create(Id + 21, Color.white, "SPIKillCooldown", 30, 0, 180, 1, OverrideDefaultOptions);
+            KillDistance = CustomOption.Create(Id + 22, Color.white, "SPIKillDistance", KillDistances, KillDistances[1], OverrideDefaultOptions);
+            AdvancedOptions = CustomOption.Create(Id + 23, Color.white, "SPAdvancedOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPImpostor]);
+            CanSabotage = CustomOption.Create(Id + 24, Color.white, "SPICanSabotage", true, AdvancedOptions);
+            CanUseVent = CustomOption.Create(Id + 25, Color.white, "SPICanUseVent", true, AdvancedOptions);
+            CanReportDeadBody = CustomOption.Create(Id + 26, Color.white, "SPCanReportDeadBody", true, AdvancedOptions);
         }
         public static void Init()
         {
@@ -76,6 +78,7 @@ namespace TownOfHost
             }
             if (OverrideDefaultOptions.GetBool())
             {
+                opt.EmergencyCooldown = EmergencyCooldown.GetInt();
                 if (IgnoreAnonymousVotes.GetBool()) opt.AnonymousVotes = false;
                 opt.ImpostorLightMod = Vision.GetFloat();
                 opt.CrewLightMod = Vision.GetFloat();
