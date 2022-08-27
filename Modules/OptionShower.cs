@@ -61,11 +61,11 @@ namespace TownOfHost
                     {
                         if (c.Name == "Maximum") continue; //Maximumの項目は飛ばす
                         text += $"\t{c.GetName()}: {c.GetString()}\n"; //親
-                        if (c.GetBool() || c.GetSelection() == 1)
+                        if (c.GetBool())
                             foreach (var d in c.Children)
                             {
                                 text += $"\t{d.GetName()}: {d.GetString()}\n"; //子
-                                if (d.GetBool() || d.GetSelection() == 1)
+                                if (d.GetBool())
                                     foreach (var e in d.Children)
                                     {
                                         text += $"\t{e.GetName()}: {e.GetString()}\n"; //孫？
