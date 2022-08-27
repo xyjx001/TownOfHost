@@ -68,6 +68,7 @@ namespace TownOfHost
         public static bool isLoversDead = true;
         public static Dictionary<byte, float> AllPlayerKillCooldown = new();
         public static Dictionary<byte, int> AllPlayerKillDistance = new();
+        public static Dictionary<byte, int> AllPlayerNumEmergencyMeetings = new();
         public static Dictionary<byte, float> AllPlayerSpeed = new();
         public static Dictionary<byte, (byte, float)> BitPlayers = new();
         public static Dictionary<byte, float> WarlockTimer = new();

@@ -21,6 +21,7 @@ namespace TownOfHost
             Main.AllPlayerCustomSubRoles = new Dictionary<byte, CustomRoles>();
             Main.AllPlayerKillCooldown = new Dictionary<byte, float>();
             Main.AllPlayerKillDistance = new Dictionary<byte, int>();
+            Main.AllPlayerNumEmergencyMeetings = new Dictionary<byte, int>();
             Main.AllPlayerSpeed = new Dictionary<byte, float>();
             Main.BitPlayers = new Dictionary<byte, (byte, float)>();
             Main.WarlockTimer = new Dictionary<byte, float>();

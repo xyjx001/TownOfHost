@@ -529,6 +529,17 @@ namespace TownOfHost
             //=============================================
 
             Utils.CustomSyncAllSettings();
+            if (target == null && Main.AllPlayerNumEmergencyMeetings.TryGetValue(__instance.PlayerId, out var left) && left > 0)
+            {
+                Main.AllPlayerNumEmergencyMeetings[__instance.PlayerId] -= 1;
+                var afterLeft = Main.AllPlayerNumEmergencyMeetings[__instance.PlayerId];
+                Logger.Info($"残り{afterLeft}回", "AllPlayerNumEmergencyMeetings");
+                if (afterLeft > 0)
+                {
+                    ExtendedPlayerControl.NoCheckStartMeeting(__instance, __instance.Data);
+                    return false;
+                }
+            }
             return true;
         }
         public static async void ChangeLocalNameAndRevert(string name, int time)

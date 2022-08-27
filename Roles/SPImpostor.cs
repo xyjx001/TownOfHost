@@ -61,6 +61,8 @@ namespace TownOfHost
         public static void Add(PlayerControl pc)
         {
             playerIdList.Add(pc.PlayerId);
+            if (OverrideDefaultOptions.GetBool())
+                Main.AllPlayerNumEmergencyMeetings.Add(pc.PlayerId, ButtonCount.GetInt());
         }
         public static bool IsEnable() => playerIdList.Count > 0;
         public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
