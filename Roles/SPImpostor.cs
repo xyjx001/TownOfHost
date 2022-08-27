@@ -83,6 +83,6 @@ namespace TownOfHost
         }
         public static bool DisableSabotage(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanSabotage.GetBool();
         public static bool CanVent(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && (!AdvancedOptions.GetBool() || CanUseVent.GetBool());
-        public static bool DisableReportDeadBody(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanReportDeadBody.GetBool();
+        public static bool DisableReportDeadBody(PlayerControl player, GameData.PlayerInfo target) => target != null && player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanReportDeadBody.GetBool();
     }
 }
