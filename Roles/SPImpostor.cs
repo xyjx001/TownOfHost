@@ -25,6 +25,11 @@ namespace TownOfHost
         private static CustomOption CanSabotage;
         private static CustomOption CanUseVent;
         private static CustomOption CanReportDeadBody;
+        private static CustomOption CanFixSabotages;
+        private static CustomOption CanFixLightsOut;
+        private static CustomOption CanFixComms;
+        private static CustomOption CanFixO2;
+        private static CustomOption CanFixReactor;
 
         private static readonly string[] RoleTypes =
         {
@@ -33,6 +38,10 @@ namespace TownOfHost
         private static readonly string[] KillDistances =
         {
             "KillDistanceShort", "KillDistanceMedium", "KillDistanceLong"
+        };
+        private static readonly string[] FixSabotageOption =
+        {
+            "AllOn", "EachOption"
         };
 
         public static void SetupCustomOption()
@@ -55,6 +64,11 @@ namespace TownOfHost
             CanSabotage = CustomOption.Create(Id + 24, Color.white, "SPICanSabotage", true, AdvancedOptions);
             CanUseVent = CustomOption.Create(Id + 25, Color.white, "SPICanUseVent", true, AdvancedOptions);
             CanReportDeadBody = CustomOption.Create(Id + 26, Color.white, "SPCanReportDeadBody", true, AdvancedOptions);
+            CanFixSabotages = CustomOption.Create(Id + 27, Color.white, "SPCanFixSabotages", FixSabotageOption, FixSabotageOption[0], AdvancedOptions);
+            CanFixLightsOut = CustomOption.Create(Id + 28, Color.white, "SPCanFixLightsOut", true, CanFixSabotages);
+            CanFixComms = CustomOption.Create(Id + 29, Color.white, "SPCanFixComms", true, CanFixSabotages);
+            CanFixO2 = CustomOption.Create(Id + 30, Color.white, "SPCanFixO2", true, CanFixSabotages);
+            CanFixReactor = CustomOption.Create(Id + 31, Color.white, "SPCanFixReactor", true, CanFixSabotages);
         }
         public static void Init()
         {
@@ -89,5 +103,23 @@ namespace TownOfHost
         public static bool DisableSabotage(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanSabotage.GetBool();
         public static bool CanVent(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && (!AdvancedOptions.GetBool() || CanUseVent.GetBool());
         public static bool DisableReportDeadBody(PlayerControl player, GameData.PlayerInfo target) => target != null && player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanReportDeadBody.GetBool();
+        public static bool DisableFixSabotages(PlayerControl player, SystemTypes systemType)
+        {
+            if (!player.Is(CustomRoles.SPImpostor) || CanFixSabotages.GetSelection() == 0) return false;
+            switch (systemType)
+            {
+                case SystemTypes.Electrical:
+                    return !CanFixLightsOut.GetBool();
+                case SystemTypes.Comms:
+                    return !CanFixComms.GetBool();
+                case SystemTypes.LifeSupp:
+                    return !CanFixO2.GetBool();
+                case SystemTypes.Reactor:
+                case SystemTypes.Laboratory:
+                    return !CanFixReactor.GetBool();
+                default:
+                    return false;
+            }
+        }
     }
 }

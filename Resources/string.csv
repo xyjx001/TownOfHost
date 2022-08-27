@@ -341,7 +341,14 @@ SPIgnoreAnonymousVotes,Ignore Anonymous Votes,投票先が見える
 SPVision,Vision,視界
 SPHasImpostorVision,Has Impostor Vision,インポスターと同じ視界を持つ
 SPAdvancedOptions,Advanced Options,詳細な設定
-SPCanReportDeadBody,CanReportDeadBody,死体を通報できる
+SPCanReportDeadBody,Can Report Dead Body,死体を通報できる
+SPCanFixSabotages,Can Fix Sabotages,サボタージュを直せる
+AllOn,<color=#00fefe>All On</color>,<color=#00fefe>全てオン</color>
+EachOption,Each Option,個別に設定
+SPCanFixLightsOut,Can Fix Lights Out,停電を直せる
+SPCanFixComms,Can Fix Comms,通信障害を直せる
+SPCanFixO2,Can Fix O2,酸素枯渇を直せる
+SPCanFixReactor,Can Fix Reactor,リアクターを直せる
 SPIRoleType,RoleType,ロールタイプ
 SPIOverrideShapeShifterOptions,Override ShapeShifter Options,シェイプシフターの設定を上書きする
 SPIShapeShiftCoolDown,ShapeShift CoolDown,変身のクールダウン
