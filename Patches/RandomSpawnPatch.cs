@@ -14,7 +14,7 @@ namespace TownOfHost
 {
     public class RandomSpawnPatch
     {
-        public static Dictionary<byte, bool> Spawned = new();
+        public static Dictionary<byte, int> NumOfTP = new();
 
         private static Vector2
         MeetingRoom = new(17.1f, 14.9f),
@@ -44,7 +44,6 @@ namespace TownOfHost
             {
                 if (!AmongUsClient.Instance.AmHost) return;
                 if (!(Options.RandomSpawn.GetBool() || PlayerControl.GameOptions.MapId == 4)) return; //ランダムスポーンが無効か、マップがエアシップじゃなかったらreturn
-                if (position == new Vector2(-25f, 40f)) return; //最初の湧き地点ならreturn
 
                 if (GameStates.IsInTask)
                 {
@@ -54,10 +53,11 @@ namespace TownOfHost
                         Logger.Warn("プレイヤーがnullだよぉ！", "RandomSpawn");
                         return;
                     }
+                    NumOfTP[player.PlayerId]++;
 
-                    if (Spawned.TryGetValue(player.PlayerId, out var spawned) && !spawned)
+                    if (NumOfTP.TryGetValue(player.PlayerId, out var num) && num == 2)
                     {
-                        Spawned[player.PlayerId] = true;
+                        NumOfTP[player.PlayerId] = 3;
                         var Location = SelectSpawnLocation();
                         TP(player.NetTransform, Location);
                         Logger.Info(player.Data.PlayerName + " : " + Location.ToString(), "RandomSpawn");
@@ -106,7 +106,7 @@ namespace TownOfHost
         {
             public static void Postfix()
             {
-                new LateTask(() => PlayerControl.AllPlayerControls.ToArray().Do(pc => Spawned[pc.PlayerId] = false), 0.3f, "RebirthSpawned");
+                new LateTask(() => PlayerControl.AllPlayerControls.ToArray().Do(pc => NumOfTP[pc.PlayerId] = 0), 0.3f, "RebirthNumOfTP");
             }
         }
     }
