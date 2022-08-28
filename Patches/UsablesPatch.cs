@@ -49,7 +49,7 @@ namespace TownOfHost
             else if (pc.Object.Is(CustomRoles.Jackal))
                 canUse = couldUse = Options.JackalCanVent.GetBool();
             else if (pc.Object.Is(CustomRoles.SPImpostor))
-                canUse = couldUse = SPImpostor.CanVent(pc.Object);
+                canUse = couldUse = !SPImpostor.DisableVent(pc.Object);
             else if (pc.Role.TeamType == RoleTeamTypes.Impostor || pc.Role.Role == RoleTypes.Engineer) // インポスター陣営ベースの役職とエンジニアベースの役職は常にtrue
                 canUse = couldUse = true;
 

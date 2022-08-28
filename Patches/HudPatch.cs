@@ -282,7 +282,7 @@ namespace TownOfHost
                     break;
                 case CustomRoles.SPImpostor:
                     __instance.SabotageButton.ToggleVisible(isActive && !SPImpostor.DisableSabotage(player));
-                    __instance.ImpostorVentButton.ToggleVisible(isActive && SPImpostor.CanVent(player));
+                    __instance.ImpostorVentButton.ToggleVisible(isActive && !SPImpostor.DisableVent(player));
                     break;
             }
         }

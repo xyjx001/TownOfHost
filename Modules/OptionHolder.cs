@@ -302,6 +302,7 @@ namespace TownOfHost
             SetupRoleOptions(30000, CustomRoles.Watcher);
             EvilWatcherChance = CustomOption.Create(30010, Color.white, "EvilWatcherChance", 0, 0, 100, 10, CustomRoleSpawnChances[CustomRoles.Watcher]);
             // Crewmate
+            SPCrew.SetupCustomOption();
             SetupRoleOptions(20000, CustomRoles.Bait);
             SetupRoleOptions(20100, CustomRoles.Lighter);
             LighterTaskCompletedVision = CustomOption.Create(20110, Color.white, "LighterTaskCompletedVision", 2f, 0f, 5f, 0.25f, CustomRoleSpawnChances[CustomRoles.Lighter]);

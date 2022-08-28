@@ -11,12 +11,12 @@ namespace TownOfHost
             if (__instance.Role.Role == RoleTypes.Scientist)
             {
                 __instance.TitleText.color = Utils.GetRoleColor(CustomRoles.Scientist);
-                if (CustomRoles.Doctor.IsEnable()) forced = true;
+                if (CustomRoles.Doctor.IsEnable() || (CustomRoles.SPCrew.IsEnable() && SPCrew.RoleType.GetSelection() == 1)) forced = true;
             }
             if (__instance.Role.Role == RoleTypes.Engineer)
             {
                 __instance.TitleText.color = Utils.GetRoleColor(CustomRoles.Engineer);
-                if (CustomRoles.Madmate.IsEnable() || CustomRoles.Terrorist.IsEnable()) forced = true;
+                if (CustomRoles.Madmate.IsEnable() || CustomRoles.Terrorist.IsEnable() || (CustomRoles.SPCrew.IsEnable() && SPCrew.RoleType.GetSelection() == 2)) forced = true;
             }
             if (__instance.Role.Role == RoleTypes.GuardianAngel)
             {

@@ -269,9 +269,6 @@ namespace TownOfHost
 
             switch (player.GetCustomRole())
             {
-                case CustomRoles.SPImpostor:
-                    SPImpostor.ApplyGameOptions(opt, player);
-                    break;
                 case CustomRoles.Terrorist:
                     goto InfinityVent;
                 // case CustomRoles.ShapeMaster:
@@ -325,6 +322,12 @@ namespace TownOfHost
                 case CustomRoles.Jackal:
                 case CustomRoles.JSchrodingerCat:
                     opt.SetVision(player, Options.JackalHasImpostorVision.GetBool());
+                    break;
+                case CustomRoles.SPImpostor:
+                    SPImpostor.ApplyGameOptions(opt, player);
+                    break;
+                case CustomRoles.SPCrew:
+                    SPCrew.ApplyGameOptions(opt, player);
                     break;
 
 
@@ -573,7 +576,7 @@ namespace TownOfHost
                     Sheriff.SetKillCooldown(player.PlayerId); //シェリフはシェリフのキルクールに。
                     break;
                 case CustomRoles.SPImpostor:
-                    SPImpostor.SetKillCooldown(player.PlayerId); //シェリフはシェリフのキルクールに。
+                    SPImpostor.SetKillCooldown(player.PlayerId);
                     break;
             }
             if (player.IsLastImpostor())
@@ -611,7 +614,7 @@ namespace TownOfHost
                     player.Data.Role.CanVent = jackal_canUse;
                     return;
                 case CustomRoles.SPImpostor:
-                    bool SPI_canUse = SPImpostor.CanVent(player);
+                    bool SPI_canUse = !SPImpostor.DisableVent(player);
                     DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ToggleVisible(SPI_canUse && !player.Data.IsDead);
                     player.Data.Role.CanVent = SPI_canUse;
                     return;

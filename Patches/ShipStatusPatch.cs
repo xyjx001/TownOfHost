@@ -64,20 +64,24 @@ namespace TownOfHost
                 SabotageMaster.RepairSystem(__instance, systemType, amount);
 
             if (((!Options.MadmateCanFixLightsOut.GetBool() && player.GetCustomRole().IsMadmate()) //Madmateが停電を直せる設定がオフ
-                || SPImpostor.DisableFixSabotages(player, SystemTypes.Electrical))
+                || SPImpostor.DisableFixSabotages(player, SystemTypes.Electrical)
+                || SPCrew.DisableFixSabotages(player, SystemTypes.Electrical))
                && systemType == SystemTypes.Electrical //システムタイプが電気室
                && 0 <= amount && amount <= 4) //配電盤操作のamount
                 return false;
             if (((!Options.MadmateCanFixComms.GetBool() && player.GetCustomRole().IsMadmate()) //Madmateがコミュサボを直せる設定がオフ
-                || SPImpostor.DisableFixSabotages(player, SystemTypes.Comms))
+                || SPImpostor.DisableFixSabotages(player, SystemTypes.Comms)
+                || SPCrew.DisableFixSabotages(player, SystemTypes.Comms))
                 && systemType == SystemTypes.Comms //システムタイプが通信室
                 && amount is 0 or 16 or 17)
                 return false;
-            if (SPImpostor.DisableFixSabotages(player, SystemTypes.LifeSupp)
+            if ((SPImpostor.DisableFixSabotages(player, SystemTypes.LifeSupp)
+                || SPCrew.DisableFixSabotages(player, SystemTypes.LifeSupp))
                 && systemType == SystemTypes.LifeSupp //システムタイプがO2
                 && amount is 64 or 65)
                 return false;
-            if (SPImpostor.DisableFixSabotages(player, SystemTypes.Reactor)
+            if ((SPImpostor.DisableFixSabotages(player, SystemTypes.Reactor)
+                || SPCrew.DisableFixSabotages(player, SystemTypes.Reactor))
                 && ((systemType == SystemTypes.Reactor && amount is 16 or 17 or 64 or 65) //システムタイプがリアクター
                 || (systemType == SystemTypes.Laboratory && amount is 64 or 65)))
                 return false;

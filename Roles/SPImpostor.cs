@@ -10,9 +10,9 @@ namespace TownOfHost
         static List<byte> playerIdList = new();
         public static CustomOption RoleType;
         private static CustomOption OverrideShapeShifterOptions;
-        private static CustomOption ShapeShiftCoolDown;
-        private static CustomOption ShapeShiftDuration;
-        private static CustomOption LeaveShapeShiftingEvidence;
+        private static CustomOption ShapeshifterCooldown;
+        private static CustomOption ShapeshifterDuration;
+        private static CustomOption ShapeshifterLeaveSkin;
         private static CustomOption OverrideDefaultOptions;
         private static CustomOption ButtonCount;
         private static CustomOption EmergencyCooldown;
@@ -47,11 +47,11 @@ namespace TownOfHost
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, CustomRoles.SPImpostor);
-            RoleType = CustomOption.Create(Id + 10, Color.white, "SPIRoleType", RoleTypes, RoleTypes[0], Options.CustomRoleSpawnChances[CustomRoles.SPImpostor]);
+            RoleType = CustomOption.Create(Id + 10, Color.white, "SPRoleType", RoleTypes, RoleTypes[0], Options.CustomRoleSpawnChances[CustomRoles.SPImpostor]);
             OverrideShapeShifterOptions = CustomOption.Create(Id + 11, Color.white, "SPIOverrideShapeShifterOptions", false, RoleType);
-            ShapeShiftCoolDown = CustomOption.Create(Id + 12, Color.white, "SPIShapeShiftCoolDown", 10f, 5f, 180f, 2.5f, OverrideShapeShifterOptions);
-            ShapeShiftDuration = CustomOption.Create(Id + 13, Color.white, "SPIShapeShiftDuration", 30f, 0f, 180f, 2.5f, OverrideShapeShifterOptions);
-            LeaveShapeShiftingEvidence = CustomOption.Create(Id + 14, Color.white, "SPILeaveShapeShiftingEvidence", false, OverrideShapeShifterOptions);
+            ShapeshifterCooldown = CustomOption.Create(Id + 12, Color.white, "SPIShapeshifterCooldown", 10f, 5f, 180f, 2.5f, OverrideShapeShifterOptions);
+            ShapeshifterDuration = CustomOption.Create(Id + 13, Color.white, "SPIShapeshifterDuration", 30f, 0f, 180f, 2.5f, OverrideShapeShifterOptions);
+            ShapeshifterLeaveSkin = CustomOption.Create(Id + 14, Color.white, "SPIShapeshifterLeaveSkin", false, OverrideShapeShifterOptions);
             OverrideDefaultOptions = CustomOption.Create(Id + 15, Color.white, "SPOverrideDefaultOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPImpostor]);
             ButtonCount = CustomOption.Create(Id + 16, Color.white, "SPButtonCount", 1, 0, 9, 1, OverrideDefaultOptions);
             EmergencyCooldown = CustomOption.Create(Id + 17, Color.white, "SPEmergencyCooldown", 20, 0, 60, 1, OverrideDefaultOptions);
@@ -86,9 +86,9 @@ namespace TownOfHost
         {
             if (RoleType.GetSelection() == 1 && OverrideShapeShifterOptions.GetBool())
             {
-                opt.RoleOptions.ShapeshifterCooldown = ShapeShiftCoolDown.GetFloat();
-                opt.RoleOptions.ShapeshifterDuration = ShapeShiftDuration.GetFloat();
-                opt.RoleOptions.ShapeshifterLeaveSkin = LeaveShapeShiftingEvidence.GetBool();
+                opt.RoleOptions.ShapeshifterCooldown = ShapeshifterCooldown.GetFloat();
+                opt.RoleOptions.ShapeshifterDuration = ShapeshifterDuration.GetFloat();
+                opt.RoleOptions.ShapeshifterLeaveSkin = ShapeshifterLeaveSkin.GetBool();
             }
             if (OverrideDefaultOptions.GetBool())
             {
@@ -101,7 +101,7 @@ namespace TownOfHost
             }
         }
         public static bool DisableSabotage(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanSabotage.GetBool();
-        public static bool CanVent(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && (!AdvancedOptions.GetBool() || CanUseVent.GetBool());
+        public static bool DisableVent(PlayerControl player) => player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanUseVent.GetBool();
         public static bool DisableReportDeadBody(PlayerControl player, GameData.PlayerInfo target) => target != null && player.Is(CustomRoles.SPImpostor) && AdvancedOptions.GetBool() && !CanReportDeadBody.GetBool();
         public static bool DisableFixSabotages(PlayerControl player, SystemTypes systemType)
         {

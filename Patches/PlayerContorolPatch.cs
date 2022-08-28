@@ -475,6 +475,7 @@ namespace TownOfHost
             if (Options.CurrentGameMode == CustomGameMode.HideAndSeek || Options.IsStandardHAS) return false;
             if (target == null && Main.AllPlayerNumEmergencyMeetings.TryGetValue(__instance.PlayerId, out var noleft) && noleft <= 0) return false;
             if (SPImpostor.DisableReportDeadBody(__instance, target)) return false;
+            if (SPCrew.DisableReportDeadBody(__instance, target)) return false;
             if (!AmongUsClient.Instance.AmHost) return true;
             BountyHunter.OnReportDeadBody();
             SerialKiller.OnReportDeadBody();
@@ -1143,7 +1144,7 @@ namespace TownOfHost
                 __instance.myPlayer.Is(CustomRoles.Arsonist) ||
                 (__instance.myPlayer.Is(CustomRoles.Mayor) && Main.MayorUsedButtonCount.TryGetValue(__instance.myPlayer.PlayerId, out var count) && count >= Options.MayorNumOfUseButton.GetInt()) ||
                 (__instance.myPlayer.Is(CustomRoles.Jackal) && !Options.JackalCanVent.GetBool()) ||
-                !SPImpostor.CanVent(__instance.myPlayer)
+                SPImpostor.DisableVent(__instance.myPlayer)
                 )
                 {
                     MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);

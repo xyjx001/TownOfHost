@@ -53,6 +53,7 @@ SpeedBooster,SpeedBooster,スピードブースター,增速者,加速器
 Doctor,Doctor,ドクター,医生,醫生
 Trapper,Trapper,トラッパー,陷阱师,設陷者
 Dictator,Dictator,ディクテーター,独裁者,獨裁主義者
+SPCrew,Special Crew,スペシャルクルー
 
 # 第三陣営役職
 Jester,Jester,ジェスター,小丑,小丑
@@ -334,6 +335,7 @@ JackalCanVent,Jackal Can Use Vents,ジャッカルがベントを使用できる
 JackalCanUseSabotage,Jackal Can Use Sabotage,ジャッカルがサボタージュを使用できる,豺狼可以破坏,豺狼可以破壞
 JackalHasImpostorVision,Jackal Has Impostor Vision,ジャッカルがインポスターと同じ視界を持つ,豺狼拥有内鬼视野,豺狼擁有狼人的視野
 EgoistKillCooldown,Egoist KillCooldown,エゴイストのキルクール
+SPRoleType,RoleType,ロールタイプ
 SPOverrideDefaultOptions,Override Default Options,基本設定の変更
 SPButtonCount,Emergency Meetings,緊急会議ボタン
 SPEmergencyCooldown,Emergency CoolDown,緊急ボタンクールダウン
@@ -349,11 +351,10 @@ SPCanFixLightsOut,Can Fix Lights Out,停電を直せる
 SPCanFixComms,Can Fix Comms,通信障害を直せる
 SPCanFixO2,Can Fix O2,酸素枯渇を直せる
 SPCanFixReactor,Can Fix Reactor,リアクターを直せる
-SPIRoleType,RoleType,ロールタイプ
 SPIOverrideShapeShifterOptions,Override ShapeShifter Options,シェイプシフターの設定を上書きする
-SPIShapeShiftCoolDown,ShapeShift CoolDown,変身のクールダウン
-SPIShapeShiftDuration,ShapeShift Duration,変身の持続時間
-SPILeaveShapeShiftingEvidence,Leave ShapeShifting Evidence,変身の証拠を残す
+SPIShapeshifterCooldown,ShapeShift CoolDown,変身のクールダウン
+SPIShapeshifterDuration,ShapeShift Duration,変身の持続時間
+SPIShapeshifterLeaveSkin,Leave ShapeShifting Evidence,変身の証拠を残す
 SPIKillCooldown,Special Impostor Kill Cooldown,スペシャルインポスターのキルクール
 SPIKillDistance,Special Impostor Kill Distance,スペシャルインポスターのキル可能距離
 KillDistanceShort,Short,ショート
@@ -361,7 +362,12 @@ KillDistanceMedium,Medium,ミドル
 KillDistanceLong,Long,ロング
 SPICanSabotage,Special Impostor Can Sabotage,サボタージュできる
 SPICanUseVent,Special Impostor Can Use Vent,ベントに入れる
-SPCRoleType,RoleType,ロールタイプ
+SPCOverrideScientistOptions,Override Scientist Options,科学者の設定を上書きする
+SPCScientistCooldown,Vitals Display Cooldown,バイタル画面クールダウン
+SPCScientistBatteryCharge,Battery Duration,充電持続時間
+SPCOverrideEngineerOptions,Override Engineer Options,エンジニアの設定を上書きする
+SPCEngineerCooldown,Vent Use Cooldown,ベントクールダウン
+SPCEngineerInVentMaxTime,Max Time In Vents,ベント内での最大時間
 
 ## かくれんぼ設定
 HideAndSeekOptions,HideAndSeek Options,かくれんぼの設定,躲猫猫设置,躲貓貓設定

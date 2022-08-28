@@ -102,6 +102,7 @@ namespace TownOfHost
             Egoist.Init();
             Sheriff.Init();
             SPImpostor.Init();
+            SPCrew.Init();
             AntiBlackout.Reset();
         }
     }
@@ -125,6 +126,10 @@ namespace TownOfHost
                 RoleOptionsData roleOpt = PlayerControl.GameOptions.RoleOptions;
                 int ScientistNum = roleOpt.GetNumPerGame(RoleTypes.Scientist);
                 int AdditionalScientistNum = CustomRoles.Doctor.GetCount();
+
+                if (SPCrew.RoleType.GetSelection() == 1)
+                    AdditionalScientistNum += CustomRoles.SPCrew.GetCount();
+
                 roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum + AdditionalScientistNum, AdditionalScientistNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Scientist));
 
                 int EngineerNum = roleOpt.GetNumPerGame(RoleTypes.Engineer);
@@ -136,6 +141,9 @@ namespace TownOfHost
 
                 if (Options.MadSnitchCanVent.GetBool())
                     AdditionalEngineerNum += CustomRoles.MadSnitch.GetCount();
+
+                if (SPCrew.RoleType.GetSelection() == 2)
+                    AdditionalEngineerNum += CustomRoles.SPCrew.GetCount();
 
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum + AdditionalEngineerNum, AdditionalEngineerNum > 0 ? 100 : roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
@@ -282,7 +290,10 @@ namespace TownOfHost
                 AssignCustomRolesFromList(CustomRoles.Doctor, Scientists);
                 AssignCustomRolesFromList(CustomRoles.Puppeteer, Impostors);
                 AssignCustomRolesFromList(CustomRoles.TimeThief, Impostors);
-                AssignCustomRolesFromList(CustomRoles.SPImpostor, SPImpostor.RoleType.GetSelection() == 1 ? Shapeshifters : Impostors);
+                List<PlayerControl>[] SPImpostorRoleType = { Impostors, Shapeshifters };
+                AssignCustomRolesFromList(CustomRoles.SPImpostor, SPImpostorRoleType[SPImpostor.RoleType.GetSelection()]);
+                List<PlayerControl>[] SPCrewRoleType = { Crewmates, Scientists, Engineers };
+                AssignCustomRolesFromList(CustomRoles.SPCrew, SPCrewRoleType[SPCrew.RoleType.GetSelection()]);
 
                 //RPCによる同期
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -369,6 +380,9 @@ namespace TownOfHost
                         case CustomRoles.SPImpostor:
                             SPImpostor.Add(pc);
                             break;
+                        case CustomRoles.SPCrew:
+                            SPCrew.Add(pc);
+                            break;
                     }
                     pc.ResetKillCooldown();
                 }
@@ -377,6 +391,8 @@ namespace TownOfHost
                 RoleOptionsData roleOpt = PlayerControl.GameOptions.RoleOptions;
                 int ScientistNum = roleOpt.GetNumPerGame(RoleTypes.Scientist);
                 ScientistNum -= CustomRoles.Doctor.GetCount();
+                if (SPCrew.RoleType.GetSelection() == 1)
+                    ScientistNum -= CustomRoles.SPCrew.GetCount();
                 roleOpt.SetRoleRate(RoleTypes.Scientist, ScientistNum, roleOpt.GetChancePerGame(RoleTypes.Scientist));
 
                 int EngineerNum = roleOpt.GetNumPerGame(RoleTypes.Engineer);
@@ -388,6 +404,9 @@ namespace TownOfHost
 
                 if (Options.MadSnitchCanVent.GetBool())
                     EngineerNum -= CustomRoles.MadSnitch.GetCount();
+
+                if (SPCrew.RoleType.GetSelection() == 2)
+                    EngineerNum -= CustomRoles.SPCrew.GetCount();
 
                 roleOpt.SetRoleRate(RoleTypes.Engineer, EngineerNum, roleOpt.GetChancePerGame(RoleTypes.Engineer));
 
