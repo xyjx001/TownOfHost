@@ -162,7 +162,6 @@ namespace TownOfHost
                     Main.CursedPlayers[pc.PlayerId] = null;
                     Main.isCurseAndKill[pc.PlayerId] = false;
                 }
-                RandomSpawnPatch.NumOfTP[pc.PlayerId] = 0;
             }
             if (Assassin.IsAssassinMeeting)
                 Assassin.BootAssassinTrigger(Utils.GetPlayerById(Assassin.TriggerPlayerId));
