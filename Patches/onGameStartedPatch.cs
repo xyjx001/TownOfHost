@@ -48,6 +48,8 @@ namespace TownOfHost
 
             Main.introDestroyed = false;
 
+            RandomSpawnPatch.Spawned = new();
+
             Main.DiscussionTime = Main.RealOptionsData.DiscussionTime;
             Main.VotingTime = Main.RealOptionsData.VotingTime;
 
