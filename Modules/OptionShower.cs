@@ -60,15 +60,15 @@ namespace TownOfHost
                     foreach (var c in kvp.Value.Children) //詳細設定をループする
                     {
                         if (c.Name == "Maximum") continue; //Maximumの項目は飛ばす
-                        text += $"\t{c.GetName()}: {c.GetString()}\n"; //親
-                        if (c.GetBool())
+                        text += $"\t{c.GetName()}: {c.GetString()}\n";
+                        if (c.GetBool() && c.Children != null)
                             foreach (var d in c.Children)
                             {
-                                text += $"\t{d.GetName()}: {d.GetString()}\n"; //子
-                                if (d.GetBool())
+                                text += $"\t\t{d.GetName()}: {d.GetString()}\n"; //子
+                                if (d.GetBool() && d.Children != null)
                                     foreach (var e in d.Children)
                                     {
-                                        text += $"\t{e.GetName()}: {e.GetString()}\n"; //孫？
+                                        text += $"\t\t\t{e.GetName()}: {e.GetString()}\n"; //孫？
                                     }
                             }
                     }
@@ -84,10 +84,6 @@ namespace TownOfHost
                     {
                         text += $"\t{Options.CanMakeMadmateCount.GetName()}: {Options.CanMakeMadmateCount.GetString()}\n";
                     }
-                    // if (kvp.Key == CustomRoles.Mayor && Options.MayorHasPortableButton.GetBool())
-                    // {
-                    //     text += $"\t{Options.MayorNumOfUseButton.GetName()}: {Options.MayorNumOfUseButton.GetString()}\n";
-                    // }
                     text += "\n";
                 }
                 //Onの時に子要素まで表示するメソッド
