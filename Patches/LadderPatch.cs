@@ -26,7 +26,7 @@ namespace TownOfHost
                 if (chance <= Chance)
                 {
                     var pc = Utils.GetPlayerById(player.myPlayer.PlayerId);
-                    if (ToughGuy.CheckAndGuardSpecificKill(pc, pc, PlayerState.DeathReason.Fell)) return;
+                    if (ToughGuy.CheckAndGuardSpecificKill(pc, pc, PlayerState.DeathReason.Fall)) return;
                     TargetLadderData[player.myPlayer.PlayerId] = targetpos;
                 }
             }
