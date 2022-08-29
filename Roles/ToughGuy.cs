@@ -120,7 +120,7 @@ namespace TownOfHost
         {
             return Helpers.ColorString(Utils.GetRoleColor(CustomRoles.ToughGuy),
                 (WillDieAfterMeeting.ContainsKey(target.PlayerId) && (seer.Data.IsDead
-                || seer == WillDieAfterMeeting[target.PlayerId].Item1)) ? "×" : "");
+                || seer == WillDieAfterMeeting[target.PlayerId].Item1)) ? "＊" : "");
         }
     }
 }
