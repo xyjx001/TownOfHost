@@ -134,7 +134,7 @@ namespace TownOfHost
                 nameAndValue(Options.NoGameEnd);
                 nameAndValue(Options.GhostCanSeeOtherRoles);
                 nameAndValue(Options.HideGameSettings);
-                nameAndValue(Options.RandomSpawn);
+                listUp(Options.AirshipRandomSpawn);
             }
             //1ページにつき35行までにする処理
             List<string> tmp = new(text.Split("\n\n"));

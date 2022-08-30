@@ -12,7 +12,7 @@ using Hazel;
 
 namespace TownOfHost
 {
-    public class RandomSpawnPatch
+    public class AirshipRandomSpawnPatch
     {
         public static Dictionary<byte, int> NumOfTP = new();
 
@@ -43,16 +43,19 @@ namespace TownOfHost
             public static void Postfix(CustomNetworkTransform __instance, [HarmonyArgument(0)] Vector2 position)
             {
                 if (!AmongUsClient.Instance.AmHost) return;
-                if (!(Options.RandomSpawn.GetBool() || PlayerControl.GameOptions.MapId == 4)) return; //ランダムスポーンが無効か、マップがエアシップじゃなかったらreturn
+                if (!(Options.AirshipRandomSpawn.GetBool() || PlayerControl.GameOptions.MapId == 4)) return; //ランダムスポーンが無効か、マップがエアシップじゃなかったらreturn
+                if (position == new Vector2(-25f, 40f)) return; //最初の湧き地点ならreturn
 
                 if (GameStates.IsInTask)
                 {
                     var player = PlayerControl.AllPlayerControls.ToArray().Where(p => p.NetTransform == __instance).FirstOrDefault();
                     if (player == null)
                     {
-                        Logger.Warn("プレイヤーがnullだよぉ！", "RandomSpawn");
+                        Logger.Warn("プレイヤーがnullだよぉ！", "AirshipRandomSpawn");
                         return;
                     }
+                    if (player.Is(CustomRoles.GM)) return; //GMは対象外に
+
                     NumOfTP[player.PlayerId]++;
 
                     if (NumOfTP.TryGetValue(player.PlayerId, out var num) && num == 2)
@@ -60,7 +63,7 @@ namespace TownOfHost
                         NumOfTP[player.PlayerId] = 3;
                         var Location = SelectSpawnLocation();
                         TP(player.NetTransform, Location);
-                        Logger.Info(player.Data.PlayerName + " : " + Location.ToString(), "RandomSpawn");
+                        Logger.Info(player.Data.PlayerName + " : " + Location.ToString(), "AirshipRandomSpawn");
                     }
                 }
             }
@@ -79,25 +82,32 @@ namespace TownOfHost
             var rand = new System.Random();
             var Locations = new List<Vector2>()
             {
-                MeetingRoom,
-                GapRoom,
                 Brig,
-                Vault,
                 Engine,
-                Communications,
-                Cockpit,
-                Armory,
                 Kitchin,
-                ViewingDeck,
-                Security,
-                Electrical,
-                Medical,
                 CargoBay,
-                Lounge,
                 Records,
-                Showers,
                 MainHall
             };
+            if (!Options.AirshipAdditionalSpawn.GetBool()) //デフォルト位置のみじゃなかったら
+            {
+                var AdditionalLocations = new Vector2[]
+                {
+                    MeetingRoom,
+                    GapRoom,
+                    Vault,
+                    Communications,
+                    Cockpit,
+                    Armory,
+                    ViewingDeck,
+                    Security,
+                    Electrical,
+                    Medical,
+                    Lounge,
+                    Showers,
+                };
+                Locations.AddRange(AdditionalLocations); //湧き位置リストに追加位置を入れる
+            }
             var SpawnLocation = Locations[rand.Next(0, Locations.Count)];
             return SpawnLocation;
         }
