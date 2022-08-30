@@ -21,8 +21,8 @@ namespace TownOfHost
         // プリセット
         private static readonly string[] presets =
         {
-            "Preset_1", "Preset_2", "Preset_3",
-            "Preset_4", "Preset_5"
+            Main.Preset1.Value, Main.Preset2.Value, Main.Preset3.Value,
+            Main.Preset4.Value, Main.Preset5.Value
         };
 
         // ゲームモード
@@ -182,6 +182,7 @@ namespace TownOfHost
         public static CustomOption ColorNameMode;
         public static CustomOption GhostCanSeeOtherRoles;
         public static CustomOption GhostCanSeeOtherVotes;
+        public static CustomOption GhostIgnoreTasks;
         public static CustomOption HideGameSettings;
         public static CustomOption RandomSpawn;
         public static readonly string[] suffixModes =
@@ -280,7 +281,7 @@ namespace TownOfHost
             TimeThief.SetupCustomOption();
 
             DefaultShapeshiftCooldown = CustomOption.Create(5011, Color.white, "DefaultShapeshiftCooldown", 15, 5, 999, 5, null, true);
-            CanMakeMadmateCount = CustomOption.Create(5012, Color.white, "CanMakeMadmateCount", 0, 0, 15, 1, null, true);
+            CanMakeMadmateCount = CustomOption.Create(5012, Utils.GetRoleColor(CustomRoles.Madmate), "CanMakeMadmateCount", 0, 0, 15, 1, null, true);
 
             // Madmate
             SetupRoleOptions(10000, CustomRoles.Madmate);
@@ -462,7 +463,9 @@ namespace TownOfHost
                 .SetGameMode(CustomGameMode.All);
             GhostCanSeeOtherVotes = CustomOption.Create(100604, Color.white, "GhostCanSeeOtherVotes", true)
                 .SetGameMode(CustomGameMode.All);
-            RandomSpawn = CustomOption.Create(100607, Color.white, "RandomSpawn", false)
+            GhostIgnoreTasks = CustomOption.Create(100607, Color.white, "GhostIgnoreTasks", false)
+                .SetGameMode(CustomGameMode.All);
+            RandomSpawn = CustomOption.Create(100608, Color.white, "RandomSpawn", false)
                 .SetGameMode(CustomGameMode.All);
             HideGameSettings = CustomOption.Create(100606, Color.white, "HideGameSettings", false)
                 .SetGameMode(CustomGameMode.All);

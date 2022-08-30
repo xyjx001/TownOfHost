@@ -66,7 +66,7 @@ namespace TownOfHost
             Assassinate,
             Surrender,
             Disconnected,
-            Fell,
+            Fall,
             etc = -1
         }
     }
