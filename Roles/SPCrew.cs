@@ -17,10 +17,6 @@ namespace TownOfHost
         private static CustomOption OverrideEngineerOptions;
         private static CustomOption EngineerCooldown;
         private static CustomOption EngineerInVentMaxTime;
-        // private static CustomOption OverrideShapeShifterOptions;
-        // private static CustomOption ShapeshifterCooldown;
-        // private static CustomOption ShapeshifterDuration;
-        // private static CustomOption ShapeshifterLeaveSkin;
         private static CustomOption OverrideDefaultOptions;
         private static CustomOption ButtonCount;
         private static CustomOption EmergencyCooldown;
@@ -28,11 +24,7 @@ namespace TownOfHost
         private static CustomOption Vision;
         private static CustomOption HasImpostorVision;
         private static Options.OverrideTasksData SPCrewTasks;
-        // private static CustomOption KillCooldown;
-        // private static CustomOption KillDistance;
         private static CustomOption AdvancedOptions;
-        // private static CustomOption CanSabotage;
-        // private static CustomOption CanUseVent;
         private static CustomOption CanReportDeadBody;
         private static CustomOption CanFixSabotages;
         private static CustomOption CanFixLightsOut;
@@ -44,10 +36,6 @@ namespace TownOfHost
         {
             CustomRoles.Crewmate.ToString(), CustomRoles.Scientist.ToString(), CustomRoles.Engineer.ToString()
         };
-        // private static readonly string[] KillDistances =
-        // {
-        //     "KillDistanceShort", "KillDistanceMedium", "KillDistanceLong"
-        // };
         private static readonly string[] FixSabotageOption =
         {
             "AllOn", "EachOption"
@@ -60,23 +48,23 @@ namespace TownOfHost
             OverrideScientistOptions = CustomOption.Create(Id + 11, Color.white, "SPCOverrideScientistOptions", false, RoleType);
             ScientistCooldown = CustomOption.Create(Id + 12, Color.white, "SPCScientistCooldown", 15f, 0f, 180f, 2.5f, OverrideScientistOptions);
             ScientistBatteryCharge = CustomOption.Create(Id + 13, Color.white, "SPCScientistBatteryCharge", 5f, 0f, 255f, 2.5f, OverrideScientistOptions);
-            OverrideEngineerOptions = CustomOption.Create(Id + 11, Color.white, "SPCOverrideEngineerOptions", false, RoleType);
-            EngineerCooldown = CustomOption.Create(Id + 12, Color.white, "SPCEngineerCooldown", 30f, 0f, 180f, 2.5f, OverrideEngineerOptions);
-            EngineerInVentMaxTime = CustomOption.Create(Id + 13, Color.white, "SPCEngineerInVentMaxTime", 15f, 0f, 180f, 2.5f, OverrideEngineerOptions);
-            OverrideDefaultOptions = CustomOption.Create(Id + 15, Color.white, "SPOverrideDefaultOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPCrew]);
-            ButtonCount = CustomOption.Create(Id + 16, Color.white, "SPButtonCount", 1, 0, 9, 1, OverrideDefaultOptions);
-            EmergencyCooldown = CustomOption.Create(Id + 17, Color.white, "SPEmergencyCooldown", 20, 0, 60, 1, OverrideDefaultOptions);
-            IgnoreAnonymousVotes = CustomOption.Create(Id + 18, Color.white, "SPIgnoreAnonymousVotes", false, OverrideDefaultOptions);
-            Vision = CustomOption.Create(Id + 19, Color.white, "SPVision", 0.5f, 0f, 5f, 0.25f, OverrideDefaultOptions);
-            HasImpostorVision = CustomOption.Create(Id + 20, Color.white, "SPHasImpostorVision", false, OverrideDefaultOptions);
-            SPCrewTasks = Options.OverrideTasksData.Create(Id + 21, CustomRoles.SPCrew);
-            AdvancedOptions = CustomOption.Create(Id + 23, Color.white, "SPAdvancedOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPCrew]);
-            CanReportDeadBody = CustomOption.Create(Id + 26, Color.white, "SPCanReportDeadBody", true, AdvancedOptions);
-            CanFixSabotages = CustomOption.Create(Id + 27, Color.white, "SPCanFixSabotages", FixSabotageOption, FixSabotageOption[0], AdvancedOptions);
-            CanFixLightsOut = CustomOption.Create(Id + 28, Color.white, "SPCanFixLightsOut", true, CanFixSabotages);
-            CanFixComms = CustomOption.Create(Id + 29, Color.white, "SPCanFixComms", true, CanFixSabotages);
-            CanFixO2 = CustomOption.Create(Id + 30, Color.white, "SPCanFixO2", true, CanFixSabotages);
-            CanFixReactor = CustomOption.Create(Id + 31, Color.white, "SPCanFixReactor", true, CanFixSabotages);
+            OverrideEngineerOptions = CustomOption.Create(Id + 14, Color.white, "SPCOverrideEngineerOptions", false, RoleType);
+            EngineerCooldown = CustomOption.Create(Id + 15, Color.white, "SPCEngineerCooldown", 30f, 0f, 180f, 2.5f, OverrideEngineerOptions);
+            EngineerInVentMaxTime = CustomOption.Create(Id + 16, Color.white, "SPCEngineerInVentMaxTime", 15f, 0f, 180f, 2.5f, OverrideEngineerOptions);
+            OverrideDefaultOptions = CustomOption.Create(Id + 17, Color.white, "SPOverrideDefaultOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPCrew]);
+            ButtonCount = CustomOption.Create(Id + 18, Color.white, "SPButtonCount", 1, 0, 9, 1, OverrideDefaultOptions);
+            EmergencyCooldown = CustomOption.Create(Id + 19, Color.white, "SPEmergencyCooldown", 20, 0, 60, 1, OverrideDefaultOptions);
+            IgnoreAnonymousVotes = CustomOption.Create(Id + 20, Color.white, "SPIgnoreAnonymousVotes", false, OverrideDefaultOptions);
+            Vision = CustomOption.Create(Id + 21, Color.white, "SPVision", 0.5f, 0f, 5f, 0.25f, OverrideDefaultOptions);
+            HasImpostorVision = CustomOption.Create(Id + 22, Color.white, "SPHasImpostorVision", false, OverrideDefaultOptions);
+            SPCrewTasks = Options.OverrideTasksData.Create(Id + 23, CustomRoles.SPCrew);
+            AdvancedOptions = CustomOption.Create(Id + 24, Color.white, "SPAdvancedOptions", false, Options.CustomRoleSpawnChances[CustomRoles.SPCrew]);
+            CanReportDeadBody = CustomOption.Create(Id + 25, Color.white, "SPCanReportDeadBody", true, AdvancedOptions);
+            CanFixSabotages = CustomOption.Create(Id + 26, Color.white, "SPCanFixSabotages", FixSabotageOption, FixSabotageOption[0], AdvancedOptions);
+            CanFixLightsOut = CustomOption.Create(Id + 27, Color.white, "SPCanFixLightsOut", true, CanFixSabotages);
+            CanFixComms = CustomOption.Create(Id + 28, Color.white, "SPCanFixComms", true, CanFixSabotages);
+            CanFixO2 = CustomOption.Create(Id + 29, Color.white, "SPCanFixO2", true, CanFixSabotages);
+            CanFixReactor = CustomOption.Create(Id + 30, Color.white, "SPCanFixReactor", true, CanFixSabotages);
         }
         public static void Init()
         {
