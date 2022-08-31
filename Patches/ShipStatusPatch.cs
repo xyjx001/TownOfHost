@@ -117,6 +117,8 @@ namespace TownOfHost
     {
         public static void Postfix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] byte amount)
         {
+            if (__instance.ActualSwitches == __instance.ExpectedSwitches)
+                Logger.Info("Fixed", "SwitchSystem.RepairSystem");
             if (player.Is(CustomRoles.SabotageMaster))
                 SabotageMaster.SwitchSystemRepair(__instance, amount);
         }
