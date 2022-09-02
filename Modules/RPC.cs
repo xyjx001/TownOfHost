@@ -403,11 +403,17 @@ namespace TownOfHost
             }
             switch (role)
             {
+                case CustomRoles.Assassin:
+                    Assassin.Add(targetId);
+                    break;
                 case CustomRoles.FireWorks:
                     FireWorks.Add(targetId);
                     break;
                 case CustomRoles.Sniper:
                     Sniper.Add(targetId);
+                    break;
+                case CustomRoles.ReportManager:
+                    ReportManager.Add(targetId);
                     break;
                 case CustomRoles.Alice:
                     Alice.Add(targetId);

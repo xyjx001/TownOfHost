@@ -21,6 +21,7 @@ namespace TownOfHost
                 CustomRoles.FireWorks or
                 CustomRoles.Sniper or
                 CustomRoles.Assassin or
+                CustomRoles.ReportManager or
                 CustomRoles.LastImpostor;
         }
         public static bool IsMadmate(this CustomRoles role)

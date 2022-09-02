@@ -32,7 +32,9 @@ namespace TownOfHost
             Main.SKMadmateNowCount = 0;
             Main.isCursed = false;
             Main.PuppeteerList = new Dictionary<byte, byte>();
+            Main.KillInfo = new();
 
+            Main.IgnoreReportBody = new();
             Main.AfterMeetingDeathPlayers = new();
             Main.ResetCamPlayerList = new();
 
@@ -101,9 +103,11 @@ namespace TownOfHost
             Sniper.Init();
             TimeThief.Init();
             Mare.Init();
+            ReportManager.Init();
             AssassinAndMarin.Init();
             Egoist.Init();
             Alice.Init();
+            SabotageMaster.Init();
             Sheriff.Init();
             AntiBlackout.Reset();
         }
@@ -254,6 +258,7 @@ namespace TownOfHost
 
                 AssignCustomRolesFromList(CustomRoles.FireWorks, Shapeshifters);
                 AssignCustomRolesFromList(CustomRoles.Sniper, Shapeshifters);
+                AssignCustomRolesFromList(CustomRoles.ReportManager, Impostors);
                 AssignCustomRolesFromList(CustomRoles.Jester, Crewmates);
                 AssignCustomRolesFromList(CustomRoles.Madmate, Engineers);
                 AssignCustomRolesFromList(CustomRoles.Bait, Crewmates);
@@ -335,6 +340,9 @@ namespace TownOfHost
                             break;
                         case CustomRoles.Mare:
                             Mare.Add(pc.PlayerId);
+                            break;
+                        case CustomRoles.ReportManager:
+                            ReportManager.Add(pc.PlayerId);
                             break;
 
                         case CustomRoles.Arsonist:

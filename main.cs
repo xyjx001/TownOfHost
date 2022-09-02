@@ -70,6 +70,7 @@ namespace TownOfHost
         public static Dictionary<(byte, byte), string> LastNotifyNames;
         public static Dictionary<byte, CustomRoles> AllPlayerCustomRoles;
         public static Dictionary<byte, CustomRoles> AllPlayerCustomSubRoles;
+        public static List<byte> IgnoreReportBody = new();
         public static Dictionary<byte, Color32> PlayerColors = new();
         public static Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = new();
         public static Dictionary<CustomRoles, String> roleColors;
@@ -108,6 +109,8 @@ namespace TownOfHost
         public static Dictionary<byte, byte> PuppeteerList = new();
         public static Dictionary<byte, byte> SpeedBoostTarget = new();
         public static Dictionary<byte, int> MayorUsedButtonCount = new();
+        public static Dictionary<byte, byte> KillInfo = new(); // Key: target, Value: killer
+        public static Dictionary<byte, byte> ReportManagerKillInfo = new(); // Key: killer, Value: target
         public static int AliveImpostorCount;
         public static int SKMadmateNowCount;
         public static bool witchMeeting;
@@ -198,7 +201,8 @@ namespace TownOfHost
                     {CustomRoles.GuardianAngel, "#ffffff"},
                     //インポスター、シェイプシフター
                     //特殊インポスター役職
-                    //マッドメイト系役職
+                    {CustomRoles.ReportManager, "#ff0000"},
+                //マッドメイト系役職
                         //後で追加
                     //両陣営可能役職
                     {CustomRoles.Watcher, "#800080"},
@@ -316,6 +320,7 @@ namespace TownOfHost
         Puppeteer,
         TimeThief,
         Assassin,
+        ReportManager,
         LastImpostor,
         //Madmate
         MadGuardian,

@@ -241,6 +241,7 @@ namespace TownOfHost
                 //{ CustomRoles.ShapeMaster, "sha" },
                 { CustomRoles.TimeThief, "tt"},
                 { CustomRoles.Sniper, "snp" },
+                { CustomRoles.ReportManager, "rmn" },
                 { CustomRoles.Puppeteer, "pup" },
                 { CustomRoles.Vampire, "va" },
                 { CustomRoles.Warlock, "wa" },
