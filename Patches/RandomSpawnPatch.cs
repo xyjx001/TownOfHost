@@ -1,9 +1,3 @@
-/*
-* RandomSpawnPatch.cs created on Sat Aug 27 2022
-* This software is released under the GNU General Public License v3.0.
-* Copyright (c) 2022 空き瓶/EmptyBottle
-*/
-
 using HarmonyLib;
 using UnityEngine;
 using System.Linq;
@@ -89,7 +83,7 @@ namespace TownOfHost
                 Records,
                 MainHall
             };
-            if (!Options.AirshipAdditionalSpawn.GetBool()) //デフォルト位置のみじゃなかったら
+            if (Options.AirshipAdditionalSpawn.GetBool()) //追加位置がオンなら
             {
                 var AdditionalLocations = new Vector2[]
                 {
