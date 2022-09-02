@@ -47,7 +47,6 @@ namespace TownOfHost
 
             Options.UsedButtonCount = 0;
             Main.RealOptionsData = PlayerControl.GameOptions.DeepCopy();
-            Main.BlockKilling = new Dictionary<byte, bool>();
 
             Main.introDestroyed = false;
 
@@ -101,8 +100,10 @@ namespace TownOfHost
             TimeThief.Init();
             Mare.Init();
             ReportManager.Init();
+            Egoist.Init();
             SabotageMaster.Init();
             Sheriff.Init();
+            AntiBlackout.Reset();
         }
     }
     [HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SelectRoles))]
@@ -354,6 +355,9 @@ namespace TownOfHost
                             RPC.SendExecutionerTarget(pc.PlayerId, Target.PlayerId);
                             Logger.Info($"{pc.GetNameWithRole()}:{Target.GetNameWithRole()}", "Executioner");
                             break;
+                        case CustomRoles.Egoist:
+                            Egoist.Add(pc.PlayerId);
+                            break;
 
                         case CustomRoles.Sheriff:
                             Sheriff.Add(pc.PlayerId);
@@ -366,13 +370,14 @@ namespace TownOfHost
                             break;
                     }
                     pc.ResetKillCooldown();
+
                     //通常モードでかくれんぼをする人用
                     if (Options.IsStandardHAS)
                     {
                         foreach (var seer in PlayerControl.AllPlayerControls)
                         {
                             if (seer == pc) continue;
-                            if (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Egoist)) //変更対象がインポスター陣営orエゴイスト
+                            if (pc.GetCustomRole().IsImpostor() || pc.IsNeutralKiller()) //変更対象がインポスター陣営orキル可能な第三陣営
                                 NameColorManager.Instance.RpcAdd(seer.PlayerId, pc.PlayerId, $"{pc.GetRoleColorCode()}");
                         }
                     }
@@ -491,7 +496,11 @@ namespace TownOfHost
         private static void AssignLoversRoles(int RawCount = -1)
         {
             var allPlayers = new List<PlayerControl>();
-            foreach (var player in PlayerControl.AllPlayerControls) allPlayers.Add(player);
+            foreach (var player in PlayerControl.AllPlayerControls)
+            {
+                if (player.Is(CustomRoles.GM)) continue;
+                allPlayers.Add(player);
+            }
             var loversRole = CustomRoles.Lovers;
             var rand = new System.Random();
             var count = Math.Clamp(RawCount, 0, allPlayers.Count);
