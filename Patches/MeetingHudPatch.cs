@@ -142,15 +142,45 @@ namespace TownOfHost
 
                 Logger.Info($"追放者決定: {exileId}({Utils.GetVoteName(exileId)})", "Vote");
 
-                var exiledPlayer = Utils.GetPlayerById(exileId);
-                if (!Assassin.IsAssassinMeeting && exiledPlayer.Is(CustomRoles.Assassin)) //アサシン会議外でアサシンが吊り先
+                if (Options.VoteMode.GetBool() && Options.WhenTie.GetBool() && tie)
                 {
-                    tie = true;
-                    Assassin.TriggerPlayerName = exiledPlayer.Data.PlayerName; //TriggerPlayer名保存
-                    Assassin.SendTriggerPlayerInfo(exileId); //非ホストMODにトリガープレイヤーを送信
-                    ExiledAssassin = true;
+                    switch ((TieMode)Options.WhenTie.GetSelection())
+                    {
+                        case TieMode.Default:
+                            exiledPlayerInfo = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == exileId);
+                            break;
+                        case TieMode.All:
+                            VotingData.DoIf(x => x.Key < 15 && x.Value == max, x =>
+                            {
+                                Main.AfterMeetingDeathPlayers.Add(x.Key, PlayerState.DeathReason.Vote);
+                                if (Utils.GetPlayerById(x.Key).Is(CustomRoles.Assassin))
+                                    SaveAssassin(x.Key);
+                            }
+                            );
+                            exiledPlayerInfo = null;
+                            break;
+                        case TieMode.Random:
+                            exiledPlayerInfo = GameData.Instance.AllPlayers.ToArray().OrderBy(_ => Guid.NewGuid()).FirstOrDefault(x => VotingData.TryGetValue(x.PlayerId, out int vote) && vote == max);
+                            tie = false;
+                            break;
+                    }
                 }
-                exiledPlayerInfo = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+                else
+                    exiledPlayerInfo = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+
+                SaveAssassin(exileId);
+
+                void SaveAssassin(byte exileId)
+                {
+                    var exiledPlayer = Utils.GetPlayerById(exileId);
+                    if (!Assassin.IsAssassinMeeting && exiledPlayer.Is(CustomRoles.Assassin)) //アサシン会議外でアサシンが吊り先
+                    {
+                        tie = true;
+                        Assassin.TriggerPlayerName = exiledPlayer.Data.PlayerName; //TriggerPlayer名保存
+                        Assassin.SendTriggerPlayerInfo(exileId); //非ホストMODにトリガープレイヤーを送信
+                        ExiledAssassin = true;
+                    }
+                }
 
                 //RPC
                 if (AntiBlackout.OverrideExiledPlayer)
@@ -162,22 +192,7 @@ namespace TownOfHost
                 if (!Utils.GetPlayerById(exileId).Is(CustomRoles.Witch))
                 {
                     foreach (var p in Main.SpelledPlayer)
-                    {
                         Main.AfterMeetingDeathPlayers.TryAdd(p.PlayerId, PlayerState.DeathReason.Spell);
-                        if (Main.ExecutionerTarget.ContainsValue(p.PlayerId) && exileId != p.PlayerId)
-                        {
-                            byte Executioner = 0x73;
-                            Main.ExecutionerTarget.Do(x =>
-                            {
-                                if (x.Value == p.PlayerId)
-                                    Executioner = x.Key;
-                            });
-                            Utils.GetPlayerById(Executioner).RpcSetCustomRole(Options.CRoleExecutionerChangeRoles[Options.ExecutionerChangeRolesAfterTargetKilled.GetSelection()]);
-                            Main.ExecutionerTarget.Remove(Executioner);
-                            RPC.RemoveExecutionerKey(Executioner);
-                            Utils.NotifyRoles();
-                        }
-                    }
                 }
                 Main.SpelledPlayer.Clear();
 
@@ -189,7 +204,7 @@ namespace TownOfHost
 
                 //霊界用暗転バグ対処
                 if (!AntiBlackout.OverrideExiledPlayer && exiledPlayerInfo != null && Main.ResetCamPlayerList.Contains(exiledPlayerInfo.PlayerId))
-                    exiledPlayer?.ResetPlayerCam(19f);
+                    Utils.GetPlayerById(exileId)?.ResetPlayerCam(19f);
 
                 return false;
             }
