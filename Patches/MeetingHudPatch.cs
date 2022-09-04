@@ -152,9 +152,10 @@ namespace TownOfHost
                         case TieMode.All:
                             VotingData.DoIf(x => x.Key < 15 && x.Value == max, x =>
                             {
-                                Main.AfterMeetingDeathPlayers.Add(x.Key, PlayerState.DeathReason.Vote);
                                 if (Utils.GetPlayerById(x.Key).Is(CustomRoles.Assassin))
                                     SaveAssassin(x.Key);
+                                else
+                                    Main.AfterMeetingDeathPlayers.Add(x.Key, PlayerState.DeathReason.Vote);
                             }
                             );
                             exiledPlayerInfo = null;
