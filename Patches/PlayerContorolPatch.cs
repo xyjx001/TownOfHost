@@ -325,6 +325,8 @@ namespace TownOfHost
             Main.KillInfo.TryAdd(target.PlayerId, __instance.PlayerId);
             if (__instance.Is(CustomRoles.ReportManager))
                 ReportManager.OnPlayerKilled(__instance, target);
+
+            if (AirshipRandomSpawnPatch.NumOfTP.TryGetValue(__instance.PlayerId, out var num) && num > 2) AirshipRandomSpawnPatch.NumOfTP[__instance.PlayerId] = 3;
         }
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
         {
