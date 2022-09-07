@@ -109,14 +109,14 @@ namespace TownOfHost
                     winner.Add(lp);
                 }
             }
-            if (Main.currentWinner == CustomWinner.Executioner && CustomRoles.Executioner.IsEnable())
+            if (Main.currentWinner == CustomWinner.Executioner && Executioner.IsEnable())
             { //Executioner単独勝利
                 winner = new();
-                foreach (var p in PlayerControl.AllPlayerControls)
+                foreach (var executioner in Executioner.playerIdList)
                 {
-                    if (p.PlayerId == Main.WonExecutionerID)
+                    if (executioner == Executioner.WinnerID)
                     {
-                        winner.Add(p);
+                        winner.Add(Utils.GetPlayerById(executioner));
                     }
                 }
             }
@@ -131,9 +131,11 @@ namespace TownOfHost
                     }
                 }
             }
+            //Egoist単独勝利
             TeamEgoist.SoloWin(winner);
             //Alice
             Alice.SoloWin(winner);
+
             ///以降追加勝利陣営 (winnerリセット無し)
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
@@ -151,16 +153,17 @@ namespace TownOfHost
                         winner.Add(pc);
                         Main.additionalwinners.Add(AdditionalWinners.SchrodingerCat);
                     }
-                //Executioner
-                if (Main.currentWinner == CustomWinner.Jester)
-                    foreach (var ExecutionerTarget in Main.ExecutionerTarget)
-                    {
-                        if (Main.ExiledJesterID == ExecutionerTarget.Value && pc.PlayerId == ExecutionerTarget.Key)
-                        {
-                            winner.Add(pc);
-                            Main.additionalwinners.Add(AdditionalWinners.Executioner);
-                        }
-                    }
+            }
+            foreach (var executioner in Executioner.playerIdList)
+            {
+                if (Main.currentWinner != CustomWinner.Jester) break; //ジェスター以外ならループを抜ける
+
+                var GetValue = Executioner.Target.TryGetValue(executioner, out var targetId);
+                if (GetValue && Main.ExiledJesterID == targetId)
+                {
+                    winner.Add(Utils.GetPlayerById(executioner));
+                    Main.additionalwinners.Add(AdditionalWinners.Executioner);
+                }
             }
             //Alice
             Alice.AddWinners(winner);

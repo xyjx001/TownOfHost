@@ -193,7 +193,7 @@ namespace TownOfHost
                     if (cRole == CustomRoles.SKMadmate) hasTasks = false;
                     if (cRole == CustomRoles.Terrorist && ForRecompute) hasTasks = false;
                     if (cRole == CustomRoles.Executioner && ForRecompute
-                        && Options.ExecutionerChangeRolesAfterTargetKilled.GetSelection() == 0) hasTasks = false;
+                        && Executioner.ChangeRolesAfterTargetKilled.GetSelection() == 0) hasTasks = false;
                     if (cRole == CustomRoles.Impostor) hasTasks = false;
                     if (cRole == CustomRoles.Shapeshifter) hasTasks = false;
                     if (cRole == CustomRoles.Arsonist) hasTasks = false;
@@ -263,11 +263,15 @@ namespace TownOfHost
                     var taskState = PlayerState.taskState?[playerId];
                     if (taskState.hasTasks)
                     {
-                        var pc = GetPlayerById(playerId);
-                        var afterFinishingcolor = HasTasks(pc.Data) ? Color.green : Color.red; //タスク完了後の色
-                        var beforeFinishingcolor = HasTasks(pc.Data) ? Color.yellow : Color.white; //カウントされない人外は白色
-                        var nonCommsColor = taskState.IsTaskFinished ? afterFinishingcolor : beforeFinishingcolor;
-                        Color color = comms ? Color.gray : nonCommsColor;
+                        Color color = Color.yellow;
+                        if (GameStates.IsInGame)
+                        {
+                            var pc = GetPlayerById(playerId);
+                            var afterFinishingcolor = HasTasks(pc.Data) ? Color.green : Color.red; //タスク完了後の色
+                            var beforeFinishingcolor = HasTasks(pc.Data) ? Color.yellow : Color.white; //カウントされない人外は白色
+                            var nonCommsColor = taskState.IsTaskFinished ? afterFinishingcolor : beforeFinishingcolor;
+                            color = comms ? Color.gray : nonCommsColor;
+                        }
                         string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
                         ProgressText = Helpers.ColorString(color, $"({Completed}/{taskState.AllTasksCount})");
                     }
@@ -428,13 +432,13 @@ namespace TownOfHost
             text += $"\n{SetEverythingUpPatch.LastWinsText}\n";
             foreach (var id in Main.winnerList)
             {
-                text += $"\n★ " + SummaryTexts(id);
+                text += $"\n★ " + EndGamePatch.SummaryText[id].RemoveHtmlTags();
                 cloneRoles.Remove(id);
             }
             foreach (var kvp in cloneRoles)
             {
                 var id = kvp.Key;
-                text += $"\n　 " + SummaryTexts(id);
+                text += $"\n　 " + EndGamePatch.SummaryText[id].RemoveHtmlTags();
             }
             SendMessage(text, PlayerId);
         }
@@ -702,6 +706,7 @@ namespace TownOfHost
                     || seer.Is(CustomRoles.Executioner)
                     || seer.Is(CustomRoles.Doctor) //seerがドクター
                     || seer.Is(CustomRoles.Puppeteer)
+                    || seer.IsNeutralKiller() //seerがキル出来る第三陣営
                     || IsActive(SystemTypes.Electrical)
                     || NoCache
                     || ForceLoop
@@ -795,12 +800,7 @@ namespace TownOfHost
                             var ncd = NameColorManager.Instance.GetData(seer.PlayerId, target.PlayerId);
                             TargetPlayerName = ncd.OpenTag + TargetPlayerName + ncd.CloseTag;
                         }
-                        foreach (var ExecutionerTarget in Main.ExecutionerTarget)
-                        {
-                            if ((seer.PlayerId == ExecutionerTarget.Key || seer.Data.IsDead) && //seerがKey or Dead
-                            target.PlayerId == ExecutionerTarget.Value) //targetがValue
-                                TargetMark += $"<color={Utils.GetRoleColorCode(CustomRoles.Executioner)}>♦</color>";
-                        }
+                        TargetMark += Executioner.TargetMark(seer, target);
 
                         string TargetDeathReason = "";
                         if (seer.Is(CustomRoles.Doctor) && //seerがDoctor

@@ -349,8 +349,14 @@ namespace TownOfHost
                             pva.NameText.text += Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Arsonist), "▲");
                         break;
                     case CustomRoles.Executioner:
-                        if (Main.ExecutionerTarget.TryGetValue(seer.PlayerId, out var targetId) && target.PlayerId == targetId) //targetがValue
-                            pva.NameText.text += Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦");
+                        pva.NameText.text += Executioner.TargetMark(seer, target);
+                        break;
+                    case CustomRoles.Egoist:
+                    case CustomRoles.Jackal:
+                        if (Options.SnitchCanFindNeutralKiller.GetBool() &&
+                        target.Is(CustomRoles.Snitch) && //変更対象がSnitch
+                        target.GetPlayerTaskState().DoExpose) //変更対象のタスクが終わりそう)
+                            pva.NameText.text += Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Snitch), "★"); //変更対象にSnitchマークをつける
                         break;
                 }
 

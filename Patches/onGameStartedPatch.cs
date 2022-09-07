@@ -28,7 +28,6 @@ namespace TownOfHost
             Main.CursedPlayers = new Dictionary<byte, PlayerControl>();
             Main.isCurseAndKill = new Dictionary<byte, bool>();
             Main.AirshipMeetingTimer = new Dictionary<byte, float>();
-            Main.ExecutionerTarget = new Dictionary<byte, byte>();
             Main.SKMadmateNowCount = 0;
             Main.isCursed = false;
             Main.PuppeteerList = new Dictionary<byte, byte>();
@@ -106,6 +105,7 @@ namespace TownOfHost
             ReportManager.Init();
             AssassinAndMarin.Init();
             Egoist.Init();
+            Executioner.Init();
             Alice.Init();
             SabotageMaster.Init();
             Sheriff.Init();
@@ -350,19 +350,7 @@ namespace TownOfHost
                                 Main.isDoused.Add((pc.PlayerId, ar.PlayerId), false);
                             break;
                         case CustomRoles.Executioner:
-                            List<PlayerControl> targetList = new();
-                            rand = new Random();
-                            foreach (var target in PlayerControl.AllPlayerControls)
-                            {
-                                if (pc == target) continue;
-                                else if (!Options.ExecutionerCanTargetImpostor.GetBool() && target.GetCustomRole().IsImpostor()) continue;
-
-                                targetList.Add(target);
-                            }
-                            var Target = targetList[rand.Next(targetList.Count)];
-                            Main.ExecutionerTarget.Add(pc.PlayerId, Target.PlayerId);
-                            RPC.SendExecutionerTarget(pc.PlayerId, Target.PlayerId);
-                            Logger.Info($"{pc.GetNameWithRole()}:{Target.GetNameWithRole()}", "Executioner");
+                            Executioner.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Egoist:
                             Egoist.Add(pc.PlayerId);
