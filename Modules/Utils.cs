@@ -15,9 +15,44 @@ namespace TownOfHost
     {
         public static bool IsActive(SystemTypes type)
         {
-            var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
-            Logger.Info($"SystemTypes:{type}", "SwitchSystem");
-            return SwitchSystem != null && SwitchSystem.IsActive;
+            //Logger.Info($"SystemTypes:{type}", "IsActive");
+            int mapId = PlayerControl.GameOptions.MapId;
+            switch (type)
+            {
+                case SystemTypes.Electrical:
+                    {
+                        var SwitchSystem = ShipStatus.Instance.Systems[type].Cast<SwitchSystem>();
+                        return SwitchSystem != null && SwitchSystem.IsActive;
+                    }
+                case SystemTypes.Reactor:
+                    {
+                        if (mapId == 2) return false;
+                        else if (mapId == 4)
+                        {
+                            var HeliSabotageSystem = ShipStatus.Instance.Systems[type].Cast<HeliSabotageSystem>();
+                            return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
+                        }
+                        else
+                        {
+                            var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                            return ReactorSystemType != null && ReactorSystemType.IsActive;
+                        }
+                    }
+                case SystemTypes.Laboratory:
+                    {
+                        if (mapId != 2) return false;
+                        var ReactorSystemType = ShipStatus.Instance.Systems[type].Cast<ReactorSystemType>();
+                        return ReactorSystemType != null && ReactorSystemType.IsActive;
+                    }
+                case SystemTypes.LifeSupp:
+                    {
+                        if (mapId is 2 or 4) return false;
+                        var LifeSuppSystemType = ShipStatus.Instance.Systems[type].Cast<LifeSuppSystemType>();
+                        return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
+                    }
+                default:
+                    return false;
+            }
         }
         public static void SetVision(this GameOptionsData opt, PlayerControl player, bool HasImpVision)
         {
@@ -46,9 +81,12 @@ namespace TownOfHost
         }
         public static string GetRoleName(CustomRoles role)
         {
-            var lang = (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese || Main.ForceJapanese.Value) &&
-                Main.JapaneseRoleName.Value == true ? SupportedLangs.Japanese : SupportedLangs.English;
-
+            var CurrentLanguage = TranslationController.Instance.currentLanguage.languageID;
+            var lang = CurrentLanguage;
+            if (Main.ForceJapanese.Value && Main.JapaneseRoleName.Value)
+                lang = SupportedLangs.Japanese;
+            else if (CurrentLanguage == SupportedLangs.Japanese && !Main.JapaneseRoleName.Value)
+                lang = SupportedLangs.English;
             return GetRoleName(role, lang);
         }
         public static string GetRoleName(CustomRoles role, SupportedLangs lang)
@@ -141,6 +179,7 @@ namespace TownOfHost
             }
             else
             {
+                if (p.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
                 var cRoleFound = Main.AllPlayerCustomRoles.TryGetValue(p.PlayerId, out var cRole);
                 if (cRoleFound)
                 {
@@ -153,7 +192,8 @@ namespace TownOfHost
                     if (cRole == CustomRoles.Madmate) hasTasks = false;
                     if (cRole == CustomRoles.SKMadmate) hasTasks = false;
                     if (cRole == CustomRoles.Terrorist && ForRecompute) hasTasks = false;
-                    if (cRole == CustomRoles.Executioner) hasTasks = false;
+                    if (cRole == CustomRoles.Executioner && ForRecompute
+                        && Executioner.ChangeRolesAfterTargetKilled.GetSelection() == 0) hasTasks = false;
                     if (cRole == CustomRoles.Impostor) hasTasks = false;
                     if (cRole == CustomRoles.Shapeshifter) hasTasks = false;
                     if (cRole == CustomRoles.Arsonist) hasTasks = false;
@@ -222,8 +262,17 @@ namespace TownOfHost
                     var taskState = PlayerState.taskState?[playerId];
                     if (taskState.hasTasks)
                     {
+                        Color color = Color.yellow;
+                        if (GameStates.IsInGame)
+                        {
+                            var pc = GetPlayerById(playerId);
+                            var afterFinishingcolor = HasTasks(pc.Data) ? Color.green : Color.red; //タスク完了後の色
+                            var beforeFinishingcolor = HasTasks(pc.Data) ? Color.yellow : Color.white; //カウントされない人外は白色
+                            var nonCommsColor = taskState.IsTaskFinished ? afterFinishingcolor : beforeFinishingcolor;
+                            color = comms ? Color.gray : nonCommsColor;
+                        }
                         string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-                        ProgressText = Helpers.ColorString(Color.yellow, $"({Completed}/{taskState.AllTasksCount})");
+                        ProgressText = Helpers.ColorString(color, $"({Completed}/{taskState.AllTasksCount})");
                     }
                     break;
             }
@@ -296,25 +345,19 @@ namespace TownOfHost
                     {
                         if (isFirst) { isFirst = false; continue; }
                         text += $"\n{c.GetName(disableColor: true)}:{c.GetString()}";
-
-                        //タスク上書き設定用の処理
-                        if (c.Name == "doOverride" && c.GetBool() == true)
-                        {
+                        if (c.Children != null && c.GetBool())
                             foreach (var d in c.Children)
                             {
-                                text += $"\n{d.GetName(disableColor: true)}:{d.GetString()}";
+                                text += $"\n└{d.GetName(disableColor: true)}:{d.GetString()}";
+                                if (d.Children != null && d.GetBool())
+                                    foreach (var e in d.Children)
+                                    {
+                                        text += $"\n　└{e.GetName(disableColor: true)}:{e.GetString()}";
+                                    }
                             }
-                        }
-                        //メイヤーのポータブルボタン使用可能回数
-                        if (c.Name == "MayorHasPortableButton" && c.GetBool() == true)
-                        {
-                            foreach (var d in c.Children)
-                            {
-                                text += $"\n{d.GetName(disableColor: true)}:{d.GetString()}";
-                            }
-                        }
                         text = text.RemoveHtmlTags();
                     }
+                    text += "\n";
                 }
                 if (Options.EnableLastImpostor.GetBool()) text += String.Format("\n{0}:{1}", GetString("LastImpostorKillCooldown"), Options.LastImpostorKillCooldown.GetString());
                 if (Options.DisableDevices.GetBool())
@@ -340,6 +383,11 @@ namespace TownOfHost
                 text += String.Format("\n{0}:{1}", GetString("LadderDeathChance"), Options.LadderDeathChance.GetString());
             }
             if (Options.IsStandardHAS) text += String.Format("\n{0}:{1}", GetString("StandardHAS"), GetOnOff(Options.StandardHAS.GetBool()));
+            if (Options.AirshipRandomSpawn.GetBool())
+            {
+                text += String.Format("\n{0}:{1}", GetString("AirshipRandomSpawn"), GetOnOff(Options.AirshipRandomSpawn.GetBool()));
+                text += String.Format("\n{0}:{1}", GetString("AirshipAdditionalSpawn"), GetOnOff(Options.AirshipAdditionalSpawn.GetBool()));
+            }
             if (Options.NoGameEnd.GetBool()) text += String.Format("\n{0}:{1}", GetString("NoGameEnd"), GetOnOff(Options.NoGameEnd.GetBool()));
             SendMessage(text, PlayerId);
         }
@@ -371,13 +419,13 @@ namespace TownOfHost
             text += $"\n{SetEverythingUpPatch.LastWinsText}\n";
             foreach (var id in Main.winnerList)
             {
-                text += $"\n★ " + SummaryTexts(id);
+                text += $"\n★ " + EndGamePatch.SummaryText[id].RemoveHtmlTags();
                 cloneRoles.Remove(id);
             }
             foreach (var kvp in cloneRoles)
             {
                 var id = kvp.Key;
-                text += $"\n　 " + SummaryTexts(id);
+                text += $"\n　 " + EndGamePatch.SummaryText[id].RemoveHtmlTags();
             }
             SendMessage(text, PlayerId);
         }
@@ -464,7 +512,7 @@ namespace TownOfHost
                     case SuffixModes.None:
                         break;
                     case SuffixModes.TOH:
-                        name += "\r\n<color=" + Main.modColor + ">TOH v" + Main.PluginVersion + "</color>";
+                        name += "\r\n<color=" + Main.ModColor + ">TOH v" + Main.PluginVersion + "</color>";
                         break;
                     case SuffixModes.Streaming:
                         name += $"\r\n{GetString("SuffixMode.Streaming")}";
@@ -641,6 +689,7 @@ namespace TownOfHost
                     || seer.Is(CustomRoles.Executioner)
                     || seer.Is(CustomRoles.Doctor) //seerがドクター
                     || seer.Is(CustomRoles.Puppeteer)
+                    || seer.IsNeutralKiller() //seerがキル出来る第三陣営
                     || IsActive(SystemTypes.Electrical)
                     || NoCache
                     || ForceLoop
@@ -732,12 +781,7 @@ namespace TownOfHost
                             var ncd = NameColorManager.Instance.GetData(seer.PlayerId, target.PlayerId);
                             TargetPlayerName = ncd.OpenTag + TargetPlayerName + ncd.CloseTag;
                         }
-                        foreach (var ExecutionerTarget in Main.ExecutionerTarget)
-                        {
-                            if ((seer.PlayerId == ExecutionerTarget.Key || seer.Data.IsDead) && //seerがKey or Dead
-                            target.PlayerId == ExecutionerTarget.Value) //targetがValue
-                                TargetMark += $"<color={Utils.GetRoleColorCode(CustomRoles.Executioner)}>♦</color>";
-                        }
+                        TargetMark += Executioner.TargetMark(seer, target);
 
                         string TargetDeathReason = "";
                         if (seer.Is(CustomRoles.Doctor) && //seerがDoctor
@@ -862,7 +906,8 @@ namespace TownOfHost
         }
         public static string SummaryTexts(byte id, bool disableColor = true)
         {
-            string summary = $"{Helpers.ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id])}<pos=25%> {Helpers.ColorString(GetRoleColor(Main.AllPlayerCustomRoles[id]), GetRoleName(Main.AllPlayerCustomRoles[id]))}{GetShowLastSubRolesText(id)}</pos><pos=44%> {GetProgressText(id)}</pos><pos=51%> {GetVitalText(id)}</pos>";
+            var RolePos = TranslationController.Instance.currentLanguage.languageID == SupportedLangs.English ? 47 : 37;
+            string summary = $"{Helpers.ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id])}<pos=22%> {GetProgressText(id)}</pos><pos=29%> {GetVitalText(id)}</pos><pos={RolePos}%> {Helpers.ColorString(GetRoleColor(Main.AllPlayerCustomRoles[id]), GetRoleName(Main.AllPlayerCustomRoles[id]))}{GetShowLastSubRolesText(id)}</pos>";
             return disableColor ? summary.RemoveHtmlTags() : Regex.Replace(summary, " ", "");
         }
         public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");

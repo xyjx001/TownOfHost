@@ -135,7 +135,26 @@ namespace TownOfHost
                 }
 
                 Logger.Info($"追放者決定: {exileId}({Utils.GetVoteName(exileId)})", "Vote");
-                exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+
+                if (Options.VoteMode.GetBool() && Options.WhenTie.GetBool() && tie)
+                {
+                    switch ((TieMode)Options.WhenTie.GetSelection())
+                    {
+                        case TieMode.Default:
+                            exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == exileId);
+                            break;
+                        case TieMode.All:
+                            VotingData.DoIf(x => x.Key < 15 && x.Value == max, x => Main.AfterMeetingDeathPlayers.Add(x.Key, PlayerState.DeathReason.Vote));
+                            exiledPlayer = null;
+                            break;
+                        case TieMode.Random:
+                            exiledPlayer = GameData.Instance.AllPlayers.ToArray().OrderBy(_ => Guid.NewGuid()).FirstOrDefault(x => VotingData.TryGetValue(x.PlayerId, out int vote) && vote == max);
+                            tie = false;
+                            break;
+                    }
+                }
+                else
+                    exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
 
                 //RPC
                 if (AntiBlackout.OverrideExiledPlayer)
@@ -227,11 +246,10 @@ namespace TownOfHost
                 roleTextMeeting.enabled =
                     pva.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId ||
                     (Main.VisibleTasksCount && PlayerControl.LocalPlayer.Data.IsDead && Options.GhostCanSeeOtherRoles.GetBool()) ||
-                    Options.EnableGM.GetBool();
+                    (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer.Is(CustomRoles.GM));
             }
             if (Options.SyncButtonMode.GetBool())
             {
-                if (AmongUsClient.Instance.AmHost) PlayerControl.LocalPlayer.RpcSetName("test");
                 Utils.SendMessage(string.Format(GetString("Message.SyncButtonLeft"), Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
                 Logger.Info("緊急会議ボタンはあと" + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount) + "回使用可能です。", "SyncButtonMode");
             }
@@ -292,8 +310,14 @@ namespace TownOfHost
                             pva.NameText.text += Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Arsonist), "▲");
                         break;
                     case CustomRoles.Executioner:
-                        if (Main.ExecutionerTarget.TryGetValue(seer.PlayerId, out var targetId) && target.PlayerId == targetId) //targetがValue
-                            pva.NameText.text += Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦");
+                        pva.NameText.text += Executioner.TargetMark(seer, target);
+                        break;
+                    case CustomRoles.Egoist:
+                    case CustomRoles.Jackal:
+                        if (Options.SnitchCanFindNeutralKiller.GetBool() &&
+                        target.Is(CustomRoles.Snitch) && //変更対象がSnitch
+                        target.GetPlayerTaskState().DoExpose) //変更対象のタスクが終わりそう)
+                            pva.NameText.text += Helpers.ColorString(Utils.GetRoleColor(CustomRoles.Snitch), "★"); //変更対象にSnitchマークをつける
                         break;
                 }
 
@@ -364,7 +388,7 @@ namespace TownOfHost
         public static void Postfix()
         {
             Logger.Info("------------会議終了------------", "Phase");
-            if (AmongUsClient.Instance.AmHost && !AntiBlackout.IsCached)
+            if (AmongUsClient.Instance.AmHost)
                 AntiBlackout.SetIsDead();
         }
     }
