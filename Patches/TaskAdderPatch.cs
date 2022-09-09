@@ -19,7 +19,7 @@ namespace TownOfHost
                     __instance.transform
                 );
                 rolesFolder.gameObject.SetActive(false);
-                rolesFolder.FolderName = "Town Of Host";
+                rolesFolder.FolderName = Main.ModName;
                 CustomRolesFolder = rolesFolder;
                 __instance.Root.SubFolders.Add(rolesFolder);
             }
@@ -89,6 +89,7 @@ namespace TownOfHost
         private static readonly Dictionary<CustomRoles, RoleTypes> RolePairs = new()
         {
             //デフォルトでクルーなので、クルー判定役職は書かなくてOK
+            { CustomRoles.GM, RoleTypes.GuardianAngel },
             { CustomRoles.Engineer, RoleTypes.Engineer },
             { CustomRoles.Scientist, RoleTypes.Scientist },
             { CustomRoles.Shapeshifter, RoleTypes.Shapeshifter },

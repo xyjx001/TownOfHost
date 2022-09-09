@@ -83,9 +83,10 @@ namespace TownOfHost
                 case CustomRPC.VersionCheck:
                     try
                     {
-                        string version = reader.ReadString();
+                        Version version = Version.Parse(reader.ReadString());
                         string tag = reader.ReadString();
-                        Main.playerVersion[__instance.PlayerId] = new PlayerVersion(version, tag);
+                        string forkId = 3 <= version.Major ? reader.ReadString() : Main.OriginalForkId;
+                        Main.playerVersion[__instance.PlayerId] = new PlayerVersion(version, tag, forkId);
                     }
                     catch
                     {
@@ -122,10 +123,7 @@ namespace TownOfHost
                     RPC.SetCustomRole(CustomRoleTargetId, role);
                     break;
                 case CustomRPC.SetBountyTarget:
-                    byte HunterId = reader.ReadByte();
-                    byte TargetId = reader.ReadByte();
-                    var target = Utils.GetPlayerById(TargetId);
-                    if (target != null) Main.BountyTargets[HunterId] = target;
+                    BountyHunter.ReceiveRPC(reader);
                     break;
                 case CustomRPC.SetKillOrSpell:
                     byte playerId = reader.ReadByte();
@@ -171,13 +169,10 @@ namespace TownOfHost
                         Main.LoversPlayers.Add(Utils.GetPlayerById(reader.ReadByte()));
                     break;
                 case CustomRPC.SetExecutionerTarget:
-                    byte executionerId = reader.ReadByte();
-                    byte targetId = reader.ReadByte();
-                    Main.ExecutionerTarget[executionerId] = targetId;
+                    Executioner.ReceiveRPC(reader, SetTarget: true);
                     break;
                 case CustomRPC.RemoveExecutionerTarget:
-                    byte Key = reader.ReadByte();
-                    Main.ExecutionerTarget.Remove(Key);
+                    Executioner.ReceiveRPC(reader, SetTarget: false);
                     break;
                 case CustomRPC.SendFireWorksState:
                     FireWorks.ReceiveRPC(reader);
@@ -232,8 +227,9 @@ namespace TownOfHost
             MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
             writer.Write(Main.PluginVersion);
             writer.Write($"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
+            writer.Write(Main.ForkId);
             writer.EndMessage();
-            Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
+            Main.playerVersion[PlayerControl.LocalPlayer.PlayerId] = new PlayerVersion(Main.PluginVersion, $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})", Main.ForkId);
         }
         public static void SendDeathReason(byte playerId, PlayerState.DeathReason deathReason)
         {
@@ -254,87 +250,11 @@ namespace TownOfHost
         {
             try
             {
-                List<byte> winner = new();
-                Main.currentWinner = (CustomWinner)reader.ReadInt32();
-                while (reader.BytesRemaining > 0) winner.Add(reader.ReadByte());
-                switch (Main.currentWinner)
-                {
-                    case CustomWinner.Draw:
-                        ForceEndGame();
-                        break;
-                    case CustomWinner.Jester:
-                        JesterExiled(winner[0]);
-                        break;
-                    case CustomWinner.Terrorist:
-                        TerroristWin(winner[0]);
-                        break;
-                    case CustomWinner.Executioner:
-                        ExecutionerWin(winner[0]);
-                        break;
-                    case CustomWinner.Arsonist:
-                        ArsonistWin(winner[0]);
-                        break;
-                    case CustomWinner.HASTroll:
-                        TrollWin(winner[0]);
-                        break;
-                    case CustomWinner.Jackal:
-                        JackalWin();
-                        break;
-
-                    default:
-                        if (Main.currentWinner != CustomWinner.Default)
-                            Logger.Warn($"{Main.currentWinner}は無効なCustomWinnerです", "EndGame");
-                        break;
-                }
+                CustomWinnerHolder.ReadFrom(reader);
             }
             catch (Exception ex)
             {
                 Logger.Error($"正常にEndGameを行えませんでした。{ex}", "EndGame");
-            }
-        }
-        public static void TrollWin(byte trollID)
-        {
-            Main.WonTrollID = trollID;
-            Main.currentWinner = CustomWinner.HASTroll;
-            CustomWinTrigger(trollID);
-        }
-        public static void JesterExiled(byte jesterID)
-        {
-            Main.ExiledJesterID = jesterID;
-            Main.currentWinner = CustomWinner.Jester;
-            CustomWinTrigger(jesterID);
-        }
-        public static void TerroristWin(byte terroristID)
-        {
-            Main.WonTerroristID = terroristID;
-            Main.currentWinner = CustomWinner.Terrorist;
-            CustomWinTrigger(terroristID);
-        }
-        public static void ExecutionerWin(byte executionerID)
-        {
-            Main.WonExecutionerID = executionerID;
-            Main.currentWinner = CustomWinner.Executioner;
-            CustomWinTrigger(executionerID);
-        }
-        public static void ArsonistWin(byte arsonistID)
-        {
-            Main.WonArsonistID = arsonistID;
-            Main.currentWinner = CustomWinner.Arsonist;
-            CustomWinTrigger(arsonistID);
-        }
-        public static void JackalWin()
-        {
-            Main.currentWinner = CustomWinner.Jackal;
-            CustomWinTrigger(0);
-        }
-        public static void ForceEndGame()
-        {
-            if (ShipStatus.Instance == null) return;
-            Main.currentWinner = CustomWinner.Draw;
-            if (AmongUsClient.Instance.AmHost)
-            {
-                ShipStatus.Instance.enabled = false;
-                ShipStatus.RpcEndGame(GameOverReason.ImpostorByKill, false);
             }
         }
         public static void PlaySound(byte playerID, Sounds sound)
@@ -369,6 +289,9 @@ namespace TownOfHost
                     break;
                 case CustomRoles.Sniper:
                     Sniper.Add(targetId);
+                    break;
+                case CustomRoles.Executioner:
+                    Executioner.Add(targetId);
                     break;
                 case CustomRoles.Sheriff:
                     Sheriff.Add(targetId);
@@ -405,35 +328,6 @@ namespace TownOfHost
             }
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        public static void SendExecutionerTarget(byte executionerId, byte targetId)
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetExecutionerTarget, Hazel.SendOption.Reliable, -1);
-            writer.Write(executionerId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-        public static void CustomWinTrigger(byte winnerID)
-        {
-            List<PlayerControl> Impostors = new();
-            foreach (var p in PlayerControl.AllPlayerControls)
-            {
-                PlayerControl Winner = null;
-                if (p.PlayerId == winnerID) Winner = p;
-                if (p.Data.Role.IsImpostor)
-                {
-                    Impostors.Add(p);
-                }
-            }
-            if (AmongUsClient.Instance.AmHost)
-            {
-                foreach (var imp in Impostors)
-                {
-                    imp.RpcSetRole(RoleTypes.GuardianAngel);
-                }
-                new LateTask(() => Main.CustomWinTrigger = true,
-                0.2f, "Custom Win Trigger Task");
-            }
-        }
         public static void SendRpcLogger(uint targetNetId, byte callId, int targetClientId = -1)
         {
             if (!Main.AmDebugger.Value) return;
@@ -455,12 +349,6 @@ namespace TownOfHost
             else if ((rpcName = Enum.GetName(typeof(CustomRPC), callId)) != null) { }
             else rpcName = callId.ToString();
             return rpcName;
-        }
-        public static void RemoveExecutionerKey(byte Key)
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveExecutionerTarget, Hazel.SendOption.Reliable, -1);
-            writer.Write(Key);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         public static void SetCurrentDousingTarget(byte arsonistId, byte targetId)
         {
