@@ -26,7 +26,7 @@ namespace TownOfHost
         public static readonly bool AllowPublicRoom = true;
         // フォークID / ForkId (Default: OriginalTOH)
         public static readonly string ForkId = "OriginalTOH";
-        // Discordボタンを表示するか / Show Discord Buttan (Default: true)
+        // Discordボタンを表示するか / Show Discord Button (Default: true)
         public static readonly bool ShowDiscordButton = true;
         // Discordサーバーの招待リンク / Discord Server Invite URL (Default: https://discord.gg/W5ug6hXB9V)
         public static readonly string DiscordInviteUrl = "https://discord.gg/W5ug6hXB9V";
@@ -119,6 +119,8 @@ namespace TownOfHost
         public static int DiscussionTime;
         public static int VotingTime;
         public static byte currentDousingTarget;
+        public static float DefaultCrewmateVision;
+        public static float DefaultImpostorVision;
 
         public static Main Instance;
 
@@ -206,6 +208,7 @@ namespace TownOfHost
                     {CustomRoles.Trapper, "#5a8fd0"},
                     {CustomRoles.Dictator, "#df9b00"},
                     {CustomRoles.CSchrodingerCat, "#ffffff"}, //シュレディンガーの猫の派生
+                    {CustomRoles.Seer, "#61b26c"},
                     //第三陣営役職
                     {CustomRoles.Arsonist, "#ff6633"},
                     {CustomRoles.Jester, "#ec62a5"},
@@ -305,6 +308,7 @@ namespace TownOfHost
         Mare,
         Puppeteer,
         TimeThief,
+        EvilTracker,
         LastImpostor,
         //Madmate
         MadGuardian,
@@ -332,6 +336,7 @@ namespace TownOfHost
         Trapper,
         Dictator,
         Doctor,
+        Seer,
         CSchrodingerCat,//クルー陣営のシュレディンガーの猫
         //Neutral
         Arsonist,
