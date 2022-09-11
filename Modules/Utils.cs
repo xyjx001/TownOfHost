@@ -810,13 +810,7 @@ namespace TownOfHost
         {
             BountyHunter.AfterMeetingTasks();
             SerialKiller.AfterMeetingTasks();
-            foreach (var pc in PlayerControl.AllPlayerControls)
-            {
-                if (pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.NiceGuesser))
-                {
-                    Guesser.IsSkillUsed[pc.PlayerId] = false;
-                }
-            }
+            Guesser.AfterMeetingTasks();
         }
 
         public static void ChangeInt(ref int ChangeTo, int input, int max)

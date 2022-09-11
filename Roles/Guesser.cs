@@ -108,6 +108,13 @@ namespace TownOfHost
                 }
             }
         }
+        public static void AfterMeetingTasks()
+        {
+            foreach (var id in playerIdList)
+            {
+                IsSkillUsed[id] = false;
+            }
+        }
         public static void SendShootChoices()//番号と役職をチャットに表示
         {
             string text = "";
