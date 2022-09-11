@@ -328,6 +328,7 @@ namespace TownOfHost
         Dictator,
         Doctor,
         CSchrodingerCat,//クルー陣営のシュレディンガーの猫
+        Blinder,
         //Neutral
         Arsonist,
         Egoist,
