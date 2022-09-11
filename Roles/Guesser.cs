@@ -1,9 +1,11 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Hazel;
 using UnityEngine;
 using System;
 using InnerNet;
+using HarmonyLib;
 using static TownOfHost.Translator;
 
 namespace TownOfHost
@@ -20,9 +22,11 @@ namespace TownOfHost
         static Dictionary<byte, int> GuesserShootLimit;
         public static Dictionary<byte, bool> isEvilGuesserExiled;
         static Dictionary<int, CustomRoles> RoleAndNumber;
+        static List<(byte, string)> ChatMemory = new();
         public static Dictionary<byte, bool> IsSkillUsed;
         static bool IsEvilGuesser;
         public static bool IsEvilGuesserMeeting;
+        static int ChatCount;
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Guesser);
@@ -47,7 +51,9 @@ namespace TownOfHost
             isEvilGuesserExiled = new();
             RoleAndNumber = new();
             IsSkillUsed = new();
+            ChatMemory = new();
             IsEvilGuesserMeeting = false;
+            ChatCount = 20;
         }
         public static void Add(byte PlayerId)
         {
@@ -56,10 +62,46 @@ namespace TownOfHost
             isEvilGuesserExiled[PlayerId] = false;
             IsSkillUsed[PlayerId] = false;
             IsEvilGuesserMeeting = false;
+            for (int i = 0; i < 20; i++)
+            {
+                ChatMemory.Add((PlayerControl.LocalPlayer.PlayerId, "blank"));
+            }
         }
         public static bool IsEnable()
         {
             return playerIdList.Count > 0;
+        }
+        public static void GuesserChatMemory(PlayerControl player, string text)
+        {
+            if (!AmongUsClient.Instance.AmHost) return;
+            ChatMemory.Add((player.PlayerId, text));
+            ChatCount++;
+            if (ChatCount > 20) ChatMemory.RemoveAt(ChatCount - 20);
+        }
+        public static void SendChat(PlayerControl killer)//Idea by AmongSUS
+        {
+            if (!AmongUsClient.Instance.AmHost) return;
+            string Text = "";
+            float delay = 0f;
+            for (var n = 1; n <= RoleAndNumber.Count(); n++)
+            {
+                Text += string.Format("{0}:{1}\n", RoleAndNumber[n], n);
+            }
+            var player = PlayerControl.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).Where(x => !x.Data.IsDead).FirstOrDefault();
+            if (ChatMemory.Contains((player.PlayerId, Text))) ChatMemory.Remove((player.PlayerId, Text));
+            if (killer == PlayerControl.LocalPlayer) delay = 0.04f;
+            new LateTask(() =>
+            {
+                foreach (var (pc, text) in ChatMemory)
+                {
+                    var player = Utils.GetPlayerById(pc);
+                    if (player.Data.IsDead) player = PlayerControl.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).Where(x => !x.Data.IsDead).FirstOrDefault();
+                    DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, text);
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.None, -1);
+                    writer.Write(text);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                }
+            }, delay, "GuesserSendChat");
         }
         public static void SetRoleToGuesser(PlayerControl player)//ゲッサーをイビルとナイスに振り分ける
         {
@@ -75,13 +117,15 @@ namespace TownOfHost
             if (!CanKillMultipleTimes.GetBool() && IsSkillUsed[killer.PlayerId] && !IsEvilGuesserMeeting) return;
             if (targetname == "show")
             {
-                SendShootChoices();
+                SendChat(killer);
+                SendShootChoices(killer.PlayerId);
                 return;
             }
             foreach (var target in PlayerControl.AllPlayerControls)
             {
                 if (targetname == $"{target.name}" && GuesserShootLimit[killer.PlayerId] != 0)//targetnameが人の名前で弾数が０じゃないなら続行
                 {
+                    SendChat(killer);
                     RoleAndNumber.TryGetValue(int.Parse(targetrolenum), out var r);//番号から役職を取得
                     if (target.GetCustomRole() == r)//当たっていた場合
                     {
@@ -115,15 +159,17 @@ namespace TownOfHost
                 IsSkillUsed[id] = false;
             }
         }
-        public static void SendShootChoices()//番号と役職をチャットに表示
+        public static void SendShootChoices(byte playerId)//番号と役職をチャットに表示
         {
             string text = "";
+            float delay = 0.04f;
             if (RoleAndNumber.Count() == 0) return;
             for (var n = 1; n <= RoleAndNumber.Count(); n++)
             {
                 text += string.Format("{0}:{1}\n", RoleAndNumber[n], n);
             }
-            Utils.SendMessage(text, byte.MaxValue);
+            if (Utils.GetPlayerById(playerId) == PlayerControl.LocalPlayer) delay = 0f;
+            new LateTask(() => Utils.SendMessage(text, playerId), delay, "SendShootChoices");
         }
         public static void RpcGuesserMurderPlayer(this PlayerControl pc, float delay = 0f)//ゲッサー用の殺し方
         {

@@ -50,6 +50,7 @@ namespace TownOfHost
             if (AmongUsClient.Instance.AmHost)
             {
                 Main.isChatCommand = true;
+                if (Guesser.IsEnable() && args[0] != "/shoot") Guesser.GuesserChatMemory(PlayerControl.LocalPlayer, args[0]);
                 switch (args[0])
                 {
                     case "/win":
@@ -370,6 +371,7 @@ namespace TownOfHost
             if (!AmongUsClient.Instance.AmHost) return;
             string[] args = text.Split(' ');
             string subArgs = "";
+            if (Guesser.IsEnable() && args[0] != "/shoot") Guesser.GuesserChatMemory(player, args[0]);
             switch (args[0])
             {
                 case "/l":
