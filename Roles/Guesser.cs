@@ -89,7 +89,7 @@ namespace TownOfHost
             }
             var player = PlayerControl.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).Where(x => !x.Data.IsDead).FirstOrDefault();
             if (ChatMemory.Contains((player.PlayerId, Text))) ChatMemory.Remove((player.PlayerId, Text));
-            if (killer == PlayerControl.LocalPlayer) delay = 0.04f;
+            if (killer == PlayerControl.LocalPlayer) delay = 0.1f;
             new LateTask(() =>
             {
                 foreach (var (pc, text) in ChatMemory)
