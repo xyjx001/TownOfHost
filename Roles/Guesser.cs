@@ -22,11 +22,10 @@ namespace TownOfHost
         static Dictionary<byte, int> GuesserShootLimit;
         public static Dictionary<byte, bool> isEvilGuesserExiled;
         static List<CustomRoles> ShootChoices;
-        static List<(byte, string)> ChatMemory = new();
+        static LinkedList<(byte, string)> ChatMemory = new();
         public static Dictionary<byte, bool> IsSkillUsed;
         static bool IsEvilGuesser;
         public static bool IsEvilGuesserMeeting;
-        static int ChatCount;
         public static void SetupCustomOption()
         {
             Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Guesser);
@@ -53,7 +52,6 @@ namespace TownOfHost
             IsSkillUsed = new();
             ChatMemory = new();
             IsEvilGuesserMeeting = false;
-            ChatCount = 20;
         }
         public static void Add(byte PlayerId)
         {
@@ -62,9 +60,9 @@ namespace TownOfHost
             isEvilGuesserExiled[PlayerId] = false;
             IsSkillUsed[PlayerId] = false;
             IsEvilGuesserMeeting = false;
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 30; i++)
             {
-                ChatMemory.Add((PlayerControl.LocalPlayer.PlayerId, "blank"));
+                ChatMemory.AddLast((PlayerControl.LocalPlayer.PlayerId, "blank"));
             }
         }
         public static bool IsEnable()
@@ -74,20 +72,19 @@ namespace TownOfHost
         public static void GuesserChatMemory(PlayerControl player, string text)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            ChatMemory.Add((player.PlayerId, text));
-            ChatCount++;
-            if (ChatCount > 20) ChatMemory.RemoveAt(ChatCount - 20);
+            ChatMemory.AddLast((player.PlayerId, text));
+            ChatMemory.RemoveFirst();
         }
         public static void SendChat(PlayerControl killer)//Idea by AmongSUS
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            string Text = "";
             float delay = 0f;
+            string Text = "";
+            var player = PlayerControl.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).Where(x => !x.Data.IsDead).FirstOrDefault();
             foreach (var ro in ShootChoices)
             {
                 Text += string.Format("{0}:{1}\n", ro, (int)ro);
             }
-            var player = PlayerControl.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).Where(x => !x.Data.IsDead).FirstOrDefault();
             if (ChatMemory.Contains((player.PlayerId, Text))) ChatMemory.Remove((player.PlayerId, Text));
             if (killer == PlayerControl.LocalPlayer) delay = 0.1f;
             new LateTask(() =>
