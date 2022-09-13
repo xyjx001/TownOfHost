@@ -25,6 +25,7 @@ namespace TownOfHost
         static LinkedList<(byte, string)> ChatMemory = new();
         public static Dictionary<byte, bool> IsSkillUsed;
         static bool IsEvilGuesser;
+        public static bool isMeeting;
         public static bool IsEvilGuesserMeeting;
         public static void SetupCustomOption()
         {
@@ -52,6 +53,7 @@ namespace TownOfHost
             IsSkillUsed = new();
             ChatMemory = new();
             IsEvilGuesserMeeting = false;
+            isMeeting = false;
         }
         public static void Add(byte PlayerId)
         {
@@ -88,7 +90,7 @@ namespace TownOfHost
             }
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                text2 += string.Format("{0}:{1}\n", pc, pc.PlayerId);
+                text2 += string.Format("{0}:{1}\n", pc.name, pc.PlayerId);
             }
             if (ChatMemory.Contains((player.PlayerId, Text))) ChatMemory.Remove((player.PlayerId, Text));
             if (ChatMemory.Contains((player.PlayerId, text2))) ChatMemory.Remove((player.PlayerId, text2));
@@ -160,6 +162,7 @@ namespace TownOfHost
             {
                 IsSkillUsed[id] = false;
             }
+            isMeeting = false;
         }
         public static void SendShootChoices(byte playerId)//番号と役職をチャットに表示
         {
@@ -175,7 +178,7 @@ namespace TownOfHost
             new LateTask(() => Utils.SendMessage(text, playerId), delay, "SendShootChoices");
             foreach (var pc in PlayerControl.AllPlayerControls)
             {
-                text2 += string.Format("{0}:{1}\n", pc, pc.PlayerId);
+                text2 += string.Format("{0}:{1}\n", pc.name, pc.PlayerId);
             }
             if (Utils.GetPlayerById(playerId) == PlayerControl.LocalPlayer) delay = 0f;
             new LateTask(() => Utils.SendMessage(text2, playerId), delay, "SendShootChoices");
