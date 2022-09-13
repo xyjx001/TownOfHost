@@ -589,7 +589,7 @@ namespace TownOfHost
         {
             if (!AmongUsClient.Instance.AmHost) return;
             if (PlayerControl.AllPlayerControls == null) return;
-            if (Guesser.IsEnable() && GameStates.IsMeeting) return;
+            if (!isMeeting && GameStates.IsMeeting) return;
 
             var caller = new System.Diagnostics.StackFrame(1, false);
             var callerMethod = caller.GetMethod();

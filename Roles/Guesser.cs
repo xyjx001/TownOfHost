@@ -92,7 +92,7 @@ namespace TownOfHost
             }
             if (ChatMemory.Contains((player.PlayerId, Text))) ChatMemory.Remove((player.PlayerId, Text));
             if (ChatMemory.Contains((player.PlayerId, text2))) ChatMemory.Remove((player.PlayerId, text2));
-            if (killer == PlayerControl.LocalPlayer) delay = 0.1f;
+            if (killer == PlayerControl.LocalPlayer) delay = 0.2f;
             new LateTask(() =>
             {
                 foreach (var (pc, text) in ChatMemory)
@@ -191,7 +191,7 @@ namespace TownOfHost
                 pc.RpcExileV2();//それ以外のやつ視点で勝手に死んだことにする
                 text += string.Format(GetString("KilledByGuesser"), pc.name);//ホスト以外死んだのがわからないのでチャットで送信
                 Utils.SendMessage(text, byte.MaxValue);
-            }, 0.2f, "Guesser Murder");
+            }, 1f, "Guesser Murder");
 
 
         }
