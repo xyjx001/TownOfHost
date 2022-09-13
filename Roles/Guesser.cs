@@ -25,7 +25,6 @@ namespace TownOfHost
         static LinkedList<(byte, string)> ChatMemory = new();
         public static Dictionary<byte, bool> IsSkillUsed;
         static bool IsEvilGuesser;
-        public static bool isMeeting;
         public static bool IsEvilGuesserMeeting;
         public static void SetupCustomOption()
         {
@@ -53,7 +52,6 @@ namespace TownOfHost
             IsSkillUsed = new();
             ChatMemory = new();
             IsEvilGuesserMeeting = false;
-            isMeeting = false;
         }
         public static void Add(byte PlayerId)
         {
@@ -162,7 +160,6 @@ namespace TownOfHost
             {
                 IsSkillUsed[id] = false;
             }
-            isMeeting = false;
         }
         public static void SendShootChoices(byte playerId)//番号と役職をチャットに表示
         {
