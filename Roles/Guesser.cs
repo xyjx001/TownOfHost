@@ -21,7 +21,7 @@ namespace TownOfHost
         static List<byte> playerIdList = new();
         static Dictionary<byte, int> GuesserShootLimit;
         public static Dictionary<byte, bool> isEvilGuesserExiled;
-        static List<CustomRoles> ShootChoices;
+        static List<CustomRoles> ShootRoles;
         static LinkedList<(byte, string)> ChatMemory = new();
         public static Dictionary<byte, bool> IsSkillUsed;
         static bool IsEvilGuesser;
@@ -48,7 +48,7 @@ namespace TownOfHost
             playerIdList = new();
             GuesserShootLimit = new();
             isEvilGuesserExiled = new();
-            ShootChoices = new();
+            ShootRoles = new();
             IsSkillUsed = new();
             ChatMemory = new();
             IsEvilGuesserMeeting = false;
@@ -80,12 +80,18 @@ namespace TownOfHost
             if (!AmongUsClient.Instance.AmHost) return;
             float delay = 0f;
             string Text = "";
+            string text2 = "";
             var player = PlayerControl.AllPlayerControls.ToArray().OrderBy(x => x.PlayerId).Where(x => !x.Data.IsDead).FirstOrDefault();
-            foreach (var ro in ShootChoices)
+            foreach (var ro in ShootRoles)
             {
                 Text += string.Format("{0}:{1}\n", ro, (int)ro);
             }
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                text2 += string.Format("{0}:{1}\n", pc, pc.PlayerId);
+            }
             if (ChatMemory.Contains((player.PlayerId, Text))) ChatMemory.Remove((player.PlayerId, Text));
+            if (ChatMemory.Contains((player.PlayerId, text2))) ChatMemory.Remove((player.PlayerId, text2));
             if (killer == PlayerControl.LocalPlayer) delay = 0.1f;
             new LateTask(() =>
             {
@@ -106,13 +112,13 @@ namespace TownOfHost
             if (IsEvilGuesser) Main.AllPlayerCustomRoles[player.PlayerId] = CustomRoles.EvilGuesser;
             else Main.AllPlayerCustomRoles[player.PlayerId] = CustomRoles.NiceGuesser;
         }
-        public static void GuesserShoot(PlayerControl killer, string targetname, string targetrolenum)//ゲッサーが撃てるかどうかのチェック
+        public static void GuesserShoot(PlayerControl killer, string targetId, string targetrolenum)//ゲッサーが撃てるかどうかのチェック
         {
             if ((!killer.Is(CustomRoles.NiceGuesser) && !killer.Is(CustomRoles.EvilGuesser)) || killer.Data.IsDead || !AmongUsClient.Instance.IsGameStarted) return;
             //死んでるやつとゲッサーじゃないやつ、ゲームが始まってない場合は引き返す
             if (killer.Is(CustomRoles.NiceGuesser) && IsEvilGuesserMeeting) return;//イビルゲッサー会議の最中はナイスゲッサーは打つな
             if (!CanKillMultipleTimes.GetBool() && IsSkillUsed[killer.PlayerId] && !IsEvilGuesserMeeting) return;
-            if (targetname == "show")
+            if (targetId == "show")
             {
                 SendChat(killer);
                 SendShootChoices(killer.PlayerId);
@@ -120,7 +126,7 @@ namespace TownOfHost
             }
             foreach (var target in PlayerControl.AllPlayerControls)
             {
-                if (targetname == $"{target.name}" && GuesserShootLimit[killer.PlayerId] != 0)//targetnameが人の名前で弾数が０じゃないなら続行
+                if (target.PlayerId == byte.Parse(targetId) && GuesserShootLimit[killer.PlayerId] != 0)//targetnameが人の名前で弾数が０じゃないなら続行
                 {
                     SendChat(killer);
                     if ((int)target.GetCustomRole() == int.Parse(targetrolenum))//当たっていた場合
@@ -158,14 +164,21 @@ namespace TownOfHost
         public static void SendShootChoices(byte playerId)//番号と役職をチャットに表示
         {
             string text = "";
+            string text2 = "";
             float delay = 0.04f;
-            if (ShootChoices.Count() == 0) return;
-            foreach (var ro in ShootChoices)
+            if (ShootRoles.Count() == 0) return;
+            foreach (var ro in ShootRoles)
             {
                 text += string.Format("{0}:{1}\n", ro, (int)ro);
             }
             if (Utils.GetPlayerById(playerId) == PlayerControl.LocalPlayer) delay = 0f;
             new LateTask(() => Utils.SendMessage(text, playerId), delay, "SendShootChoices");
+            foreach (var pc in PlayerControl.AllPlayerControls)
+            {
+                text2 += string.Format("{0}:{1}\n", pc, pc.PlayerId);
+            }
+            if (Utils.GetPlayerById(playerId) == PlayerControl.LocalPlayer) delay = 0f;
+            new LateTask(() => Utils.SendMessage(text2, playerId), delay, "SendShootChoices");
         }
         public static void RpcGuesserMurderPlayer(this PlayerControl pc)//ゲッサー用の殺し方
         {
@@ -184,20 +197,20 @@ namespace TownOfHost
         }
         public static void SetRoleAndNumber()//役職を番号で管理
         {
-            ShootChoices = new();
+            ShootRoles = new();
             foreach (var pc in PlayerControl.AllPlayerControls)//とりあえずアサインされた役職をすべて取りだす
             {
-                if (!ShootChoices.Contains(pc.GetCustomRole())) ShootChoices.Add(pc.GetCustomRole());
+                if (!ShootRoles.Contains(pc.GetCustomRole())) ShootRoles.Add(pc.GetCustomRole());
             }
-            if (Options.CanMakeMadmateCount.GetInt() != 0) ShootChoices.Add(CustomRoles.SKMadmate);//SKMadmateがいる際にはサイドキック前から候補に入れておく。
+            if (Options.CanMakeMadmateCount.GetInt() != 0) ShootRoles.Add(CustomRoles.SKMadmate);//SKMadmateがいる際にはサイドキック前から候補に入れておく。
             if (CustomRoles.SchrodingerCat.IsEnable())//シュレネコがいる場合も役職変化前から候補に入れておく。
             {
-                ShootChoices.Add(CustomRoles.MSchrodingerCat);
-                if (Sheriff.IsEnable) ShootChoices.Add(CustomRoles.CSchrodingerCat);
-                if (CustomRoles.Egoist.IsEnable()) ShootChoices.Add(CustomRoles.EgoSchrodingerCat);
-                if (CustomRoles.Jackal.IsEnable()) ShootChoices.Add(CustomRoles.JSchrodingerCat);
+                ShootRoles.Add(CustomRoles.MSchrodingerCat);
+                if (Sheriff.IsEnable) ShootRoles.Add(CustomRoles.CSchrodingerCat);
+                if (CustomRoles.Egoist.IsEnable()) ShootRoles.Add(CustomRoles.EgoSchrodingerCat);
+                if (CustomRoles.Jackal.IsEnable()) ShootRoles.Add(CustomRoles.JSchrodingerCat);
             }
-            ShootChoices = ShootChoices.OrderBy(a => Guid.NewGuid()).ToList();//会議画面で見たときに役職と順番が一緒で、役バレしたのでシャッフル
+            ShootRoles = ShootRoles.OrderBy(a => Guid.NewGuid()).ToList();//会議画面で見たときに役職と順番が一緒で、役バレしたのでシャッフル
         }
         public static void OpenGuesserMeeting()
         {
