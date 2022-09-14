@@ -254,6 +254,7 @@ namespace TownOfHost
     {
         public static void Postfix(IntroCutscene __instance)
         {
+            if (!GameStates.IsInGame) return;
             Main.introDestroyed = true;
             if (AmongUsClient.Instance.AmHost)
             {

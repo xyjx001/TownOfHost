@@ -317,7 +317,7 @@ namespace TownOfHost
                     switch (pc.GetCustomRole())
                     {
                         case CustomRoles.BountyHunter:
-                            BountyHunter.Add(pc);
+                            BountyHunter.Add(pc.PlayerId);
                             break;
                         case CustomRoles.SerialKiller:
                             SerialKiller.Add(pc.PlayerId);
@@ -333,7 +333,7 @@ namespace TownOfHost
                             FireWorks.Add(pc.PlayerId);
                             break;
                         case CustomRoles.TimeThief:
-                            TimeThief.Add(pc, pc.PlayerId);
+                            TimeThief.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Sniper:
                             Sniper.Add(pc.PlayerId);
